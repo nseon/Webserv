@@ -1,0 +1,28 @@
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <sys/types.h>
+#include <cstring>
+
+#define PORT 3030
+
+int	main(void)
+{
+	int					listeningSocket;
+	int					newSocket;
+	struct sockaddr_in	myAddr;
+	struct sockaddr_in	sender;
+
+	listeningSocket = socket(AF_INET, SOCK_STREAM, 0);
+	myAddr.sin_family = AF_INET;
+	myAddr.sin_port = htons(PORT);
+	myAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+	std::memset(&myAddr.sin_zero, 0, 8);
+
+	bind(listeningSocket, reinterpret_cast<struct sockaddr *>(&myAddr), sizeof(struct sockaddr));
+
+	listen(listeningSocket, 10);
+	int	size = sizeof(sockaddr);
+	newSocket = accept(listeningSocket, reinterpret_cast<struct sockaddr *>(&sender), &size);
+	char	buf[10];
+	recv(newSocket, buf, 10, 0);
+}
