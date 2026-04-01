@@ -1,4 +1,5 @@
 NAME		:=	webserv
+CLIENT		:=	client
 
 # ---------------FILES--------------- #
 
@@ -8,12 +9,14 @@ BUILD_DIR	:=	$(MAKE_DIR)build_$(shell git branch --show-current)/
 SRC_DIR		:=	src/
 
 OBJ			=	$(patsubst %.cpp, $(BUILD_DIR)%.o, $(SRC))
+OBJ_CLIENT	=	$(patsubst %.cpp, $(BUILD_DIR)%.o, $(SRC_CLIENT))
 
 DEP			=	$(patsubst %.cpp, $(BUILD_DIR)%.d, $(SRC))
 
 # ---------------MAIN---------------- #
 
 SRC			:=	main.cpp
+SRC_CLIENT	:=	client.cpp
 
 # --------------INCLUDES------------- #
 
@@ -50,11 +53,15 @@ endif
 # --------------TARGETS-------------- #
 
 .PHONY: all
-all: $(NAME)
+all: $(NAME) $(CLIENT)
 
 $(NAME): $(OBJ)
 	@echo $(MODE) > $(MODE_TRACE)
 	$(CC) $(CFLAGS) $(OBJ) -o $@
+
+$(CLIENT): $(OBJ_CLIENT)
+	@echo $(MODE) > $(MODE_TRACE)
+	$(CC) $(CFLAGS) $(OBJ_CLIENT) -o $@
 
 $(BUILD_DIR)%.o: $(SRC_DIR)%.cpp
 	@mkdir -p $(@D)

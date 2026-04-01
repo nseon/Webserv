@@ -2,6 +2,7 @@
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <cstring>
+#include <iostream>
 
 #define PORT 3030
 
@@ -13,6 +14,7 @@ int	main(void)
 	struct sockaddr_in	sender;
 
 	listeningSocket = socket(AF_INET, SOCK_STREAM, 0);
+
 	myAddr.sin_family = AF_INET;
 	myAddr.sin_port = htons(PORT);
 	myAddr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -22,7 +24,8 @@ int	main(void)
 
 	listen(listeningSocket, 10);
 	int	size = sizeof(sockaddr);
-	newSocket = accept(listeningSocket, reinterpret_cast<struct sockaddr *>(&sender), &size);
+	newSocket = accept(listeningSocket, reinterpret_cast<struct sockaddr *>(&sender), reinterpret_cast<socklen_t *>(&size));
 	char	buf[10];
 	recv(newSocket, buf, 10, 0);
+	std::cout << buf << std::endl;
 }
