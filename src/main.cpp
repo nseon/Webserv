@@ -1,4 +1,5 @@
 #include <sys/socket.h>
+#include <sys/epoll.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <cstring>
@@ -12,6 +13,9 @@ int	main(void)
 	int					newSocket;
 	struct sockaddr_in	myAddr;
 	struct sockaddr_in	sender;
+	char				buf[10];
+	int					size;
+	int					epollFd;
 
 	listeningSocket = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -21,11 +25,17 @@ int	main(void)
 	std::memset(&myAddr.sin_zero, 0, 8);
 
 	bind(listeningSocket, reinterpret_cast<struct sockaddr *>(&myAddr), sizeof(struct sockaddr));
-
 	listen(listeningSocket, 10);
-	int	size = sizeof(sockaddr);
-	newSocket = accept(listeningSocket, reinterpret_cast<struct sockaddr *>(&sender), reinterpret_cast<socklen_t *>(&size));
-	char	buf[10];
-	recv(newSocket, buf, 10, 0);
-	std::cout << buf << std::endl;
+
+	epollFd = epoll_create(1);
+	epoll_ctl(epollFd, EPOLL_CTL_ADD, listeningSocket, );
+
+	while (1)
+	{
+		newSocket = accept(listeningSocket, reinterpret_cast<struct sockaddr *>(&sender), reinterpret_cast<socklen_t *>(&size));
+
+		recv(newSocket, buf, 10, 0);
+
+		std::cout << buf << std::endl;
+	}
 }
