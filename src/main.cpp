@@ -7,6 +7,8 @@
 
 #define PORT 3030
 
+
+
 int	main(void)
 {
 	int					listeningSocket;
@@ -16,6 +18,9 @@ int	main(void)
 	char				buf[10];
 	int					size;
 	int					epollFd;
+	struct epoll_event	event;
+	struct epoll_event	readyList[10];
+	int					maxEvents;
 
 	listeningSocket = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -28,11 +33,23 @@ int	main(void)
 	listen(listeningSocket, 10);
 
 	epollFd = epoll_create(1);
-	epoll_ctl(epollFd, EPOLL_CTL_ADD, listeningSocket, );
+	event.events = EPOLLIN;
+	event.data.fd = listeningSocket;
+	epoll_ctl(epollFd, EPOLL_CTL_ADD, listeningSocket, &event);
+	maxEvents = 1;
 
+	int readyEvents;
 	while (1)
 	{
-		newSocket = accept(listeningSocket, reinterpret_cast<struct sockaddr *>(&sender), reinterpret_cast<socklen_t *>(&size));
+		readyEvents = epoll_wait(epollFd,  readyList, maxEvents, -1);
+		for (int i = 0; i < readyEvents; i++)
+		{
+			if (readyList[i].data.fd == listeningSocket)
+			{
+				newSocket = accept(listeningSocket, reinterpret_cast<struct sockaddr *>(&sender), reinterpret_cast<socklen_t *>(&size));
+				epoll_ctl(epollFd, EPOLL_CTL_ADD, newSocket, &event);
+			}
+		}
 
 		recv(newSocket, buf, 10, 0);
 
