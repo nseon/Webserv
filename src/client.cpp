@@ -7,7 +7,7 @@
 int	main(void)
 {
 	struct sockaddr_in	server;
-	char	toSend[10] = "012345678";
+	char	toSend[1024] = "012345678";
 	int		serverSocket;
 
 	serverSocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -19,5 +19,5 @@ int	main(void)
 
 	connect(serverSocket, reinterpret_cast<struct sockaddr *>(&server), static_cast<socklen_t>(sizeof(struct sockaddr)));
 
-	send(serverSocket, toSend, 10, 0);
+	send(serverSocket, toSend, 1024, 0);
 }

@@ -15,7 +15,7 @@ DEP			=	$(patsubst %.cpp, $(BUILD_DIR)%.d, $(SRC))
 
 # ---------------MAIN---------------- #
 
-SRC			:=	main.cpp
+SRC			:=	server.cpp
 SRC_CLIENT	:=	client.cpp
 
 # --------------INCLUDES------------- #
