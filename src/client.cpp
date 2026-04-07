@@ -1,14 +1,19 @@
+#include <cstdio>
 #include <cstring>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <iostream>
+#include <string.h>
+#include <string>
 
 #define PORT 3030
 
 int	main(void)
 {
 	struct sockaddr_in	server;
-	char	toSend[1024] = "012345678";
-	int		serverSocket;
+	char				toSend[1024];
+	std::string			line;
+	int					serverSocket;
 
 	serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -19,5 +24,10 @@ int	main(void)
 
 	connect(serverSocket, reinterpret_cast<struct sockaddr *>(&server), static_cast<socklen_t>(sizeof(struct sockaddr)));
 
-	send(serverSocket, toSend, 1024, 0);
+	while (std::getline(std::cin, line))
+	{
+		strcpy(toSend, line.c_str());
+		toSend << std::cin;
+		send(serverSocket, toSend, 1024, 0);
+	}
 }

@@ -53,7 +53,7 @@ endif
 # --------------TARGETS-------------- #
 
 .PHONY: all
-all: $(NAME) $(CLIENT)
+all: $(NAME)
 
 $(NAME): $(OBJ)
 	@echo $(MODE) > $(MODE_TRACE)

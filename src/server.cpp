@@ -8,6 +8,15 @@
 #include <cstring>
 #include <iostream>
 
+#include <errno.h>
+#include <stdio.h>
+#include <string.h>
+
+#ifndef NULL
+# define NULL (void *)0 
+#endif
+
+#define RECV_SIZE 1024
 #define PORT 3030
 #define BACKLOG 10
 
@@ -83,7 +92,7 @@ static int	acceptNewSocket(int listeningSocket, struct epoll_event** events, int
 
 	newEvent.data.fd = newSocket;
 	newEvent.events = EPOLLIN;
-	if (epoll_ctl(epollFd, EPOLL_CTL_ADD, listeningSocket, &newEvent))
+	if (epoll_ctl(epollFd, EPOLL_CTL_ADD, newSocket, &newEvent))
 	{
 		close(newSocket);
 		return (1);
@@ -92,14 +101,29 @@ static int	acceptNewSocket(int listeningSocket, struct epoll_event** events, int
 	return (0);
 }
 
-static int	manageClient(int senderSocket)
+static int	sendMessage(int senderSocket, char* msg)
 {
-	char	msg[1024];
-	size_t	length = 1024;
+	std::cout << senderSocket << " : " << msg << std::flush;
+	return (0);
+}
 
-	recv(senderSocket, msg, length, 0);
-	std::cout << senderSocket << " : " << msg << std::endl;
-	send(senderSocket, msg, 1024, 0);
+static int	manageClient(int epollFd, int senderSocket)
+{
+	char	msg[RECV_SIZE];
+	ssize_t	msg_length;
+
+	msg_length = recv(senderSocket, msg, RECV_SIZE, 0);
+	if (msg_length <= 0)
+	{
+		epoll_ctl(epollFd, EPOLL_CTL_DEL, senderSocket, NULL);
+		close(senderSocket);
+		std::strcpy(msg, "disconected.\n");
+	}
+	else
+	{
+		msg[msg_length] = 0;
+	}
+	sendMessage(senderSocket, msg);
 	return (0);
 }
 
@@ -121,12 +145,15 @@ static int	epollLoop(int epollFd, int listeningSocket)
 			{
 				if (acceptNewSocket(listeningSocket, &events, &maxEvents, &events_size, epollFd))
 				{
+					std::cout << errno << std::endl;
+					perror(strerror(errno));
 					return (1);
 				}
+				std::cout << "New Socket Accepted" << std::endl;
 			}
 			else
 			{
-				manageClient(events[i].data.fd);
+				manageClient(epollFd, events[i].data.fd);
 			}
 		}
 	}
