@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <cstring>
 #include <iostream>
+#include <fcntl.h>
 
 #include <errno.h>
 #include <stdio.h>
@@ -44,6 +45,8 @@ static int	initServer(int* listeningSocket, struct sockaddr_in* serverAddr)
 		close(*listeningSocket);
 		return (1);
 	}
+
+	fcntl(*listeningSocket, F_SETFL, O_NONBLOCK);
 
 	return (0);
 }
@@ -89,6 +92,8 @@ static int	acceptNewSocket(int listeningSocket, struct epoll_event** events, int
 		std::memcpy(*events, buf, sizeof(struct epoll_event) * static_cast<size_t>(*current));
 		delete[] buf;
 	}
+
+	fcntl(newSocket, F_SETFL, O_NONBLOCK);
 
 	newEvent.data.fd = newSocket;
 	newEvent.events = EPOLLIN;
