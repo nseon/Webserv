@@ -6,11 +6,12 @@
 #    By: nseon <nseon@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/10/13 10:54:16 by nseon             #+#    #+#              #
-#    Updated: 2026/03/30 14:48:25 by nseon            ###   ########.fr        #
+#    Updated: 2026/04/03 16:06:51 by nseon            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME		:=	webserv
+CLIENT		:=	client
 
 # ---------------FILES--------------- #
 
@@ -20,12 +21,15 @@ BUILD_DIR	:=	$(MAKE_DIR)build_$(shell git branch --show-current)/
 SRC_DIR		:=	src/
 
 OBJ			=	$(patsubst %.cpp, $(BUILD_DIR)%.o, $(SRC))
+CL_OBJ		=	$(patsubst %.cpp, $(BUILD_DIR)%.o, $(CL_SRC))
 
 DEP			=	$(patsubst %.cpp, $(BUILD_DIR)%.d, $(SRC))
 
 # ---------------MAIN---------------- #
 
-SRC			:=
+SRC			:= server.cpp
+
+CL_SRC		:= client.cpp
 
 # --------------INCLUDES------------- #
 
@@ -62,11 +66,15 @@ endif
 # --------------TARGETS-------------- #
 
 .PHONY: all
-all: $(NAME)
+all: $(NAME) $(CLIENT)
 
 $(NAME): $(OBJ)
 	@echo $(MODE) > $(MODE_TRACE)
 	$(CC) $(CFLAGS) $(OBJ) -o $@
+	
+$(CLIENT): $(CL_OBJ)
+	@echo $(MODE) > $(MODE_TRACE)
+	$(CC) $(CFLAGS) $(CL_OBJ) -o $@
 
 $(BUILD_DIR)%.o: $(SRC_DIR)%.cpp
 	@mkdir -p $(@D)
