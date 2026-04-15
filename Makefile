@@ -25,7 +25,7 @@ DEP			=	$(patsubst %.cpp, $(BUILD_DIR)%.d, $(SRC))
 
 # ---------------MAIN---------------- #
 
-SRC			:=	main Socket
+SRC			:=	main.cpp ASocket.cpp ListenerSocket.cpp ClientSocket.cpp PollingManager.cpp
 
 # --------------INCLUDES------------- #
 
