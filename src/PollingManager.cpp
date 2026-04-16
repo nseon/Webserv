@@ -46,24 +46,25 @@ void	PollingManager::addListenerSocket(struct sockaddr_in address)
 
 void	PollingManager::removeSocket(int socketFd)
 {
-	ASocket*	toDel = this->findSocket(socketFd);
-	epoll_ctl(this->epollInstance_, EPOLL_CTL_DEL, socketFd, toDel->getNotConstEvent());
-	delete toDel;
+	std::vector<ASocket*>::iterator	toDel = this->findSocket(socketFd);
+	epoll_ctl(this->epollInstance_, EPOLL_CTL_DEL, socketFd, (*toDel)->getNotConstEvent());
+	delete *toDel;
+	this->sockets_.erase(toDel);
 }
 
-ASocket*	PollingManager::findSocket(int socketFd) const
+std::vector<ASocket*>::iterator	PollingManager::findSocket(int socketFd)
 {
-	for (unsigned int i = 0; i < this->sockets_.size(); i++)
+	for (std::vector<ASocket*>::iterator it = this->sockets_.begin(); it < this->sockets_.end(); it++)
 	{
-		if (socketFd == this->sockets_[i]->getFd())
+		if (socketFd == (*it)->getFd())
 		{
-			return (this->sockets_[i]);
+			return (it);
 		}
 	}
-	return (NULL);
+	return (this->sockets_.end());
 }
 
-std::vector<ASocket*>	PollingManager::poll(void) const
+std::vector<ASocket*>	PollingManager::poll(void)
 {
 	struct epoll_event*		events = new struct epoll_event[this->sockets_.size()];
 	std::vector<ASocket*>	ret;
@@ -72,7 +73,8 @@ std::vector<ASocket*>	PollingManager::poll(void) const
 	nbEvents = epoll_wait(this->epollInstance_, events, static_cast<int>(this->sockets_.size()), -1);
 	for (int i = 0; i < nbEvents; i++)
 	{
-		ret.push_back(this->findSocket(events[i].data.fd));
+		ret.push_back(*this->findSocket(events[i].data.fd));
 	}
+	delete[] events;
 	return (ret);
 }
