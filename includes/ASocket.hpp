@@ -6,7 +6,7 @@
 class ASocket
 {
 	protected:
-		int	socketFd_;
+		int					socketFd_;
 		struct epoll_event	event_;
 
 	public:
