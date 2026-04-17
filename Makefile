@@ -35,7 +35,7 @@ INCLUDES	:=	$(INCS_DIR)
 # --------------CONFIGS-------------- #
 
 CXX			:=	c++
-CXXFLAGS		=	-Wall -Wextra -Werror -std=c++98 -Weverything -Wno-suggest-override -Wno-suggest-destructor-override -Wno-padded -Wno-address-of-temporary
+CXXFLAGS	=	-Wall -Wextra -Werror -std=c++98
 CPPFLAGS	:=	-MMD -MP $(addprefix -I, $(INCLUDES))
 
 MAKEFLAGS	+=	--no-print-directory --jobs
