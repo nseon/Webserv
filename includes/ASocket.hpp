@@ -6,8 +6,8 @@
 class ASocket
 {
 	protected:
-		int					socketFd_;
-		struct epoll_event	event_;
+		int							socketFd_;
+		struct epoll_event			event_;
 
 	public:
 		ASocket(void);
@@ -20,7 +20,6 @@ class ASocket
 		struct epoll_event*			getNotConstEvent(void);
 
 		virtual int					socketBehavior(void *) = 0;
-		virtual ASocket*			clone(void) const = 0;
 };
 
 #endif

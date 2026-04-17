@@ -17,11 +17,6 @@ ASocket (fd) {}
 
 ClientSocket::~ClientSocket(void) {}
 
-ClientSocket*	ClientSocket::clone(void) const
-{
-	return (new ClientSocket(*this));
-}
-
 int	ClientSocket::socketBehavior(void *pm)
 {
 	int		socketFd = this->socketFd_;

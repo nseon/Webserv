@@ -52,11 +52,6 @@ address_(toCopy.address_) {}
 
 ListenerSocket::~ListenerSocket(void) {}
 
-ListenerSocket*	ListenerSocket::clone(void) const
-{
-	return (new ListenerSocket(*this));
-}
-
 int	ListenerSocket::socketBehavior(void* pm)
 {
 	int				newFd;

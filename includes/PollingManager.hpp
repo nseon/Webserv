@@ -13,6 +13,7 @@ class PollingManager
 
 		std::vector<ASocket*>::iterator	findSocket(int socketFd);
 		void							addSocket(ASocket* toAdd);
+
 	public:
 		PollingManager(void);
 		~PollingManager(void);

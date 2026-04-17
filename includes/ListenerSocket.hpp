@@ -21,8 +21,7 @@ class ListenerSocket: public ASocket
 		ListenerSocket(ListenerSocket const& toCopy);
 		~ListenerSocket(void);
 
-		virtual ListenerSocket*	clone(void) const;
-		virtual int				socketBehavior(void* clientSocket);
+		virtual int			socketBehavior(void* clientSocket);
 };
 
 #endif
