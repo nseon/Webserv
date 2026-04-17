@@ -18,6 +18,7 @@ MAKE_DIR	:=	.make/
 BUILD_DIR	:=	$(MAKE_DIR)build_$(shell git branch --show-current)/
 
 SRC_DIR		:=	src/
+TEST_DIR	:= tests/
 
 OBJ			=	$(patsubst %.cpp, $(BUILD_DIR)%.o, $(SRC))
 
@@ -25,7 +26,13 @@ DEP			=	$(patsubst %.cpp, $(BUILD_DIR)%.d, $(SRC))
 
 # ---------------MAIN---------------- #
 
-SRC			:=	main.cpp ASocket.cpp ListenerSocket.cpp ClientSocket.cpp PollingManager.cpp
+BASE_SRC	:=	ASocket.cpp ListenerSocket.cpp ClientSocket.cpp PollingManager.cpp
+MAIN		:=	main.cpp
+SRC			:=	$(MAIN) $(BASE_SRC)
+
+# ----------------TEST--------------- #
+
+TEST_SRC	:=	main_test.cpp
 
 # --------------INCLUDES------------- #
 
@@ -42,7 +49,7 @@ MAKEFLAGS	+=	--no-print-directory --jobs
 
 # ---------------MODES--------------- #
 
-MODES := debug
+MODES := debug test
 
 MODE_TRACE	:= $(BUILD_DIR).mode_trace
 LAST_MODE	:= $(shell cat $(MODE_TRACE) 2>/dev/null)
@@ -53,6 +60,13 @@ BUILD_DIR := $(BUILD_DIR)$(MODE)/
 
 ifeq ($(MODE), debug)
 	CXXFLAGS = -g3 -std=c++98
+endif
+
+ifeq ($(MODE), test)
+	INCLUDES += lib/
+	SRC := $(TEST_SRC) $(BASE_SRC)
+	CPPFLAGS	:=	-MMD -MP $(addprefix -I, $(INCLUDES))
+	CXXFLAGS	= -Wall -Wextra -Werror
 endif
 
 ifneq ($(LAST_MODE), $(MODE))
@@ -69,6 +83,10 @@ $(NAME): $(OBJ)
 	$(CXX) $(CXXFLAGS) $(OBJ) -o $@
 
 $(BUILD_DIR)%.o: $(SRC_DIR)%.cpp
+	@mkdir -p $(@D)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+$(BUILD_DIR)%.o: $(TEST_DIR)%.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 

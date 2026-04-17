@@ -1,0 +1,45 @@
+name: Pull Request on Main
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: sudo apt-get update && sudo apt-get install -y build-essential
+
+    - name: Build using clang++
+      run: make CXX=clang++
+
+  test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: sudo apt-get update && sudo apt-get install -y build-essential
+
+    - name: Build unit tests with clang++
+      run: make CXX=clang++ MODE=test
+
+    - name: execute tests
+      run: ./webserv
+
+  todo-fixme:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Check for TODO or FIXME
+        run: ./CI/checkTodoFixMe.sh
