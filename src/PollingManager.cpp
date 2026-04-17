@@ -70,10 +70,6 @@ std::vector<ASocket*>	PollingManager::poll(void)
 	int						nbEvents;
 
 	nbEvents = epoll_wait(this->_epollInstance, events, static_cast<int>(this->_sockets.size()), -1);
-	if (nbEvents == -1) // TODO
-	{
-
-	}
 	std::vector<ASocket*>	ret(static_cast<unsigned long>(nbEvents));
 	for (int i = 0; i < nbEvents; i++)
 	{

@@ -32,7 +32,7 @@ SRC			:=	$(MAIN) $(BASE_SRC)
 
 # ----------------TEST--------------- #
 
-TEST_SRC	:=	main_test.cpp
+TEST_SRC	:=	PollingManager_test.cpp
 
 # --------------INCLUDES------------- #
 
