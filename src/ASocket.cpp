@@ -7,49 +7,49 @@
 
 ASocket::ASocket(void)
 {
-	this->socketFd_ = socket(AF_INET, SOCK_STREAM, 0);
-	if (this->socketFd_ == -1)
+	this->_socketFd = socket(AF_INET, SOCK_STREAM, 0);
+	if (this->_socketFd == -1)
 		throw std::runtime_error("ASocket constructor failed, because socket() function failed.");
 
-	fcntl(this->socketFd_, F_SETFL, O_NONBLOCK);
-	if (this->socketFd_ == -1)
+	fcntl(this->_socketFd, F_SETFL, O_NONBLOCK);
+	if (this->_socketFd == -1)
 		throw std::runtime_error("ASocket constructor failed, because fnctl() function failed.");
 
-	this->event_.events = EPOLLIN;
-	this->event_.data.fd = this->socketFd_;
+	this->_event.events = EPOLLIN;
+	this->_event.data.fd = this->_socketFd;
 }
 
 ASocket::ASocket(int socketFd):
-socketFd_(socketFd)
+_socketFd(socketFd)
 {
-	fcntl(this->socketFd_, F_SETFL, O_NONBLOCK);
-	if (this->socketFd_ == -1)
+	fcntl(this->_socketFd, F_SETFL, O_NONBLOCK);
+	if (this->_socketFd == -1)
 		throw std::runtime_error("ASocket constructor failed, because fnctl() function failed.");
 
-	this->event_.events = EPOLLIN;
-	this->event_.data.fd = this->socketFd_;
+	this->_event.events = EPOLLIN;
+	this->_event.data.fd = this->_socketFd;
 }
 
 ASocket::ASocket(ASocket const& toCopy):
-socketFd_(toCopy.socketFd_),
-event_(toCopy.event_) {}
+_socketFd(toCopy._socketFd),
+_event(toCopy._event) {}
 
 ASocket::~ASocket(void)
 {
-	close(this->socketFd_);
+	close(this->_socketFd);
 }
 
 int	ASocket::getFd(void) const
 {
-	return (this->socketFd_);
+	return (this->_socketFd);
 }
 
 struct epoll_event const*	ASocket::getEvent(void) const
 {
-	return (&this->event_);
+	return (&this->_event);
 }
 
 struct epoll_event*	ASocket::getNotConstEvent(void)
 {
-	return (&this->event_);
+	return (&this->_event);
 }

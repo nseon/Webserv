@@ -8,8 +8,8 @@
 class PollingManager
 {
 	private:
-		int								epollInstance_;
-		std::vector<ASocket*>			sockets_;
+		int								_epollInstance;
+		std::vector<ASocket*>			_sockets;
 
 		std::vector<ASocket*>::iterator	findSocket(int socketFd);
 		void							addSocket(ASocket* toAdd);

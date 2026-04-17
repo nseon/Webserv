@@ -19,14 +19,14 @@ ClientSocket::~ClientSocket(void) {}
 
 int	ClientSocket::socketBehavior(void *pm)
 {
-	int		socketFd = this->socketFd_;
+	int		socketFd = this->_socketFd;
 	char	msg[RECV_SIZE];
 	ssize_t	msg_length;
 
-	msg_length = recv(this->socketFd_, msg, RECV_SIZE, 0);
+	msg_length = recv(this->_socketFd, msg, RECV_SIZE, 0);
 	if (msg_length <= 0)
 	{
-		reinterpret_cast<PollingManager*>(pm)->removeSocket(this->socketFd_);
+		reinterpret_cast<PollingManager*>(pm)->removeSocket(this->_socketFd);
 		std::strcpy(msg, "disconected.\n");
 	}
 	else

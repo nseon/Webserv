@@ -15,31 +15,31 @@
 
 ListenerSocket::ListenerSocket(unsigned short port)
 {
-	this->address_.sin_family = AF_INET;
-	this->address_.sin_port = htons(port);
-	this->address_.sin_addr.s_addr = htonl(INADDR_ANY);
-	std::memset(&this->address_.sin_zero, 0, 8);
+	this->_address.sin_family = AF_INET;
+	this->_address.sin_port = htons(port);
+	this->_address.sin_addr.s_addr = htonl(INADDR_ANY);
+	std::memset(&this->_address.sin_zero, 0, 8);
 
-	if (bind(this->socketFd_, reinterpret_cast<struct sockaddr*>(&this->address_), sizeof(struct sockaddr)))
+	if (bind(this->_socketFd, reinterpret_cast<struct sockaddr*>(&this->_address), sizeof(struct sockaddr)))
 	{
 		throw std::runtime_error("ListenerSocket constructor failed because bind() failed.");
 	}
 
-	if (listen(this->socketFd_, BACKLOG))
+	if (listen(this->_socketFd, BACKLOG))
 	{
 		throw std::runtime_error("ListenerSocket constructor failed because listen() failed.");
 	}
 }
 
 ListenerSocket::ListenerSocket(struct sockaddr_in address):
-address_(address)
+_address(address)
 {
-	if (bind(this->socketFd_, reinterpret_cast<struct sockaddr*>(&this->address_), sizeof(struct sockaddr)))
+	if (bind(this->_socketFd, reinterpret_cast<struct sockaddr*>(&this->_address), sizeof(struct sockaddr)))
 	{
 		throw std::runtime_error("ListenerSocket constructor failed because bind() failed.");
 	}
 
-	if (listen(this->socketFd_, BACKLOG))
+	if (listen(this->_socketFd, BACKLOG))
 	{
 		throw std::runtime_error("ListenerSocket constructor failed because listen() failed.");
 	}
@@ -47,7 +47,7 @@ address_(address)
 
 ListenerSocket::ListenerSocket(ListenerSocket const& toCopy):
 ASocket(toCopy),
-address_(toCopy.address_) {}
+_address(toCopy._address) {}
 
 
 ListenerSocket::~ListenerSocket(void) {}
@@ -56,7 +56,7 @@ int	ListenerSocket::socketBehavior(void* pm)
 {
 	int				newFd;
 
-	newFd = accept(this->socketFd_, NULL, NULL);
+	newFd = accept(this->_socketFd, NULL, NULL);
 	if (newFd == -1)
 	{
 		return (1);

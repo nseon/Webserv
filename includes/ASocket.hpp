@@ -6,8 +6,8 @@
 class ASocket
 {
 	protected:
-		int							socketFd_;
-		struct epoll_event			event_;
+		int							_socketFd;
+		struct epoll_event			_event;
 
 	public:
 		ASocket(void);
