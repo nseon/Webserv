@@ -6,7 +6,7 @@
 #    By: nseon <nseon@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/10/13 10:54:16 by nseon             #+#    #+#              #
-#    Updated: 2026/04/15 17:16:42 by nseon            ###   ########.fr        #
+#    Updated: 2026/04/20 14:30:07 by nseon            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,6 +18,7 @@ MAKE_DIR	:=	.make/
 BUILD_DIR	:=	$(MAKE_DIR)build_$(shell git branch --show-current)/
 
 SRC_DIR		:=	src/
+TEST_DIR	:= tests/
 
 OBJ			=	$(patsubst %.cpp, $(BUILD_DIR)%.o, $(SRC))
 
@@ -25,17 +26,23 @@ DEP			=	$(patsubst %.cpp, $(BUILD_DIR)%.d, $(SRC))
 
 # ---------------MAIN---------------- #
 
-SRC			=	main.cpp \
+BASE_SRC	:=	ASocket.cpp ListenerSocket.cpp ClientSocket.cpp PollingManager.cpp
+MAIN		:=	main.cpp
+SRC			:=	$(MAIN) $(BASE_SRC)
 
 # --------------PARSING-------------- #
 
-SRC			+=	$(addprefix $(PRS_DIR), $(PRS_SRC))
+BASE_SRC	+=	$(addprefix $(PRS_DIR), $(PRS_SRC))
 
 PRS_DIR		=	parsing/
 PRS_SRC		=	Ablock.cpp \
 				Config.cpp \
 				Location.cpp \
 				Server.cpp \
+
+# ----------------TEST--------------- #
+
+TEST_SRC	:=	PollingManager_test.cpp
 
 # --------------INCLUDES------------- #
 
@@ -44,8 +51,8 @@ INCLUDES	:=	$(INCS_DIR)
 
 # --------------CONFIGS-------------- #
 
-CC			:=	c++
-CFLAGS		=	-Wall -Wextra -Werror -std=c++98 -Weverything -Wno-suggest-override -Wno-suggest-destructor-override -Wno-padded -Wno-address-of-temporary
+CXX			:=	c++
+CXXFLAGS	=	-Wall -Wextra -Werror -std=c++98
 CPPFLAGS	:=	-MMD -MP $(addprefix -I, $(INCLUDES))
 
 
@@ -53,7 +60,7 @@ MAKEFLAGS	+=	--no-print-directory --jobs
 
 # ---------------MODES--------------- #
 
-MODES := debug
+MODES := debug test
 
 MODE_TRACE	:= $(BUILD_DIR).mode_trace
 LAST_MODE	:= $(shell cat $(MODE_TRACE) 2>/dev/null)
@@ -63,7 +70,14 @@ MODE ?= basic
 BUILD_DIR := $(BUILD_DIR)$(MODE)/
 
 ifeq ($(MODE), debug)
-	CFLAGS = -g3 -std=c++98
+	CXXFLAGS = -g3 -std=c++98
+endif
+
+ifeq ($(MODE), test)
+	INCLUDES += lib/
+	SRC := $(TEST_SRC) $(BASE_SRC)
+	CPPFLAGS	:=	-MMD -MP $(addprefix -I, $(INCLUDES))
+	CXXFLAGS	= -Wall -Wextra -Werror
 endif
 
 ifneq ($(LAST_MODE), $(MODE))
@@ -77,11 +91,15 @@ all: $(NAME)
 
 $(NAME): $(OBJ)
 	@echo $(MODE) > $(MODE_TRACE)
-	$(CC) $(CFLAGS) $(OBJ) -o $@
+	$(CXX) $(CXXFLAGS) $(OBJ) -o $@
 
 $(BUILD_DIR)%.o: $(SRC_DIR)%.cpp
 	@mkdir -p $(@D)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+$(BUILD_DIR)%.o: $(TEST_DIR)%.cpp
+	@mkdir -p $(@D)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 .PHONY: $(MODES)
 $(MODES):

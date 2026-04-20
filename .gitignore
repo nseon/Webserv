@@ -1,3 +1,4 @@
-.make/
 webserv
-client
+.make/
+compile_commands.json
+.cache/
