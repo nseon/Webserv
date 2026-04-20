@@ -1,32 +1,55 @@
 #include "Logger.hpp"
 #include <fstream>
 #include <ostream>
+#include <ctime>
 
+Logger::Logger(void):
+_outFile("webserv.log") {}
 
-Logger::Logger(void) {}
-
-Logger::Logger(std::string filename)
-{
-	_outFile.open(filename.c_str());
-}
-
-Logger::Logger(std::ofstream& file)
-{
-	_outFile = file;
-}
+Logger::Logger(std::string filename):
+_outFile(filename.c_str()) {}
 
 Logger::~Logger(void) {}
 
-static std::ostream&	log(enum e_logLevel level)
+std::string	Logger::getDate(void)
 {
-	std::ostream	ret;
+	char	date[11];
+	time_t	time = std::time(NULL);
+	std::tm	timeStruct;
 
-	std::cout << ret;
-	return (ret);
+	
 }
 
-static std::ostream&	info(void);
-static std::ostream&	debug(void);
-static std::ostream&	warning(void);
-static std::ostream&	error(void);
-static std::ostream&	critical(void);
+std::ostream&	Logger::log(enum e_logLevel level)
+{
+	
+}
+
+Logger*	Logger::getInstance(void)
+{
+	return (_loggerSingleton);
+}
+
+void	Logger::setInstance(std::string const& ofile)
+void	Logger::setInstance(std::ofstream const& ofile);
+
+std::ostream&	info(void)
+{
+
+}
+std::ostream&	debug(void)
+{
+
+}
+std::ostream&	warning(void)
+{
+
+}
+std::ostream&	error(void)
+{
+
+}
+std::ostream&	critical(void)
+{
+
+}

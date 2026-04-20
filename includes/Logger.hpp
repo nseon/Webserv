@@ -7,16 +7,22 @@
 class Logger
 {
 	private:
-		static std::ofstream	_outFile;
+		static Logger*	_loggerSingleton;
+
+		std::ofstream	_outFile;
+
 
 		Logger(void);
+		Logger(std::string filename);
 
-		
+		static Logger*	getInstance(void);
+
+		std::string		getDate(void);
 
 	public:
-		Logger(std::string filename);
-		Logger(std::ofstream& file);
 		~Logger(void);
+
+		static void	setInstance(std::string const& ofile);
 
 		enum e_logLevel
 		{
