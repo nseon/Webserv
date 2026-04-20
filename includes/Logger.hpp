@@ -2,6 +2,7 @@
 # define LOGGER_HPP
 
 # include <fstream>
+#include <ostream>
 # include <string>
 
 class Logger
@@ -41,5 +42,7 @@ class Logger
 		static std::ostream&	error(void);
 		static std::ostream&	critical(void);
 };
+
+std::ostream& operator<<
 
 #endif

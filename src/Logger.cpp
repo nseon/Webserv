@@ -13,16 +13,16 @@ Logger::~Logger(void) {}
 
 std::string	Logger::getDate(void)
 {
-	char	date[11];
-	time_t	time = std::time(NULL);
-	std::tm	timeStruct;
+	char	date[23];
+	time_t	timestamp;
 
-	
+    std::time(&timestamp);
+    std::strftime(date, 23, "[%d %b %Y %H:%M:%S]", std::localtime(&timestamp));
+	return (std::string(date));
 }
 
 std::ostream&	Logger::log(enum e_logLevel level)
 {
-	
 }
 
 Logger*	Logger::getInstance(void)
