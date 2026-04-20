@@ -1,23 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Server.hpp                                         :+:      :+:    :+:   */
+/*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/13 17:18:42 by nseon             #+#    #+#             */
-/*   Updated: 2026/04/13 18:02:13 by nseon            ###   ########.fr       */
+/*   Created: 2026/04/15 16:48:06 by nseon             #+#    #+#             */
+/*   Updated: 2026/04/16 14:45:43 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <vector>
+#include <iostream>
 
-#include "Ablock.hpp"
-#include "Location.hpp"
+#include "Config.hpp"
 
-class Server : public Ablock{
-	private:
-		std::vector<Location> _locations;
-	public:
-		
-};
+int main(int argc, char **argv)
+{
+	if (argc == 2)
+	{
+		Config conf(argv[1]);
+		std::cout << conf << std::endl;
+	}
+	else
+		std::cout << "Usage: ./webserv file.conf" << std::endl;
+}
