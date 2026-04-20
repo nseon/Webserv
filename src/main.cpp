@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/15 16:48:06 by nseon             #+#    #+#             */
-/*   Updated: 2026/04/20 14:33:01 by nseon            ###   ########.fr       */
+/*   Updated: 2026/04/20 14:48:42 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ int	main(int argc, char **argv)
 		
 		std::cout << conf << std::endl;
 		
-		struct sockaddr_in		address = conf.getServers()[0].getAddr();
+		struct sockaddr_in		address = conf.getServers().begin()->getAddr();
 		PollingManager			pm;
 		std::vector<ASocket*>	readyList;
 

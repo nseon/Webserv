@@ -6,7 +6,7 @@
 #    By: nseon <nseon@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/10/13 10:54:16 by nseon             #+#    #+#              #
-#    Updated: 2026/04/20 14:30:07 by nseon            ###   ########.fr        #
+#    Updated: 2026/04/20 14:46:32 by nseon            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,9 +26,9 @@ DEP			=	$(patsubst %.cpp, $(BUILD_DIR)%.d, $(SRC))
 
 # ---------------MAIN---------------- #
 
-BASE_SRC	:=	ASocket.cpp ListenerSocket.cpp ClientSocket.cpp PollingManager.cpp
-MAIN		:=	main.cpp
-SRC			:=	$(MAIN) $(BASE_SRC)
+BASE_SRC	=	ASocket.cpp ListenerSocket.cpp ClientSocket.cpp PollingManager.cpp
+MAIN		=	main.cpp
+SRC			=	$(MAIN) $(BASE_SRC)
 
 # --------------PARSING-------------- #
 
