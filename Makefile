@@ -6,7 +6,7 @@
 #    By: nseon <nseon@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/10/13 10:54:16 by nseon             #+#    #+#              #
-#    Updated: 2026/03/30 14:48:25 by nseon            ###   ########.fr        #
+#    Updated: 2026/04/20 14:46:32 by nseon            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,9 +26,19 @@ DEP			=	$(patsubst %.cpp, $(BUILD_DIR)%.d, $(SRC))
 
 # ---------------MAIN---------------- #
 
-BASE_SRC	:=	ASocket.cpp ListenerSocket.cpp ClientSocket.cpp PollingManager.cpp
-MAIN		:=	main.cpp
-SRC			:=	$(MAIN) $(BASE_SRC)
+BASE_SRC	=	ASocket.cpp ListenerSocket.cpp ClientSocket.cpp PollingManager.cpp
+MAIN		=	main.cpp
+SRC			=	$(MAIN) $(BASE_SRC)
+
+# --------------PARSING-------------- #
+
+BASE_SRC	+=	$(addprefix $(PRS_DIR), $(PRS_SRC))
+
+PRS_DIR		=	parsing/
+PRS_SRC		=	Ablock.cpp \
+				Config.cpp \
+				Location.cpp \
+				Server.cpp \
 
 # ----------------TEST--------------- #
 
@@ -44,6 +54,7 @@ INCLUDES	:=	$(INCS_DIR)
 CXX			:=	c++
 CXXFLAGS	=	-Wall -Wextra -Werror -std=c++98
 CPPFLAGS	:=	-MMD -MP $(addprefix -I, $(INCLUDES))
+
 
 MAKEFLAGS	+=	--no-print-directory --jobs
 
