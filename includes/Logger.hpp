@@ -8,17 +8,13 @@
 class Logger
 {
 	private:
-		static Logger*	_loggerSingleton;
-
 		Logger(void);
 		Logger(std::string filename);
 
-		std::string		getDate(void);
+		static std::string		getDate(void);
 
 	public:
 		~Logger(void);
-
-		static Logger*	getInstance(void);
 
 		enum e_logLevel
 		{

@@ -24,24 +24,15 @@ std::ostream&	Logger::log(enum e_logLevel level)
 
 	switch (level)
 	{
-		case NO_LEVEL: logLevelString = "NO_LVL";
-		case INFO: logLevelString = "INFO";
-		case DEBUG: logLevelString = "DEBUG";
-		case WARNING: logLevelString = "WARNING";
-		case ERROR: logLevelString = "ERROR";
-		case CRITICAL: logLevelString = "CRITICAL";
+		case NO_LEVEL: logLevelString = "NO_LVL"; break;
+		case INFO: logLevelString = "INFO"; break;
+		case DEBUG: logLevelString = "DEBUG"; break;
+		case WARNING: logLevelString = "WARNING"; break;
+		case ERROR: logLevelString = "ERROR"; break;
+		case CRITICAL: logLevelString = "CRITICAL"; break;
 	}
-	std::cout << getDate << " [" << logLevelString << ']';
+	std::cout << getDate() << " [" << logLevelString << "] ";
 	return (std::cout);
-}
-
-Logger*	Logger::getInstance(void)
-{
-	if (!_loggerSingleton)
-	{
-		_loggerSingleton = new Logger();
-	}
-	return (_loggerSingleton);
 }
 
 std::ostream&		Logger::info(void)

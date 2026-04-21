@@ -26,7 +26,7 @@ DEP			=	$(patsubst %.cpp, $(BUILD_DIR)%.d, $(SRC))
 
 # ---------------MAIN---------------- #
 
-BASE_SRC	=	ASocket.cpp ListenerSocket.cpp ClientSocket.cpp PollingManager.cpp
+BASE_SRC	=	
 MAIN		=	main.cpp
 SRC			=	$(MAIN) $(BASE_SRC)
 
@@ -39,6 +39,27 @@ PRS_SRC		=	Ablock.cpp \
 				Config.cpp \
 				Location.cpp \
 				Server.cpp \
+
+# --------------SOCKET-------------- #
+
+BASE_SRC	+=	$(addprefix $(SOCKET_DIR), $(SOCKET_SRC))
+
+SOCKET_DIR	=	socket/
+SOCKET_SRC	=	ASocket.cpp ClientSocket.cpp ListenerSocket.cpp
+
+# --------------POLLING--------------#
+
+BASE_SRC	+= $(addprefix $(POLLING_DIR), $(POLLING_SRC))
+
+POLLING_DIR	=	polling/
+POLLING_SRC	=	PollingManager.cpp
+
+# --------------LOGGER-------------- #
+
+BASE_SRC	+=	$(addprefix $(LOGGER_DIR), $(LOGGER_SRC))
+
+LOGGER_DIR	=	logger/
+LOGGER_SRC	=	Logger.cpp
 
 # ----------------TEST--------------- #
 
