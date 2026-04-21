@@ -73,7 +73,7 @@ std::vector<ASocket*>	PollingManager::poll(void)
 	std::vector<ASocket*>	ret(static_cast<unsigned long>(nbEvents));
 	for (int i = 0; i < nbEvents; i++)
 	{
-		ret.push_back(*this->findSocket(events[i].data.fd));
+		ret[i] = *this->findSocket(events[i].data.fd);
 	}
 	delete[] events;
 	return (ret);
