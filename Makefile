@@ -63,7 +63,8 @@ LOGGER_SRC	=	Logger.cpp
 
 # ----------------TEST--------------- #
 
-TEST_SRC	:=	PollingManager_test.cpp
+TEST_SRC	:=	PollingManager_test.cpp \
+				Logger_test.cpp
 
 # --------------INCLUDES------------- #
 

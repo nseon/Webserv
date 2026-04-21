@@ -31,9 +31,9 @@ int	main(int argc, char **argv)
 		std::vector<ASocket*>	readyList;
 
 		pm.addListenerSocket(address);
+		Logger::info() << "Server Up !" << std::endl;
 		while (1)
 		{
-			Logger::info() << "Server Up !" << std::endl;
 			readyList = pm.poll();
 			for (unsigned int i = 0; i < readyList.size(); i++)
 			{

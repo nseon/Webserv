@@ -2,6 +2,7 @@
 #include "ASocket.hpp"
 #include "ClientSocket.hpp"
 #include "ListenerSocket.hpp"
+#include "Logger.hpp"
 #include <netinet/in.h>
 #include <sys/epoll.h>
 #include <stdexcept>
@@ -13,6 +14,7 @@ PollingManager::PollingManager(void)
 	{
 		throw std::runtime_error("PollingManager constructor failed, because epoll_create() failed.");
 	}
+	Logger::info() << "Polling Manager created" << std::endl;
 }
 
 PollingManager::~PollingManager(void)
