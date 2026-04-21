@@ -1,29 +1,44 @@
-#include "PollingManager.hpp"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/04/15 16:48:06 by nseon             #+#    #+#             */
+/*   Updated: 2026/04/20 14:48:42 by nseon            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include <iostream>
 #include <netinet/in.h>
 #include <cstring>
 
-#ifndef PORT
-# define PORT 3030
-#endif
+#include "Config.hpp"
+#include "PollingManager.hpp"
 
-int	main(void)
+int	main(int argc, char **argv)
 {
-	struct sockaddr_in		address;
-	PollingManager			pm;
-	std::vector<ASocket*>	readyList;
-
-	address.sin_family = AF_INET;
-	address.sin_port = htons(PORT);
-	address.sin_addr.s_addr = htonl(INADDR_ANY);
-	std::memset(&address.sin_zero, 0, 8);
-
-	pm.addListenerSocket(address);
-	while (1)
+	if (argc == 2)
 	{
-		readyList = pm.poll();
-		for (unsigned int i = 0; i < readyList.size(); i++)
+		Config conf(argv[1]);
+		
+		std::cout << conf << std::endl;
+		
+		struct sockaddr_in		address = conf.getServers().begin()->getAddr();
+		PollingManager			pm;
+		std::vector<ASocket*>	readyList;
+
+		pm.addListenerSocket(address);
+		while (1)
 		{
-			readyList[i]->socketBehavior(&pm);
+			readyList = pm.poll();
+			for (unsigned int i = 0; i < readyList.size(); i++)
+			{
+				readyList[i]->socketBehavior(&pm);
+			}
 		}
 	}
+	else
+		std::cout << "Usage: ./webserv file.conf" << std::endl;
 }
