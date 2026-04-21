@@ -2,12 +2,9 @@
 #include <fstream>
 #include <ostream>
 #include <ctime>
+#include <iostream>
 
-Logger::Logger(void):
-_outFile("webserv.log") {}
-
-Logger::Logger(std::string filename):
-_outFile(filename.c_str()) {}
+Logger::Logger(void) {}
 
 Logger::~Logger(void) {}
 
@@ -23,33 +20,49 @@ std::string	Logger::getDate(void)
 
 std::ostream&	Logger::log(enum e_logLevel level)
 {
+	std::string	logLevelString;
+
+	switch (level)
+	{
+		case NO_LEVEL: logLevelString = "NO_LVL";
+		case INFO: logLevelString = "INFO";
+		case DEBUG: logLevelString = "DEBUG";
+		case WARNING: logLevelString = "WARNING";
+		case ERROR: logLevelString = "ERROR";
+		case CRITICAL: logLevelString = "CRITICAL";
+	}
+	std::cout << getDate << " [" << logLevelString << ']';
+	return (std::cout);
 }
 
 Logger*	Logger::getInstance(void)
 {
+	if (!_loggerSingleton)
+	{
+		_loggerSingleton = new Logger();
+	}
 	return (_loggerSingleton);
 }
 
-void	Logger::setInstance(std::string const& ofile)
-void	Logger::setInstance(std::ofstream const& ofile);
-
-std::ostream&	info(void)
+std::ostream&		Logger::info(void)
 {
-
+	return (log(INFO));
 }
-std::ostream&	debug(void)
-{
 
+std::ostream&		Logger::debug(void)
+{
+	return (log(DEBUG));
 }
-std::ostream&	warning(void)
-{
 
+std::ostream&		Logger::warning(void)
+{
+	return (log(WARNING));
 }
-std::ostream&	error(void)
+std::ostream&		Logger::error(void)
 {
-
+	return (log(ERROR));
 }
-std::ostream&	critical(void)
+std::ostream&		Logger::critical(void)
 {
-
+	return (log(CRITICAL));
 }

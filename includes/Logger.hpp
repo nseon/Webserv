@@ -10,20 +10,15 @@ class Logger
 	private:
 		static Logger*	_loggerSingleton;
 
-		std::ofstream	_outFile;
-
-
 		Logger(void);
 		Logger(std::string filename);
-
-		static Logger*	getInstance(void);
 
 		std::string		getDate(void);
 
 	public:
 		~Logger(void);
 
-		static void	setInstance(std::string const& ofile);
+		static Logger*	getInstance(void);
 
 		enum e_logLevel
 		{
@@ -42,7 +37,5 @@ class Logger
 		static std::ostream&	error(void);
 		static std::ostream&	critical(void);
 };
-
-std::ostream& operator<<
 
 #endif
