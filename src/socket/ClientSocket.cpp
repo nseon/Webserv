@@ -1,5 +1,6 @@
 #include "ClientSocket.hpp"
 #include "PollingManager.hpp"
+#include "Logger.hpp"
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <cstring>
@@ -23,6 +24,7 @@ int	ClientSocket::socketBehavior(void *pm)
 	char	msg[RECV_SIZE];
 	ssize_t	msg_length;
 
+	Logger::info() << "Client " << this->_socketFd << " sended a message : " << std::endl;
 	msg_length = recv(this->_socketFd, msg, RECV_SIZE, 0);
 	if (msg_length <= 0)
 	{

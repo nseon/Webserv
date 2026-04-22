@@ -15,6 +15,7 @@
 #include <cstring>
 
 #include "Config.hpp"
+#include "Logger.hpp"
 #include "PollingManager.hpp"
 
 int	main(int argc, char **argv)
@@ -30,6 +31,7 @@ int	main(int argc, char **argv)
 		std::vector<ASocket*>	readyList;
 
 		pm.addListenerSocket(address);
+		Logger::info() << "Server Up !" << std::endl;
 		while (1)
 		{
 			readyList = pm.poll();
