@@ -3,7 +3,7 @@
 
 # include <vector>
 # include "PollingManager.hpp"
-# include "Server.hpp""
+# include "Server.hpp"
 
 class ServerManager
 {
@@ -14,6 +14,8 @@ class ServerManager
 	public:
 		ServerManager(void);
 		ServerManager(std::vector<Server> servers);
+
+		void	serverLoop(void);
 };
 
 #endif
