@@ -15,6 +15,7 @@
 #include <iostream>
 
 #include "Server.hpp"
+#include "ListenerSocket.hpp"
 
 Server::Server()
 {
@@ -28,7 +29,9 @@ Server::Server()
 }
 
 Server::~Server()
-{}
+{
+	delete this->_socket;
+}
 
 //**********************SETTER**************************//
 
@@ -108,6 +111,11 @@ Location &Server::addLocation(std::string const &value)
 	return (_locations.back());
 }
 
+void	Server::createSocket(void)
+{
+	this->_socket = new ListenerSocket(this->getAddr());
+}
+
 //**********************GETTER**************************//
 
 unsigned int Server::getPort() const
@@ -140,6 +148,11 @@ struct sockaddr_in Server::getAddr() const
 	addr.sin_addr.s_addr = inet_addr(_ip.c_str());
 
 	return addr;
+}
+
+ListenerSocket*	Server::getSocket(void) const
+{
+	return (this->_socket);
 }
 
 //******************************************************//
