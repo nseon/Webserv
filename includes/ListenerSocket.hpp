@@ -2,6 +2,7 @@
 # define LISTENERSOCKET_HPP
 
 # include "ASocket.hpp"
+# include "Server.hpp"
 # include <netinet/in.h>
 
 # ifndef BACKLOG
@@ -12,12 +13,13 @@ class ListenerSocket: public ASocket
 {
 	private:
 		struct sockaddr_in	_address;
+		Server*				_server;
 
 		ListenerSocket(void);
 
 	public:
 		ListenerSocket(unsigned short port);
-		ListenerSocket(struct sockaddr_in address);
+		ListenerSocket(struct sockaddr_in address, Server* server);
 		ListenerSocket(ListenerSocket const& toCopy);
 		~ListenerSocket(void);
 

@@ -13,7 +13,8 @@
 # define NULL (void*)0
 #endif
 
-ListenerSocket::ListenerSocket(unsigned short port)
+ListenerSocket::ListenerSocket(unsigned short port):
+_server(NULL)
 {
 	this->_address.sin_family = AF_INET;
 	this->_address.sin_port = htons(port);
@@ -31,8 +32,9 @@ ListenerSocket::ListenerSocket(unsigned short port)
 	}
 }
 
-ListenerSocket::ListenerSocket(struct sockaddr_in address):
-_address(address)
+ListenerSocket::ListenerSocket(struct sockaddr_in address, Server* server):
+_address(address),
+_server(server)
 {
 	if (bind(this->_socketFd, reinterpret_cast<struct sockaddr*>(&this->_address), sizeof(struct sockaddr)))
 	{

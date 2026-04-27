@@ -82,6 +82,7 @@ void Server::setPort(std::string &value)
 	}
 	else
 		throw std::logic_error("Invalid port: " + value);
+	this->createSocket();
 }
 
 void Server::setName(std::string const &value)
@@ -113,7 +114,7 @@ Location &Server::addLocation(std::string const &value)
 
 void	Server::createSocket(void)
 {
-	this->_socket = new ListenerSocket(this->getAddr());
+	this->_socket = new ListenerSocket(this->getAddr(), this);
 }
 
 //**********************GETTER**************************//

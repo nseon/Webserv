@@ -9,12 +9,13 @@
 class ServerManager
 {
 	private:
+		ServerManager(void);
+
 		std::vector<Server>			_servers;
 		std::vector<ClientSocket>	_clients;
-		PollingManager		_pollingManager;
+		PollingManager				_pollingManager;
 
 	public:
-		ServerManager(void);
 		ServerManager(std::vector<Server> servers);
 
 		void	serverLoop(void);
