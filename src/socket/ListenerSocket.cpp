@@ -1,4 +1,5 @@
 #include "ListenerSocket.hpp"
+#include "ServerManager.hpp"
 #include "ClientSocket.hpp"
 #include "PollingManager.hpp"
 #include <arpa/inet.h>
@@ -54,7 +55,7 @@ _address(toCopy._address) {}
 
 ListenerSocket::~ListenerSocket(void) {}
 
-int	ListenerSocket::socketBehavior(void* pm)
+int	ListenerSocket::socketBehavior(void* sm)
 {
 	int				newFd;
 
@@ -63,7 +64,6 @@ int	ListenerSocket::socketBehavior(void* pm)
 	{
 		return (1);
 	}
-	reinterpret_cast<PollingManager*>(pm)->addClientSocket(newFd);
-	std::cout << newFd << " joined the room." << std::endl;
+	reinterpret_cast<ServerManager*>(sm)->addClientSocket(newFd);
 	return (0);
 }

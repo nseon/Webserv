@@ -23,6 +23,7 @@ Server::Server()
 	_port = DEFAULT_PORT;
 	_client_max_body_size = DEFAULT_MAX_SIZE;
 	initDispatchMap();
+	_socket = NULL;
 	_dispatchMap["listen"] = reinterpret_cast<SetterFunc>(&Server::setPort);
 	_dispatchMap["server_name"] = reinterpret_cast<SetterFunc>(&Server::setName);
 	_dispatchMap["location"] = reinterpret_cast<SetterFunc>(&Server::addLocation);
@@ -30,7 +31,7 @@ Server::Server()
 
 Server::~Server()
 {
-	delete this->_socket;
+	std::cout << "un serveur a ete detruit" << std::endl;
 }
 
 //**********************SETTER**************************//

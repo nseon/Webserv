@@ -17,29 +17,18 @@
 #include "Config.hpp"
 #include "Logger.hpp"
 #include "PollingManager.hpp"
+#include "ServerManager.hpp"
 
 int	main(int argc, char **argv)
 {
 	if (argc == 2)
 	{
-		Config conf(argv[1]);
+		Config			conf(argv[1]);
+		ServerManager	sm(conf.getServers());
 		
-		std::cout << conf << std::endl;
-		
-		struct sockaddr_in		address = conf.getServers().begin()->getAddr();
-		PollingManager			pm;
-		std::vector<ASocket*>	readyList;
 
-		pm.addListenerSocket(address);
-		Logger::info() << "Server Up !" << std::endl;
-		while (1)
-		{
-			readyList = pm.poll();
-			for (unsigned int i = 0; i < readyList.size(); i++)
-			{
-				readyList[i]->socketBehavior(&pm);
-			}
-		}
+		std::cout << conf << std::endl;
+		sm.serverLoop();
 	}
 	else
 		std::cout << "Usage: ./webserv file.conf" << std::endl;

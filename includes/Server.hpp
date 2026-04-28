@@ -31,9 +31,9 @@ class Server : public Ablock{
 		unsigned int _port;
 		std::string _ip;
 		
-		std::vector<Location> _locations;
+		std::vector<Location>	_locations;
 
-		ListenerSocket*	_socket;
+		ListenerSocket*			_socket;
 
 		void					createSocket(void);
 

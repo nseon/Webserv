@@ -2,12 +2,13 @@
 # define LISTENERSOCKET_HPP
 
 # include "ASocket.hpp"
-# include "Server.hpp"
 # include <netinet/in.h>
 
 # ifndef BACKLOG
 #  define BACKLOG 10
 # endif
+
+class Server;
 
 class ListenerSocket: public ASocket
 {
@@ -23,7 +24,7 @@ class ListenerSocket: public ASocket
 		ListenerSocket(ListenerSocket const& toCopy);
 		~ListenerSocket(void);
 
-		virtual int			socketBehavior(void* clientSocket);
+		virtual int			socketBehavior(void* sm);
 };
 
 #endif
