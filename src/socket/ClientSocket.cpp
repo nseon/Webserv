@@ -1,6 +1,7 @@
 #include "ClientSocket.hpp"
-#include "PollingManager.hpp"
+#include "ServerManager.hpp"
 #include "Logger.hpp"
+#include <sys/epoll.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <cstring>
@@ -24,15 +25,15 @@ int	ClientSocket::socketBehavior(void *pm)
 	char	msg[RECV_SIZE];
 	ssize_t	msg_length;
 
-	Logger::info() << "Client " << this->_socketFd << " sended a message : " << std::endl;
-	msg_length = recv(this->_socketFd, msg, RECV_SIZE, 0);
-	if (msg_length <= 0)
+	if (this->_currentEvent & EPOLLRDHUP)
 	{
-		reinterpret_cast<PollingManager*>(pm)->removeSocket(this->_socketFd);
+		reinterpret_cast<ServerManager*>(pm)->removeClientSocket(this->_socketFd);
 		std::strcpy(msg, "disconected.\n");
 	}
 	else
 	{
+		Logger::info() << "Client " << this->_socketFd << " sended a message : " << std::endl;
+		msg_length = recv(this->_socketFd, msg, RECV_SIZE, 0);
 		msg[msg_length] = 0;
 	}
 	std::cout << socketFd << ' ' << msg << std::flush;

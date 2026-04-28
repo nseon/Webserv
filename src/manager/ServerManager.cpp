@@ -11,6 +11,7 @@ _servers(servers)
 {
 	for (std::vector<Server>::iterator it = this->_servers.begin(); it < this->_servers.end(); it++)
 	{
+		it->createSocket();
 		this->_pollingManager.addSocket(it->getSocket());
 	}
 	Logger::info() << "Server Manager is up !" << std::endl;

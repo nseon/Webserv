@@ -1,4 +1,5 @@
 #include "PollingManager.hpp"
+#include <iostream>
 #include "ASocket.hpp"
 #include "ClientSocket.hpp"
 #include "ListenerSocket.hpp"
@@ -57,6 +58,7 @@ std::vector<ASocket*>	PollingManager::poll(void)
 	for (int i = 0; i < nbEvents; i++)
 	{
 		ret[i] = *this->findSocket(events[i].data.fd);
+		ret[i]->setCurrentEvent(events[i].events);
 	}
 	delete[] events;
 	return (ret);

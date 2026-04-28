@@ -29,10 +29,7 @@ Server::Server()
 	_dispatchMap["location"] = reinterpret_cast<SetterFunc>(&Server::addLocation);
 }
 
-Server::~Server()
-{
-	std::cout << "un serveur a ete detruit" << std::endl;
-}
+Server::~Server() {}
 
 //**********************SETTER**************************//
 
@@ -83,7 +80,6 @@ void Server::setPort(std::string &value)
 	}
 	else
 		throw std::logic_error("Invalid port: " + value);
-	this->createSocket();
 }
 
 void Server::setName(std::string const &value)

@@ -35,8 +35,6 @@ class Server : public Ablock{
 
 		ListenerSocket*			_socket;
 
-		void					createSocket(void);
-
 	public:
 		Server();
 		~Server();
@@ -45,6 +43,8 @@ class Server : public Ablock{
 		void 					setName(std::string const &value);
 		Location				&addLocation(std::string const &value);
 		
+		void					createSocket(void);
+
 		unsigned int			getPort() const;
 		std::string				getIp() const;
 		std::string				getName() const;
