@@ -21,10 +21,10 @@ class ServerManager
 		ServerManager(std::vector<Server> servers);
 		~ServerManager(void);
 
-		void				serverLoop(void);
+		void	serverLoop(void);
 
-		void				addClientSocket(int socketFd);
-		void				removeClientSocket(int socketFd);
+		void	addClientSocket(int socketFd);
+		void	removeClientSocket(int socketFd);
 };
 
 #endif

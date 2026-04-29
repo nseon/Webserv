@@ -29,7 +29,13 @@ Server::Server()
 	_dispatchMap["location"] = reinterpret_cast<SetterFunc>(&Server::addLocation);
 }
 
-Server::~Server() {}
+Server::~Server()
+{
+	if (this->_socket)
+	{
+		delete this->_socket;
+	}
+}
 
 //**********************SETTER**************************//
 
