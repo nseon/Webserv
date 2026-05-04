@@ -112,7 +112,7 @@ Ablock &Config::createBlock(std::string token, std::string const &)
 	if (token == "server")
 	{
 		Server new_serv;
-		
+
 		_servers.push_back(new_serv);
 	}
 	else
@@ -126,7 +126,7 @@ std::ostream &operator<<(std::ostream &os, const Config &conf) {
     os << std::string(50, '=') << "\n";
 
     const std::vector<Server>& servers = conf.getServers();
-    
+
     if (servers.empty()) {
         os << " [!] No servers found in configuration.\n";
     } else {

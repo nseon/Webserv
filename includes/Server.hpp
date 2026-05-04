@@ -18,6 +18,7 @@
 #include <cstring>
 
 #include "Ablock.hpp"
+#include "ListenerSocket.hpp"
 #include "Location.hpp"
 
 #define DEFAULT_PORT 3030
@@ -30,20 +31,26 @@ class Server : public Ablock{
 		unsigned int _port;
 		std::string _ip;
 		
-		std::vector<Location> _locations;
+		std::vector<Location>	_locations;
+
+		ListenerSocket*			_socket;
+
 	public:
 		Server();
 		~Server();
 
-		void setPort(std::string &value);
-		void setName(std::string const &value);
-		Location &addLocation(std::string const &value);
+		void					setPort(std::string &value);
+		void 					setName(std::string const &value);
+		Location				&addLocation(std::string const &value);
 		
+		void					createSocket(void);
+
 		unsigned int			getPort() const;
 		std::string				getIp() const;
 		std::string				getName() const;
 		std::vector<Location>	getLocations() const;
 		struct sockaddr_in		getAddr() const;
+		ListenerSocket*			getSocket() const;
 
 		Ablock &createBlock(std::string token, std::string const &value);
 };
