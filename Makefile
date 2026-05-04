@@ -73,7 +73,8 @@ MANAGER_SRC	=	ServerManager.cpp
 # ----------------TEST--------------- #
 
 TEST_SRC	:=	PollingManager_test.cpp \
-				Logger_test.cpp
+				Logger_test.cpp \
+				ServerManager_test.cpp
 
 # --------------INCLUDES------------- #
 
