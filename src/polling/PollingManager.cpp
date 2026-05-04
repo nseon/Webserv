@@ -53,7 +53,14 @@ std::vector<ASocket*>	PollingManager::poll(void)
 	struct epoll_event*		events = new struct epoll_event[this->_sockets.size()];
 	int						nbEvents;
 
-	nbEvents = epoll_wait(this->_epollInstance, events, static_cast<int>(this->_sockets.size()), -1);
+	if (this->_sockets.empty())
+	{
+		nbEvents = 0;
+	}
+	else
+	{
+		nbEvents = epoll_wait(this->_epollInstance, events, static_cast<int>(this->_sockets.size()), -1);
+	}
 	std::vector<ASocket*>	ret(static_cast<unsigned long>(nbEvents));
 	for (int i = 0; i < nbEvents; i++)
 	{
