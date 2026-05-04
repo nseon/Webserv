@@ -2,7 +2,7 @@
 # define LOGGER_HPP
 
 # include <fstream>
-#include <ostream>
+# include <ostream>
 # include <string>
 
 class Logger
