@@ -59,7 +59,7 @@ void	ServerManager::addClientSocket(int socketFd)
 
 	this->_clients.push_back(newCs);
 	this->_pollingManager.addSocket(newCs);
-	Logger::info() << socketFd << "joined the room." << std::endl;
+	Logger::info() << socketFd << " joined the room." << std::endl;
 }
 
 void	ServerManager::removeClientSocket(int socketFd)
