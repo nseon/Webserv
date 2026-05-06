@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 17:39:51 by nseon             #+#    #+#             */
-/*   Updated: 2026/04/20 14:18:16 by nseon            ###   ########.fr       */
+/*   Updated: 2026/04/30 14:27:44 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ Server::~Server()
 
 //**********************SETTER**************************//
 
-static std::string parseIp(std::string ip)
+static std::string parseIp(std::string const &ip)
 {
 	std::stringstream ss(ip);
 	int nb;

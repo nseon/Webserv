@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/15 14:59:37 by nseon             #+#    #+#             */
-/*   Updated: 2026/04/17 11:37:36 by nseon            ###   ########.fr       */
+/*   Updated: 2026/04/23 13:26:27 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@ static std::string extractSubContent(std::stringstream &ss)
 	{
 		content += token + " ";
 		ss >> token;
-		// std::cout << token << std::endl;
 		if (token == "{")
 			count++;
 		else if (token == "}")
@@ -105,7 +104,6 @@ std::vector<Server> Config::getServers() const
 {
 	return (_servers);
 }
-
 
 Ablock &Config::createBlock(std::string token, std::string const &)
 {

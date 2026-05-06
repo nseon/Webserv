@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 15:58:31 by nseon             #+#    #+#             */
-/*   Updated: 2026/04/17 14:01:55 by nseon            ###   ########.fr       */
+/*   Updated: 2026/04/23 13:25:02 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@ typedef void (Ablock::*SetterFunc)(std::string const&);
 Ablock::~Ablock() {}
 
 //**********************GETTER**************************//
-
 
 std::string	Ablock::getRoot() const
 {
