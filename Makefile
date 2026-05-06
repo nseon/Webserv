@@ -45,14 +45,16 @@ PRS_DIR		=	config/
 PRS_SRC		=	Ablock.cpp \
 				Config.cpp \
 				Location.cpp \
-				Server.cpp \
+				Server.cpp
 
 # --------------SOCKET-------------- #
 
 BASE_SRC	+=	$(addprefix $(SOCKET_DIR), $(SOCKET_SRC))
 
 SOCKET_DIR	=	socket/
-SOCKET_SRC	=	ASocket.cpp ClientSocket.cpp ListenerSocket.cpp
+SOCKET_SRC	=	ASocket.cpp \
+				ClientSocket.cpp \
+				ListenerSocket.cpp
 
 # --------------POLLING--------------#
 
@@ -68,10 +70,18 @@ BASE_SRC	+=	$(addprefix $(LOGGER_DIR), $(LOGGER_SRC))
 LOGGER_DIR	=	logger/
 LOGGER_SRC	=	Logger.cpp
 
+# --------------MANAGER-------------- #
+
+BASE_SRC	+=	$(addprefix $(MANAGER_DIR), $(MANAGER_SRC))
+
+MANAGER_DIR	=	manager/
+MANAGER_SRC	=	ServerManager.cpp
+
 # ----------------TEST--------------- #
 
 TEST_SRC	:=	PollingManager_test.cpp \
-				Logger_test.cpp
+				Logger_test.cpp \
+				ServerManager_test.cpp
 
 # --------------INCLUDES------------- #
 

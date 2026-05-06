@@ -1,8 +1,9 @@
 #include "ClientSocket.hpp"
-#include "PollingManager.hpp"
+#include "ServerManager.hpp"
 #include "Logger.hpp"
 #include "Request.hpp"
 
+#include <sys/epoll.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <cstring>
@@ -22,33 +23,33 @@ ClientSocket::~ClientSocket(void) {}
 
 int	ClientSocket::socketBehavior(void *pm)
 {
-	int		socketFd = this->_socketFd;
 	char	msg[RECV_SIZE];
 	ssize_t	msg_length;
 
-	Logger::info() << "Client " << this->_socketFd << " sended a message : " << std::endl;
-		msg_length = recv(this->_socketFd, msg, RECV_SIZE, 0);
-	if (msg_length <= 0)
+	if (this->_currentEvent & EPOLLRDHUP)
 	{
-		reinterpret_cast<PollingManager*>(pm)->removeSocket(this->_socketFd);
-		std::strcpy(msg, "disconected.\n");
+		int		socketFd = this->_socketFd;
+		reinterpret_cast<ServerManager*>(pm)->removeClientSocket(this->_socketFd);
+		Logger::info() << "Client " << socketFd << " disconnected." << std::endl;
 	}
 	else
 	{
+		msg_length = recv(this->_socketFd, msg, RECV_SIZE, 0);
 		msg[msg_length] = 0;
-	}
-	try {
-		_request.parseRequest(msg);
-
-		if (_request.getParsingState() == DONE)
-		{
-			std::cout << socketFd << ' ' << _request << std::flush;
+		Logger::info() << "Client " << this->_socketFd << " sended a message : " << msg << std::endl;
+		try {
+			_request.parseRequest(msg);
+	
+			if (_request.getParsingState() == DONE)
+			{
+				std::cout << _socketFd << ' ' << _request << std::flush;
+				_request.reset();
+			}
+		}
+		catch (std::exception &e) {
+			std::cout << e.what() << std::endl;
 			_request.reset();
 		}
-	}
-	catch (std::exception &e) {
-		std::cout << e.what() << std::endl;
-		_request.reset();
 	}
 	return (0);
 }

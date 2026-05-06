@@ -1,4 +1,5 @@
 #include "ListenerSocket.hpp"
+#include "ServerManager.hpp"
 #include "ClientSocket.hpp"
 #include "PollingManager.hpp"
 #include <arpa/inet.h>
@@ -13,7 +14,8 @@
 # define NULL (void*)0
 #endif
 
-ListenerSocket::ListenerSocket(unsigned short port)
+ListenerSocket::ListenerSocket(unsigned short port):
+_server(NULL)
 {
 	this->_address.sin_family = AF_INET;
 	this->_address.sin_port = htons(port);
@@ -31,8 +33,9 @@ ListenerSocket::ListenerSocket(unsigned short port)
 	}
 }
 
-ListenerSocket::ListenerSocket(struct sockaddr_in address):
-_address(address)
+ListenerSocket::ListenerSocket(struct sockaddr_in address, Server* server):
+_address(address),
+_server(server)
 {
 	int yes = 1;
 
@@ -55,7 +58,7 @@ _address(toCopy._address) {}
 
 ListenerSocket::~ListenerSocket(void) {}
 
-int	ListenerSocket::socketBehavior(void* pm)
+int	ListenerSocket::socketBehavior(void* sm)
 {
 	int				newFd;
 
@@ -64,7 +67,6 @@ int	ListenerSocket::socketBehavior(void* pm)
 	{
 		return (1);
 	}
-	reinterpret_cast<PollingManager*>(pm)->addClientSocket(newFd);
-	std::cout << newFd << " joined the room." << std::endl;
+	reinterpret_cast<ServerManager*>(sm)->addClientSocket(newFd);
 	return (0);
 }

@@ -1,4 +1,5 @@
 #include "PollingManager.hpp"
+#include <iostream>
 #include "ASocket.hpp"
 #include "ClientSocket.hpp"
 #include "ListenerSocket.hpp"
@@ -17,13 +18,7 @@ PollingManager::PollingManager(void)
 	Logger::info() << "Polling Manager created" << std::endl;
 }
 
-PollingManager::~PollingManager(void)
-{
-	for (std::vector<ASocket*>::iterator it = this->_sockets.begin(); it < this->_sockets.end(); it++)
-	{
-		delete *it;
-	}
-}
+PollingManager::~PollingManager(void) {}
 
 void	PollingManager::addSocket(ASocket* toAdd)
 {
@@ -34,23 +29,10 @@ void	PollingManager::addSocket(ASocket* toAdd)
 	}
 }
 
-void	PollingManager::addClientSocket(int socketFd)
-{
-	ClientSocket*	newCs = new ClientSocket(socketFd);
-	this->addSocket(newCs);
-}
-
-void	PollingManager::addListenerSocket(struct sockaddr_in address)
-{
-	ListenerSocket*	newLs = new ListenerSocket(address);
-	this->addSocket(newLs);
-}
-
 void	PollingManager::removeSocket(int socketFd)
 {
 	std::vector<ASocket*>::iterator	toDel = this->findSocket(socketFd);
 	epoll_ctl(this->_epollInstance, EPOLL_CTL_DEL, socketFd, (*toDel)->getNotConstEvent());
-	delete *toDel;
 	this->_sockets.erase(toDel);
 }
 
@@ -71,11 +53,19 @@ std::vector<ASocket*>	PollingManager::poll(void)
 	struct epoll_event*		events = new struct epoll_event[this->_sockets.size()];
 	int						nbEvents;
 
-	nbEvents = epoll_wait(this->_epollInstance, events, static_cast<int>(this->_sockets.size()), -1);
+	if (this->_sockets.empty())
+	{
+		nbEvents = 0;
+	}
+	else
+	{
+		nbEvents = epoll_wait(this->_epollInstance, events, static_cast<int>(this->_sockets.size()), -1);
+	}
 	std::vector<ASocket*>	ret(static_cast<unsigned long>(nbEvents));
 	for (int i = 0; i < nbEvents; i++)
 	{
 		ret[i] = *this->findSocket(events[i].data.fd);
+		ret[i]->setCurrentEvent(events[i].events);
 	}
 	delete[] events;
 	return (ret);

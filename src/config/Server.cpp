@@ -15,6 +15,7 @@
 #include <iostream>
 
 #include "Server.hpp"
+#include "ListenerSocket.hpp"
 
 Server::Server()
 {
@@ -22,13 +23,19 @@ Server::Server()
 	_port = DEFAULT_PORT;
 	_client_max_body_size = DEFAULT_MAX_SIZE;
 	initDispatchMap();
+	_socket = NULL;
 	_dispatchMap["listen"] = reinterpret_cast<SetterFunc>(&Server::setPort);
 	_dispatchMap["server_name"] = reinterpret_cast<SetterFunc>(&Server::setName);
 	_dispatchMap["location"] = reinterpret_cast<SetterFunc>(&Server::addLocation);
 }
 
 Server::~Server()
-{}
+{
+	if (this->_socket)
+	{
+		delete this->_socket;
+	}
+}
 
 //**********************SETTER**************************//
 
@@ -108,6 +115,11 @@ Location &Server::addLocation(std::string const &value)
 	return (_locations.back());
 }
 
+void	Server::createSocket(void)
+{
+	this->_socket = new ListenerSocket(this->getAddr(), this);
+}
+
 //**********************GETTER**************************//
 
 unsigned int Server::getPort() const
@@ -140,6 +152,11 @@ struct sockaddr_in Server::getAddr() const
 	addr.sin_addr.s_addr = inet_addr(_ip.c_str());
 
 	return addr;
+}
+
+ListenerSocket*	Server::getSocket(void) const
+{
+	return (this->_socket);
 }
 
 //******************************************************//
