@@ -1,5 +1,5 @@
 #include "doctest.h"
-#include "Logger.hpp"
+#include "logger/Logger.hpp"
 #include <sstream>
 #include <iostream>
 #include <string>

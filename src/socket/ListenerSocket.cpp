@@ -1,14 +1,10 @@
-#include "ListenerSocket.hpp"
-#include "ServerManager.hpp"
-#include "ClientSocket.hpp"
-#include "PollingManager.hpp"
+#include "socket/ListenerSocket.hpp"
+#include "manager/ServerManager.hpp"
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <cstring>
 #include <stdexcept>
-
-#include <iostream>
 
 #ifndef NULL
 # define NULL (void*)0

@@ -1,7 +1,7 @@
-#include "ClientSocket.hpp"
-#include "ServerManager.hpp"
-#include "Logger.hpp"
-#include "Request.hpp"
+#include "socket/ClientSocket.hpp"
+#include "manager/ServerManager.hpp"
+#include "logger/Logger.hpp"
+#include "http/Request.hpp"
 
 #include <sys/epoll.h>
 #include <sys/types.h>

@@ -14,8 +14,8 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 
-#include "PollingManager.hpp"
-#include "ASocket.hpp"
+#include "polling/PollingManager.hpp"
+#include "socket/ASocket.hpp"
 
 #include <sys/socket.h>   // socketpair()
 #include <unistd.h>       // close(), write()

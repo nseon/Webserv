@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/27 14:01:57 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/06 10:44:57 by nseon            ###   ########.fr       */
+/*   Updated: 2026/05/06 15:56:31 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 #include <algorithm>
 #include <iterator>
 
-#include "Request.hpp"
+#include "http/Request.hpp"
 
 //***********************PARSING**************************//
 

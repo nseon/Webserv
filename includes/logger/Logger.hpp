@@ -1,7 +1,6 @@
 #ifndef LOGGER_HPP
 # define LOGGER_HPP
 
-# include <fstream>
 # include <ostream>
 # include <string>
 

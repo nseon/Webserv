@@ -15,8 +15,8 @@
 
 #include "doctest.h"
 
-#include "ServerManager.hpp"
-#include "Server.hpp"
+#include "manager/ServerManager.hpp"
+#include "config/Server.hpp"
 
 #include <sys/socket.h>   // socketpair()
 #include <unistd.h>       // close()
