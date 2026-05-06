@@ -6,16 +6,15 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 17:39:59 by nseon             #+#    #+#             */
-/*   Updated: 2026/04/27 13:03:12 by nseon            ###   ########.fr       */
+/*   Updated: 2026/05/06 15:58:54 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <string>
 #include <sstream>
-#include <vector>
 #include <iostream>
 
-#include "Location.hpp"
+#include "config/Location.hpp"
 
 Location::Location(Ablock const &m)
 {

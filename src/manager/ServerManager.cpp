@@ -1,8 +1,8 @@
 #include <iostream>
-#include "ServerManager.hpp"
-#include "ClientSocket.hpp"
-#include "Logger.hpp"
-#include "ASocket.hpp"
+#include "manager/ServerManager.hpp"
+#include "socket/ClientSocket.hpp"
+#include "logger/Logger.hpp"
+#include "socket/ASocket.hpp"
 
 ServerManager::ServerManager(void) {}
 

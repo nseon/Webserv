@@ -1,8 +1,8 @@
 #ifndef CLIENTSOCKET_HPP
 # define CLIENTSOCKET_HPP
 
-# include "ASocket.hpp"
-# include "Request.hpp"
+# include "socket/ASocket.hpp"
+# include "http/Request.hpp"
 
 class ClientSocket: public ASocket
 {

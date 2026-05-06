@@ -2,9 +2,9 @@
 # define SERVERMANAGER_HPP
 
 # include <vector>
-# include "ClientSocket.hpp"
-# include "PollingManager.hpp"
-# include "Server.hpp"
+# include "socket/ClientSocket.hpp"
+# include "polling/PollingManager.hpp"
+# include "config/Server.hpp"
 
 class ServerManager
 {

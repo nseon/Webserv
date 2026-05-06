@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/15 14:59:37 by nseon             #+#    #+#             */
-/*   Updated: 2026/04/23 13:26:27 by nseon            ###   ########.fr       */
+/*   Updated: 2026/05/06 15:53:34 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <sstream>
 #include <iostream>
 
-#include "Config.hpp"
+#include "config/Config.hpp"
 
 static std::string extractSubContent(std::stringstream &ss)
 {

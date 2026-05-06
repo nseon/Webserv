@@ -1,9 +1,7 @@
-#include "PollingManager.hpp"
+#include "polling/PollingManager.hpp"
 #include <iostream>
-#include "ASocket.hpp"
-#include "ClientSocket.hpp"
-#include "ListenerSocket.hpp"
-#include "Logger.hpp"
+#include "socket/ASocket.hpp"
+#include "logger/Logger.hpp"
 #include <netinet/in.h>
 #include <sys/epoll.h>
 #include <stdexcept>

@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 15:58:31 by nseon             #+#    #+#             */
-/*   Updated: 2026/04/23 13:25:02 by nseon            ###   ########.fr       */
+/*   Updated: 2026/05/06 15:53:23 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <vector>
 #include <iostream>
 
-#include "Ablock.hpp"
+#include "config/Ablock.hpp"
 
 typedef void (Ablock::*SetterFunc)(std::string const&);
 

@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/15 14:57:26 by nseon             #+#    #+#             */
-/*   Updated: 2026/04/16 14:26:11 by nseon            ###   ########.fr       */
+/*   Updated: 2026/05/06 15:54:20 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 #include <vector>
 
-#include "Ablock.hpp"
-#include "Server.hpp"
+#include "config/Ablock.hpp"
+#include "config/Server.hpp"
 
 class Config : public Ablock{
 	private:

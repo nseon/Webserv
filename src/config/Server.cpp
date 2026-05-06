@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 17:39:51 by nseon             #+#    #+#             */
-/*   Updated: 2026/04/30 14:27:44 by nseon            ###   ########.fr       */
+/*   Updated: 2026/05/06 15:56:19 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 #include <string>
 #include <iostream>
 
-#include "Server.hpp"
-#include "ListenerSocket.hpp"
+#include "config/Server.hpp"
+#include "socket/ListenerSocket.hpp"
 
 Server::Server()
 {

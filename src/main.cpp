@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/15 16:48:06 by nseon             #+#    #+#             */
-/*   Updated: 2026/04/20 14:48:42 by nseon            ###   ########.fr       */
+/*   Updated: 2026/05/06 16:00:26 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,8 @@
 #include <netinet/in.h>
 #include <cstring>
 
-#include "Config.hpp"
-#include "Logger.hpp"
-#include "PollingManager.hpp"
-#include "ServerManager.hpp"
+#include "config/Config.hpp"
+#include "manager/ServerManager.hpp"
 
 int	main(int argc, char **argv)
 {
