@@ -6,7 +6,7 @@
 #    By: nseon <nseon@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/10/13 10:54:16 by nseon             #+#    #+#              #
-#    Updated: 2026/04/20 14:46:32 by nseon            ###   ########.fr        #
+#    Updated: 2026/04/28 12:15:55 by nseon            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,11 +30,18 @@ BASE_SRC	=
 MAIN		=	main.cpp
 SRC			=	$(MAIN) $(BASE_SRC)
 
-# --------------PARSING-------------- #
+# ---------------HTTP---------------- #
+
+BASE_SRC	+=	$(addprefix $(HTTP_DIR), $(HTTP_SRC))
+
+HTTP_DIR = http/
+HTTP_SRC = Request.cpp \
+
+# --------------CONFIG--------------- #
 
 BASE_SRC	+=	$(addprefix $(PRS_DIR), $(PRS_SRC))
 
-PRS_DIR		=	parsing/
+PRS_DIR		=	config/
 PRS_SRC		=	Ablock.cpp \
 				Config.cpp \
 				Location.cpp \
