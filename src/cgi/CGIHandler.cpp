@@ -2,6 +2,7 @@
 
 
 CGIHandler::CGIHandler(void) {}
+
 CGIHandler::~CGIHandler(void) {}
 
 bool	isCgi(std::string URI,
@@ -14,3 +15,5 @@ void	CGIHandler::setEnvs(std::string URI, std::string )
 {
 	
 }
+
+

@@ -2,6 +2,8 @@
 # define SERVERMANAGER_HPP
 
 # include <vector>
+# include <map>
+# include "http/Request.hpp"
 # include "socket/ClientSocket.hpp"
 # include "polling/PollingManager.hpp"
 # include "config/Server.hpp"
@@ -13,6 +15,7 @@ class ServerManager
 
 		std::vector<Server>						_servers;
 		std::vector<ClientSocket*>				_clients;
+		std::map<ClientSocket*, Request>		_requests;
 		PollingManager							_pollingManager;
 
 		std::vector<ClientSocket*>::iterator	findClient(int socketFd);
@@ -25,6 +28,8 @@ class ServerManager
 
 		void	addClientSocket(int socketFd);
 		void	removeClientSocket(int socketFd);
+
+		void	handleHttpRequest(ClientSocket* client, char* msg);
 };
 
 #endif
