@@ -23,7 +23,7 @@ ClientSocket::~ClientSocket(void) {}
 
 int	ClientSocket::socketBehavior(void *sm)
 {
-	char	msg[RECV_SIZE];
+	char	msg[RECV_SIZE + 1];
 	ssize_t	msg_length;
 
 	if (this->_currentEvent & EPOLLRDHUP)
