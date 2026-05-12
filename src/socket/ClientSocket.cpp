@@ -11,7 +11,7 @@
 #include <iostream> //tmp
 
 #ifndef RECV_SIZE
-# define RECV_SIZE 10
+# define RECV_SIZE 1024
 #endif
 
 ClientSocket::ClientSocket(void) {}
