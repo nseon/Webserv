@@ -16,4 +16,3 @@ void	CGIHandler::setEnvs(std::string URI, std::string )
 	
 }
 
-
