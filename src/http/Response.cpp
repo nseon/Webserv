@@ -11,19 +11,18 @@
 /* ************************************************************************** */
 
 #include "http/Response.hpp"
-#include "http/responses.hpp"
 #include <fcntl.h>
 #include <vector>
 
-static void fill_response(Request const &request, Response &response)
-{
-	if (request.getMethod() == "GET")
-		handle_get(request, response);
-	if (request.getMethod() == "POST")
-		handle_post(request, response);
-	if (request.getMethod() == "DELETE")
-		handle_delete(request, response);
-}
+//static void fill_response(Request const &request, Response &response)
+//{
+//	if (request.getMethod() == "GET")
+//		handle_get(request, response);
+//	if (request.getMethod() == "POST")
+//		handle_post(request, response);
+//	if (request.getMethod() == "DELETE")
+//		handle_delete(request, response);
+//}
 
 //**********************GETTER**************************//
 
@@ -58,7 +57,8 @@ void Response::setBody(std::vector<char> body)
 
 Response::Response(Request const &request, Location const &location) : _status_code(0), _location(location)
 {
-	fill_response(request, *this);
+	(void)request; (void)location;
+	//fill_response(request, *this);
 }
 
 Response::~Response()

@@ -1,18 +1,9 @@
 #ifndef CGIHANDLER_HPP
 # define CGIHANDLER_HPP
 
+# include <map>
 # include <string>
 
-class CGIHandler
-{
-	private:
-		char**	_envs;
-	public:
-		CGIHandler(void);
-		~CGIHandler(void);
-
-		bool	isCgi(std::string URI);
-		void	setEnvs(std::string URI);
-};
+bool	isCgi(std::string URI, std::map<std::string, std::string> cgi_configs);
 
 #endif
