@@ -2,6 +2,7 @@
 # define LISTENERSOCKET_HPP
 
 # include "socket/ASocket.hpp"
+# include "config/Server.hpp"
 # include <netinet/in.h>
 
 # ifndef BACKLOG
@@ -14,7 +15,6 @@ class ListenerSocket: public ASocket
 {
 	private:
 		struct sockaddr_in	_address;
-		Server*				_server;
 
 		ListenerSocket(void);
 

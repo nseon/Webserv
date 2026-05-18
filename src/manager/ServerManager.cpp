@@ -62,9 +62,9 @@ std::vector<ClientSocket*>::iterator	ServerManager::findClient(int socketFd)
 	return (this->_clients.end());
 }
 
-void	ServerManager::addClientSocket(int socketFd)
+void	ServerManager::addClientSocket(int socketFd, Server* server)
 {
-	ClientSocket*	newCs = new ClientSocket(socketFd);
+	ClientSocket*	newCs = new ClientSocket(socketFd, server);
 
 	this->_clients.push_back(newCs);
 	this->_pollingManager.addSocket(newCs);

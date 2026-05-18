@@ -14,10 +14,8 @@
 # define RECV_SIZE 1024
 #endif
 
-ClientSocket::ClientSocket(void) {}
-
-ClientSocket::ClientSocket(int fd):
-ASocket (fd) {}
+ClientSocket::ClientSocket(int fd, Server* server):
+ASocket (fd, server) {}
 
 ClientSocket::~ClientSocket(void) {}
 

@@ -18,12 +18,14 @@
 #include <cstring>
 
 #include "Ablock.hpp"
-#include "socket/ListenerSocket.hpp"
 #include "Location.hpp"
+#include "socket/ListenerSocket.hpp"
 
 #define DEFAULT_PORT 3030
 #define DEFAULT_MAX_SIZE 10
 #define DEFAULT_IP "0.0.0.0"
+
+class ListenerSocket;
 
 class Server : public Ablock{
 	private:

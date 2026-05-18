@@ -3,6 +3,7 @@
 
 # include "socket/ASocket.hpp"
 # include "http/Request.hpp"
+# include "config/Server.hpp"
 
 class ClientSocket: public ASocket
 {
@@ -12,7 +13,7 @@ class ClientSocket: public ASocket
 	public:
 		Request _request;
 		
-		ClientSocket(int fd);
+		ClientSocket(int fd, Server* server);
 		~ClientSocket(void);
 
 		virtual int	socketBehavior(void *);

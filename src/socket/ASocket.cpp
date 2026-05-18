@@ -5,7 +5,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-ASocket::ASocket(void)
+ASocket::ASocket(Server* server):
+_server(server)
 {
 	this->_currentEvent = 0;
 	this->_socketFd = socket(AF_INET, SOCK_STREAM, 0);
@@ -20,8 +21,9 @@ ASocket::ASocket(void)
 	this->_event.data.fd = this->_socketFd;
 }
 
-ASocket::ASocket(int socketFd):
-_socketFd(socketFd)
+ASocket::ASocket(int socketFd, Server* server):
+_socketFd(socketFd),
+_server(server)
 {
 	this->_currentEvent = 0;
 	fcntl(this->_socketFd, F_SETFL, O_NONBLOCK);
@@ -35,7 +37,8 @@ _socketFd(socketFd)
 ASocket::ASocket(ASocket const& toCopy):
 _socketFd(toCopy._socketFd),
 _event(toCopy._event),
-_currentEvent(toCopy._currentEvent)
+_currentEvent(toCopy._currentEvent),
+_server(toCopy._server)
 {}
 
 ASocket::~ASocket(void)
@@ -56,6 +59,11 @@ int	ASocket::getCurrentEvent(void) const
 struct epoll_event const*	ASocket::getEvent(void) const
 {
 	return (&this->_event);
+}
+
+Server*	ASocket::getServer(void) const
+{
+	return (this->_server);
 }
 
 struct epoll_event*	ASocket::getNotConstEvent(void)

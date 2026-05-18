@@ -26,7 +26,7 @@ class ServerManager
 
 		void	serverLoop(void);
 
-		void	addClientSocket(int socketFd);
+		void	addClientSocket(int socketFd, Server* server);
 		void	removeClientSocket(int socketFd);
 
 		void	handleHttpRequest(ClientSocket* client, char* msg);
