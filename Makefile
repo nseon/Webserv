@@ -89,9 +89,9 @@ CGI_SRC	=	CGIHandler.cpp
 # ----------------TEST--------------- #
 
 TEST_SRC	:=	Logger_test.cpp \
-				CGIHandler_test.cpp
-				#PollingManager_test.cpp \ #
-				#ServerManager_test.cpp \ #
+				CGIHandler_test.cpp \
+				PollingManager_test.cpp \
+				ServerManager_test.cpp \
 
 # --------------INCLUDES------------- #
 

@@ -33,7 +33,7 @@
 class MockSocket : public ASocket
 {
 public:
-    MockSocket(int fd) : ASocket(fd) {}
+    MockSocket(int fd) : ASocket(fd, NULL) {}
     virtual int socketBehavior(void*) { return 0; }
 };
 
