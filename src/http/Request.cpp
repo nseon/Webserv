@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/27 14:01:57 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/06 15:56:31 by nseon            ###   ########.fr       */
+/*   Updated: 2026/05/12 10:38:11 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,31 +61,25 @@ static void parse_request_line(Request &request, std::string request_line)
 			throw std::logic_error("Invalid request line: " + request_line);
 }
 
-static void parse_headers(Request &request, std::string line)
+static bool parse_header(Request &request, std::string line)
 {
-	while (line.size())
-	{
-		size_t pos = line.find("\r\n");
-		
-		if (pos == std::string::npos)
-			throw std::logic_error("Invalid header in request: " + line);
-
-		std::string header = line.substr(0, pos);
-		
-		line.erase(0, pos + 2);
-		if (header.empty())
-            continue;
-		pos = header.find_first_of(':');
-		if (pos == std::string::npos)
-			throw std::logic_error("Invalid header in request: " + header);
-		
-		std::string key = header.substr(0, pos);
-		std::string value = header.substr(pos + 1);
-		
-		trim(value);
-		std::transform(key.begin(), key.end(), key.begin(), ::tolower);
-		request.addHeader(key, value);
-	}
+	if (line == "\r\n")
+		return (true);
+	
+	size_t pos = line.find("\r\n");
+	std::string header = line.substr(0, pos);
+	
+	pos = header.find_first_of(':');
+	if (pos == std::string::npos)
+		throw std::logic_error("Invalid header in request: " + header);
+	
+	std::string key = header.substr(0, pos);
+	std::string value = header.substr(pos + 1);
+	
+	trim(value);
+	std::transform(key.begin(), key.end(), key.begin(), ::tolower);
+	request.addHeader(key, value);
+	return (false);
 }
 
 bool Request::_parseBodyContent(std::map<std::string, std::string>::iterator &i)
@@ -166,17 +160,21 @@ bool Request::_handleRequestLine()
 
 bool Request::_handleHeaders()
 {
-	size_t pos = _raw_data.find("\r\n\r\n");
-		
-	if (pos != std::string::npos)
+	size_t pos = _raw_data.find("\r\n");
+
+	while (pos != std::string::npos)
 	{
-		parse_headers(*this, _raw_data.substr(0, pos + 2));
-		_raw_data.erase(0, pos + 4);
-		if (_parsing_state == TRAILERS)
-			_parsing_state = DONE;
-		else
-			_parsing_state = BODY;
-		return (true);
+		bool done = parse_header(*this, _raw_data.substr(0, pos + 2));
+		_raw_data.erase(0, pos + 2);
+		if (done)
+		{
+			if (_parsing_state == TRAILERS)
+				_parsing_state = DONE;
+			else
+				_parsing_state = BODY;
+			return (true);
+		}
+		pos = _raw_data.find("\r\n");
 	}
 	return (false);
 }
@@ -299,21 +297,6 @@ std::string Request::getPath() const
 	return (_path);
 }
 
-std::string Request::getVersion() const
-{
-	return (_version);
-}
-
-std::map<std::string, std::string> Request::getHeaders() const
-{
-	return (_headers);
-}
-
-std::vector<char> Request::getBody() const
-{
-	return (_body);
-}
-
 //**********************SETTER**************************//
 
 void Request::setMethod(std::string const &value)
@@ -324,14 +307,4 @@ void Request::setMethod(std::string const &value)
 void Request::setPath(std::string const &value)
 {
 	_path = value;
-}		
-
-void Request::setVersion(std::string const &value)
-{
-	_version = value;
-}
-
-void Request::addHeader(std::string const &key, std::string const &value)
-{
-	_headers[key] = value;
 }
