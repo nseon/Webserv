@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 17:39:59 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/06 15:58:54 by nseon            ###   ########.fr       */
+/*   Updated: 2026/05/12 11:37:44 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,22 @@ Location::Location(Ablock const &m)
 	_dispatchMap["upload_store"] = reinterpret_cast<SetterFunc>(&Location::setUploadStore);
 	_dispatchMap["return"] = reinterpret_cast<SetterFunc>(&Location::setReturn);
 	_dispatchMap["cgi"] = reinterpret_cast<SetterFunc>(&Location::addCgi);
+}
+
+Location::Location(Location const &m)
+{
+	_root = m.getRoot();
+	_client_max_body_size = m.getClientMaxBodySize();
+	_index = m.getIndex();
+	_error_pages = m.getErrorPages();
+	_path = m.getPath();
+	_allow_get = m.getAllowGet();
+	_allow_post = m.getAllowPost();
+	_allow_delete = m.getAllowDelete();
+	_autoindex = m.getAutoIndex();
+	_upload_store = m.getUploadStore();
+	_return = m.getReturn();
+	_cgi_configs = m.getCgiConfigs();
 }
 
 Location::~Location()

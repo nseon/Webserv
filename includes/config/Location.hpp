@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 17:19:42 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/06 15:54:25 by nseon            ###   ########.fr       */
+/*   Updated: 2026/05/11 15:25:41 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ class Location : public Ablock{
 		std::map<std::string, std::string>	_cgi_configs;
 	public:
 		Location(Ablock const &m);
+		Location(Location const &m);
 		~Location();
 
 		void setPath(std::string const &value);
