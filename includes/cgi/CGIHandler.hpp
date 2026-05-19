@@ -4,6 +4,6 @@
 # include <map>
 # include <string>
 
-bool	isCgi(std::string URI, std::map<std::string, std::string> cgi_configs);
+bool	isCgi(std::string& URI, std::map<std::string, std::string>& cgi_configs, std::string& cgi);
 
 #endif

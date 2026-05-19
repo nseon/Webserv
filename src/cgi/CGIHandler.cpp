@@ -1,7 +1,7 @@
 #include "cgi/CGIHandler.hpp"
 #include <map>
 
-std::pair<std::string, std::string> parsePathQuery(std::string URI)
+std::pair<std::string, std::string> parsePathQuery(std::string& URI)
 {
 	std::pair<std::string, std::string>	ret;
 	size_t								queryIndex = URI.find_first_of('?');
@@ -41,3 +41,5 @@ bool	isCgi(std::string const & path,
 	}
 	return (false);
 }
+
+
