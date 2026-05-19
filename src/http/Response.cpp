@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 13:34:54 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/13 14:10:51 by nseon            ###   ########.fr       */
+/*   Updated: 2026/05/18 15:32:02 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 
 static void fill_response(Request const &request, Response &response)
 {
+	response.setVersion(request.getVersion());
 	if (request.getMethod() == "GET")
 		handle_get(request, response);
 	if (request.getMethod() == "POST")
