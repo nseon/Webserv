@@ -6,11 +6,12 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 11:37:15 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/11 15:44:21 by nseon            ###   ########.fr       */
+/*   Updated: 2026/05/18 14:57:22 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "http/AHttpMessage.hpp"
+#include <stdexcept>
 
 AHttpMessage::~AHttpMessage()
 {}
@@ -36,6 +37,8 @@ std::vector<char> AHttpMessage::getBody() const
 
 void AHttpMessage::setVersion(std::string const &value)
 {
+	if (value != "HTTP/1.0" && value != "HTTP/1.1")
+		throw std::logic_error("Invalid version: " + value);
 	_version = value;
 }
 

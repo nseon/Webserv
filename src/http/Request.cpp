@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/27 14:01:57 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/12 10:38:11 by nseon            ###   ########.fr       */
+/*   Updated: 2026/05/18 14:56:32 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -301,6 +301,8 @@ std::string Request::getPath() const
 
 void Request::setMethod(std::string const &value)
 {
+	if (value != "GET" && value != "POST" && value != "DELETE")
+		throw std::logic_error("Invalid method: " + value);
 	_method = value;
 }
 
