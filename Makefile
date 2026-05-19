@@ -6,7 +6,7 @@
 #    By: nseon <nseon@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/10/13 10:54:16 by nseon             #+#    #+#              #
-#    Updated: 2026/04/28 12:15:55 by nseon            ###   ########.fr        #
+#    Updated: 2026/05/07 14:19:58 by nseon            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,8 +34,9 @@ SRC			=	$(MAIN) $(BASE_SRC)
 
 BASE_SRC	+=	$(addprefix $(HTTP_DIR), $(HTTP_SRC))
 
-HTTP_DIR = http/
-HTTP_SRC = Request.cpp \
+HTTP_DIR =	http/
+HTTP_SRC =	AHttpMessage.cpp \
+			Request.cpp \
 
 # --------------CONFIG--------------- #
 
