@@ -6,12 +6,11 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 13:34:54 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/18 15:32:02 by nseon            ###   ########.fr       */
+/*   Updated: 2026/05/19 11:51:37 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "http/Response.hpp"
-#include "http/responses.hpp"
 #include <fcntl.h>
 #include <vector>
 
@@ -27,8 +26,8 @@ static void fill_response(Request const &request, Response &response)
 }
 
 //**********************GETTER**************************//
-
 Location Response::getLocation() const
+
 {
 	return (_location);
 }
@@ -59,7 +58,8 @@ void Response::setBody(std::vector<char> body)
 
 Response::Response(Request const &request, Location const &location) : _status_code(0), _location(location)
 {
-	fill_response(request, *this);
+	(void)request; (void)location;
+	//fill_response(request, *this);
 }
 
 Response::~Response()

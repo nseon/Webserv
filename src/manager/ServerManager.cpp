@@ -1,5 +1,6 @@
 #include <iostream>
 #include "manager/ServerManager.hpp"
+#include "http/Request.hpp"
 #include "socket/ClientSocket.hpp"
 #include "logger/Logger.hpp"
 #include "socket/ASocket.hpp"
@@ -11,7 +12,15 @@ _servers(servers)
 {
 	for (std::vector<Server>::iterator it = this->_servers.begin(); it < this->_servers.end(); it++)
 	{
-		it->createSocket();
+		try
+		{
+			it->createSocket();
+		}
+		catch (std::exception &e)
+		{
+			std::cout << "Manager failed to create because :" << e.what() << std::endl;
+			return ;
+		}
 		this->_pollingManager.addSocket(it->getSocket());
 	}
 	Logger::info() << "Server Manager is up !" << std::endl;
@@ -53,9 +62,9 @@ std::vector<ClientSocket*>::iterator	ServerManager::findClient(int socketFd)
 	return (this->_clients.end());
 }
 
-void	ServerManager::addClientSocket(int socketFd)
+void	ServerManager::addClientSocket(int socketFd, Server* server)
 {
-	ClientSocket*	newCs = new ClientSocket(socketFd);
+	ClientSocket*	newCs = new ClientSocket(socketFd, server);
 
 	this->_clients.push_back(newCs);
 	this->_pollingManager.addSocket(newCs);
@@ -71,5 +80,32 @@ void	ServerManager::removeClientSocket(int socketFd)
 		this->_pollingManager.removeSocket(socketFd);
 		delete *toRemove;
 		this->_clients.erase(toRemove);
+	}
+}
+
+void	ServerManager::handleHttpRequest(ClientSocket* client, char* msg)
+{
+	std::map<ClientSocket*, Request>::iterator	requestIterator;
+
+	requestIterator = this->_requests.find(client);
+	if (requestIterator == this->_requests.end())
+	{
+		this->_requests[client] = Request();
+		requestIterator = this->_requests.find(client);
+	}
+	try
+	{
+		requestIterator->second.parseRequest(msg);
+
+		if (requestIterator->second.getParsingState() == DONE)
+		{
+				std::cout << client->getFd() << ' ' << requestIterator->second << std::flush;
+				requestIterator->second.reset();
+		}
+	}
+	catch (std::exception &e)
+	{
+		std::cout << e.what() << std::endl;
+		requestIterator->second.reset();
 	}
 }

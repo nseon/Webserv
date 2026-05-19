@@ -77,7 +77,7 @@ TEST_SUITE("ServerManager — addClientSocket")
         ServerManager sm = make_empty_manager();
         SockPair sp = make_sock_pair();
 
-        CHECK_NOTHROW(sm.addClientSocket(sp.client));
+        CHECK_NOTHROW(sm.addClientSocket(sp.client, NULL));
         // sp.client is now owned by the ClientSocket inside sm
 
         close(sp.peer);
@@ -91,9 +91,9 @@ TEST_SUITE("ServerManager — addClientSocket")
         SockPair sp2 = make_sock_pair();
         SockPair sp3 = make_sock_pair();
 
-        CHECK_NOTHROW(sm.addClientSocket(sp1.client));
-        CHECK_NOTHROW(sm.addClientSocket(sp2.client));
-        CHECK_NOTHROW(sm.addClientSocket(sp3.client));
+        CHECK_NOTHROW(sm.addClientSocket(sp1.client, NULL));
+        CHECK_NOTHROW(sm.addClientSocket(sp2.client, NULL));
+        CHECK_NOTHROW(sm.addClientSocket(sp3.client, NULL));
 
         close(sp1.peer);
         close(sp2.peer);
@@ -112,7 +112,7 @@ TEST_SUITE("ServerManager — removeClientSocket")
         ServerManager sm = make_empty_manager();
         SockPair sp = make_sock_pair();
 
-        sm.addClientSocket(sp.client);
+        sm.addClientSocket(sp.client, NULL);
         CHECK_NOTHROW(sm.removeClientSocket(sp.client));
         // ClientSocket dtor closed sp.client
 
@@ -131,7 +131,7 @@ TEST_SUITE("ServerManager — removeClientSocket")
         ServerManager sm = make_empty_manager();
         SockPair sp = make_sock_pair();
 
-        sm.addClientSocket(sp.client);
+        sm.addClientSocket(sp.client, NULL);
         sm.removeClientSocket(sp.client); // first: client deleted, fd closed
         CHECK_NOTHROW(sm.removeClientSocket(sp.client)); // second: no-op
 
@@ -144,8 +144,8 @@ TEST_SUITE("ServerManager — removeClientSocket")
         SockPair sp1 = make_sock_pair();
         SockPair sp2 = make_sock_pair();
 
-        sm.addClientSocket(sp1.client);
-        sm.addClientSocket(sp2.client);
+        sm.addClientSocket(sp1.client, NULL);
+        sm.addClientSocket(sp2.client, NULL);
 
         sm.removeClientSocket(sp1.client);
 
@@ -165,7 +165,7 @@ TEST_SUITE("ServerManager — removeClientSocket")
         for (int i = 0; i < N; ++i)
         {
             pairs[i] = make_sock_pair();
-            sm.addClientSocket(pairs[i].client);
+            sm.addClientSocket(pairs[i].client, NULL);
         }
 
         for (int i = 0; i < N; ++i)
@@ -188,10 +188,10 @@ TEST_SUITE("ServerManager — add/remove round-trips")
         SockPair sp1 = make_sock_pair();
         SockPair sp2 = make_sock_pair();
 
-        sm.addClientSocket(sp1.client);
+        sm.addClientSocket(sp1.client, NULL);
         sm.removeClientSocket(sp1.client); // sp1.client closed internally
 
-        CHECK_NOTHROW(sm.addClientSocket(sp2.client));
+        CHECK_NOTHROW(sm.addClientSocket(sp2.client, NULL));
 
         close(sp1.peer);
         close(sp2.peer);
@@ -207,7 +207,7 @@ TEST_SUITE("ServerManager — add/remove round-trips")
         for (int i = 0; i < N; ++i)
         {
             pairs[i] = make_sock_pair();
-            sm.addClientSocket(pairs[i].client);
+            sm.addClientSocket(pairs[i].client, NULL);
         }
 
         // Remove even-indexed clients

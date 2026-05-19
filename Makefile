@@ -6,7 +6,7 @@
 #    By: nseon <nseon@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/10/13 10:54:16 by nseon             #+#    #+#              #
-#    Updated: 2026/05/07 14:19:58 by nseon            ###   ########.fr        #
+#    Updated: 2026/05/19 11:52:13 by nseon            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,9 +34,10 @@ SRC			=	$(MAIN) $(BASE_SRC)
 
 BASE_SRC	+=	$(addprefix $(HTTP_DIR), $(HTTP_SRC))
 
-HTTP_DIR =	http/
-HTTP_SRC =	AHttpMessage.cpp \
-			Request.cpp \
+HTTP_DIR 	=	http/
+HTTP_SRC	=	Request.cpp \
+				AHttpMessage.cpp \
+				Response.cpp
 
 # --------------CONFIG--------------- #
 
@@ -78,11 +79,19 @@ BASE_SRC	+=	$(addprefix $(MANAGER_DIR), $(MANAGER_SRC))
 MANAGER_DIR	=	manager/
 MANAGER_SRC	=	ServerManager.cpp
 
+# --------------CGI-------------- #
+
+BASE_SRC	+=	$(addprefix $(CGI_DIR), $(CGI_SRC))
+
+CGI_DIR	=	cgi/
+CGI_SRC	=	CGIHandler.cpp
+
 # ----------------TEST--------------- #
 
-TEST_SRC	:=	PollingManager_test.cpp \
-				Logger_test.cpp \
-				ServerManager_test.cpp
+TEST_SRC	:=	Logger_test.cpp \
+				CGIHandler_test.cpp \
+				PollingManager_test.cpp \
+				ServerManager_test.cpp \
 
 # --------------INCLUDES------------- #
 
