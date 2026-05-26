@@ -42,4 +42,3 @@ bool	isCgi(std::string const & path,
 	return (false);
 }
 
-
