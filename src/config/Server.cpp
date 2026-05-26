@@ -6,15 +6,17 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 17:39:51 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/06 15:56:19 by nseon            ###   ########.fr       */
+/*   Updated: 2026/05/25 13:39:02 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <sstream>
 #include <string>
 #include <iostream>
+#include <vector>
 
 #include "config/Server.hpp"
+#include "config/Location.hpp"
 #include "socket/ListenerSocket.hpp"
 
 Server::Server()
@@ -157,6 +159,38 @@ struct sockaddr_in Server::getAddr() const
 ListenerSocket*	Server::getSocket(void) const
 {
 	return (this->_socket);
+}
+
+Location *Server::matchLocation(std::string uri)
+{
+	Location *best_match = NULL;
+	int longest = -1;
+	
+	for (std::vector<Location>::iterator it = _locations.begin(); it != _locations.end(); ++it)
+	{
+		int i = 0;
+		while (it->getPath()[i])
+		{
+			if (!(uri[i]) || it->getPath()[i] != uri[i])
+			{
+				i = 0;
+				break;
+			}
+			++i;
+		}
+		if (i > 0)
+		{
+			if (it->getPath()[i - 1] == '/' || uri[i] == '\0' || uri[i] == '/')
+			{
+				if (i > longest || best_match == NULL)
+				{
+					longest = i;
+					best_match = &(*it);
+				}
+			}
+		}
+	}
+	return (best_match);
 }
 
 //******************************************************//

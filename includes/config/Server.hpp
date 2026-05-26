@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 17:18:42 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/06 15:54:34 by nseon            ###   ########.fr       */
+/*   Updated: 2026/05/19 16:56:52 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,8 @@ class Server : public Ablock{
 		std::vector<Location>	getLocations() const;
 		struct sockaddr_in		getAddr() const;
 		ListenerSocket*			getSocket() const;
+		
+		Location *matchLocation(std::string path);
 
 		Ablock &createBlock(std::string token, std::string const &value);
 };
