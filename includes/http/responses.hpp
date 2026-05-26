@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 14:04:38 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/19 11:43:12 by nseon            ###   ########.fr       */
+/*   Updated: 2026/05/25 16:25:35 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,3 +18,4 @@
 int handle_get(Request const &request, Response &response);
 int handle_post(Request const &request, Response &response);
 int handle_delete(Request const &request, Response &response);
+int getRessource(std::string const &path, Response &response);
