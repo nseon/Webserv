@@ -1,6 +1,8 @@
 #include <iostream>
+#include <sys/socket.h>
 #include "manager/ServerManager.hpp"
 #include "http/Request.hpp"
+#include "http/Response.hpp"
 #include "socket/ClientSocket.hpp"
 #include "logger/Logger.hpp"
 #include "socket/ASocket.hpp"
@@ -92,6 +94,7 @@ void	ServerManager::handleHttpRequest(ClientSocket* client, char* msg)
 	{
 		this->_requests[client] = Request();
 		requestIterator = this->_requests.find(client);
+		requestIterator->second.setServer(requestIterator->first->getServer());
 	}
 	try
 	{
@@ -99,8 +102,11 @@ void	ServerManager::handleHttpRequest(ClientSocket* client, char* msg)
 
 		if (requestIterator->second.getParsingState() == DONE)
 		{
-				std::cout << client->getFd() << ' ' << requestIterator->second << std::flush;
-				requestIterator->second.reset();
+			Response response(requestIterator->second, *(requestIterator->first->getServer()->matchLocation(requestIterator->second.getPath())));
+			std::string response_str = response.toString();
+
+			send(client->getFd(), response_str.c_str(), response_str.size(), 0);
+			requestIterator->second.reset();
 		}
 	}
 	catch (std::exception &e)
