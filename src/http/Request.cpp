@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/27 14:01:57 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/12 10:38:11 by nseon            ###   ########.fr       */
+/*   Updated: 2026/05/19 16:46:47 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,11 +86,13 @@ bool Request::_parseBodyContent(std::map<std::string, std::string>::iterator &i)
 {
 	size_t body_length = std::atoi(i->second.c_str());
 	size_t bytes_needed = body_length - _body.size();
+	if (bytes_needed  + _body.size() > _server->getClientMaxBodySize())
+		bytes_needed = _server->getClientMaxBodySize() - _body.size();
 	size_t bytes_to_copy = std::min(bytes_needed, _raw_data.size());
-	
+
 	_body.insert(_body.end(), _raw_data.begin(), _raw_data.begin() + bytes_to_copy);
 	_raw_data.erase(0, bytes_to_copy);
-	if (_body.size() == body_length)
+	if (_body.size() == body_length || _body.size() == _server->getClientMaxBodySize())
 	{
 		_parsing_state = DONE;
 		return (true);
@@ -128,8 +130,12 @@ bool Request::_parseBodyChunked()
 		{
 			if (_raw_data.size() < _chunk_size)
 				return (false);
+			if (_body.size() + _chunk_size > _server->getClientMaxBodySize())
+				_chunk_size = _server->getClientMaxBodySize() - _body.size();
 			_body.insert(_body.end(), _raw_data.begin(), _raw_data.begin() + _chunk_size);
 			_raw_data.erase(0, _chunk_size);
+			if (_body.size() == _server->getClientMaxBodySize())
+				return (true);
 			_chunk_state = CHUNK_CRLF;
 		}
 		if (_chunk_state == CHUNK_CRLF)
@@ -224,7 +230,7 @@ bool Request::parseRequest(std::string msg)
 
 //**************CONSTRUCTOR/DESTRUCTOR******************//
 
-Request::Request() : _parsing_state(REQUEST), _chunk_state(CHUNK_SIZE), _chunk_size(0)
+Request::Request() : _parsing_state(REQUEST), _chunk_state(CHUNK_SIZE), _chunk_size(0), _server(NULL)
 {}
 
 Request::~Request()
@@ -301,10 +307,17 @@ std::string Request::getPath() const
 
 void Request::setMethod(std::string const &value)
 {
+	if (value != "GET" && value != "POST" && value != "DELETE")
+		throw std::logic_error("Invalid method: " + value);
 	_method = value;
 }
 
 void Request::setPath(std::string const &value)
 {
 	_path = value;
+}
+
+void Request::setServer(Server *ptr)
+{
+	_server = ptr;
 }

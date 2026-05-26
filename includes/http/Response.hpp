@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 16:07:59 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/13 14:10:22 by nseon            ###   ########.fr       */
+/*   Updated: 2026/05/25 14:57:54 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,9 @@ class Response : public AHttpMessage {
 	private:
 		int	_status_code;
 		std::string _status_msg;
-		Location _location;
+		Location *_location;
 	public:
-		Response(Request const &request, Location const &location);
+		Response(Request const &request, Location &location);
 		~Response();
 
 		Location getLocation() const;
@@ -35,5 +35,5 @@ class Response : public AHttpMessage {
 		void setStatusMsg(std::string msg);
 		void setBody(std::vector<char> body);
 
-		void toString();
+		std::string toString();
 };

@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/27 14:02:10 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/11 13:21:03 by nseon            ###   ########.fr       */
+/*   Updated: 2026/05/19 13:58:26 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <string>
 #include <map>
 
+#include "config/Server.hpp"
 #include "http/AHttpMessage.hpp"
 
 enum parsing_state {
@@ -41,6 +42,8 @@ class Request : public AHttpMessage {
 
 		std::string _method;
 		std::string _path;
+		
+		Server *_server;
 
 		bool _handleRequestLine();
 		bool _handleHeaders();
@@ -55,6 +58,7 @@ class Request : public AHttpMessage {
 
 		void setMethod(std::string const &value);
 		void setPath(std::string const &value);
+		void setServer(Server *ptr);
 		
 		int getParsingState() const;
 		std::string getRawData() const;

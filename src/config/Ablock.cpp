@@ -6,10 +6,11 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 15:58:31 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/06 15:53:23 by nseon            ###   ########.fr       */
+/*   Updated: 2026/05/12 11:44:51 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <cstddef>
 #include <sstream>
 #include <vector>
 #include <iostream>
@@ -40,6 +41,15 @@ std::string Ablock::getIndex() const
 std::map<int, std::string> Ablock::getErrorPages() const
 {
 	return (_error_pages);
+}
+
+std::string Ablock::getErrorPath(int code) const
+{
+	std::map<int, std::string>::const_iterator pos = _error_pages.find(code);
+	
+	if (pos != _error_pages.end())
+		return (pos->second);
+	return ("");
 }
 
 std::map<std::string, SetterFunc> Ablock::getDispatchMap() const
