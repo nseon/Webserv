@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 17:39:59 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/12 11:37:44 by nseon            ###   ########.fr       */
+/*   Updated: 2026/05/26 12:13:25 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ Location::Location(Ablock const &m)
 
 Location::Location(Location const &m)
 {
+	_dispatchMap = m.getDispatchMap();
 	_root = m.getRoot();
 	_client_max_body_size = m.getClientMaxBodySize();
 	_index = m.getIndex();
@@ -135,7 +136,7 @@ void Location::addCgi(std::string const &value)
 	if (ss >> extension >> path)
 	{
 		if (ss >> path)
-			throw std::logic_error("Invalid return: " + value);
+			throw std::logic_error("Invalid cgi: " + value);
 		_cgi_configs[extension] = path;
 	}
 	else
