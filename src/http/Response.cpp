@@ -12,29 +12,18 @@
 
 #include "http/Response.hpp"
 #include "http/responses.hpp"
+#include "cgi/CGIHandler.hpp"
 #include <fcntl.h>
 #include <sstream>
 #include <vector>
 
-static void fill_response(Request const &request, Response &response)
-{
-	response.setVersion(request.getVersion());
-	response.addHeader("connection", "keep-alive");
-	if (request.getMethod() == "GET")
-		handle_get(request, response);
-	if (request.getMethod() == "POST")
-		handle_post(request, response);
-	if (request.getMethod() == "DELETE")
-		handle_delete(request, response);
-}
-
-std::string Response::toString()
+std::string Response::toString() const
 {
 	std::stringstream ss;
 
 	ss << _status_code;
 	std::string response = _version + " " + ss.str() + " " + _status_msg + "\r\n";
-	for (std::map<std::string, std::string>::iterator it = _headers.begin(); it != _headers.end(); ++it)
+	for (std::map<std::string, std::string>::const_iterator it = _headers.begin(); it != _headers.end(); ++it)
 		response += it->first + ":" + it->second + "\r\n";
 	response += "\r\n";
 	response.insert(response.end(), _body.begin(), _body.end());
@@ -74,7 +63,14 @@ void Response::setBody(std::vector<char> body)
 
 Response::Response(Request const &request, Location &location) : _status_code(0), _location(&location)
 {
-	fill_response(request, *this);
+	this->setVersion(request.getVersion());
+	this->addHeader("connection", "keep-alive");
+	if (request.getMethod() == "GET")
+		handle_get(request, this);
+	else if (request.getMethod() == "POST")
+		handle_post(request, this);
+	else if (request.getMethod() == "DELETE")
+		handle_delete(request, this);
 }
 
 Response::~Response()

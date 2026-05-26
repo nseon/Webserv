@@ -68,14 +68,14 @@ static bool parse_header(Request &request, std::string line)
 	
 	size_t pos = line.find("\r\n");
 	std::string header = line.substr(0, pos);
-	
+
 	pos = header.find_first_of(':');
 	if (pos == std::string::npos)
 		throw std::logic_error("Invalid header in request: " + header);
 	
 	std::string key = header.substr(0, pos);
 	std::string value = header.substr(pos + 1);
-	
+
 	trim(value);
 	std::transform(key.begin(), key.end(), key.begin(), ::tolower);
 	request.addHeader(key, value);

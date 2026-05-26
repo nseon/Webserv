@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "http/Request.hpp"
+#include "cgi/CGIHandler.hpp""
 #include "http/Response.hpp"
 #include "http/errors.hpp"
 #include <cstddef>
@@ -77,12 +78,18 @@ int handle_get(Request const &request, Response &response)
 	response.setStatusCode(200);
 	response.setStatusMsg("OK");
 
-	std::string path = response.getLocation().getRoot() + request.getPath();
+	std::string URI= response.getLocation().getRoot() + request.getPath();
+	std::pair<std::string, std::string> pathQuery = parsePathQuery(URI);
 
-	size_t pos = path.find("..");
+	if (isCgi(pathQuery.first))
+	{
+		//handle CGI
+	}
 
-	if (pos != std::string::npos && (pos == path.size() - 2 || path[pos + 2] == '/'))
+	size_t pos = pathQuery.first.find("..");
+
+	if (pos != std::string::npos && (pos == pathQuery.first.size() - 2 || pathQuery.first[pos + 2] == '/'))
 		return (error(response, 400, "Bad Request"));
 
-	return (getFile(path, response));
+	return (getFile(pathQuery.first, response));
 }

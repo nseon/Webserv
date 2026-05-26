@@ -21,9 +21,12 @@
 
 class Response : public AHttpMessage {
 	private:
+		Response(void);
+
 		int	_status_code;
 		std::string _status_msg;
 		Location *_location;
+
 	public:
 		Response(Request const &request, Location &location);
 		~Response();
@@ -35,5 +38,5 @@ class Response : public AHttpMessage {
 		void setStatusMsg(std::string msg);
 		void setBody(std::vector<char> body);
 
-		std::string toString();
+		std::string toString() const;
 };
