@@ -6,7 +6,7 @@
 #    By: nseon <nseon@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/10/13 10:54:16 by nseon             #+#    #+#              #
-#    Updated: 2026/05/19 11:52:13 by nseon            ###   ########.fr        #
+#    Updated: 2026/05/25 15:03:45 by nseon            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,6 +38,14 @@ HTTP_DIR 	=	http/
 HTTP_SRC	=	Request.cpp \
 				AHttpMessage.cpp \
 				Response.cpp
+				
+HTTP_SRC	+=	$(addprefix $(RSPS_DIR), $(RSPS_SRC))
+
+RSPS_DIR	+=	responses/
+RSPS_SRC	+=	delete.cpp \
+				errors.cpp \
+				get.cpp \
+				post.cpp
 
 # --------------CONFIG--------------- #
 
@@ -81,10 +89,10 @@ MANAGER_SRC	=	ServerManager.cpp
 
 # --------------CGI-------------- #
 
-BASE_SRC	+=	$(addprefix $(CGI_DIR), $(CGI_SRC))
+# BASE_SRC	+=	$(addprefix $(CGI_DIR), $(CGI_SRC))
 
-CGI_DIR	=	cgi/
-CGI_SRC	=	CGIHandler.cpp
+# CGI_DIR	=	cgi/
+# CGI_SRC	=	CGIHandler.cpp
 
 # ----------------TEST--------------- #
 
