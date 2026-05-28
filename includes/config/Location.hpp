@@ -43,7 +43,7 @@ class Location : public Ablock{
 		bool getAutoIndex() const;
 		std::string getUploadStore() const;
 		std::pair<int, std::string> getReturn() const;
-		std::map<std::string, std::string> getCgiConfigs() const;
+		std::map<std::string, std::string>& getCgiConfigs() const;
 		
 		Ablock &createBlock(std::string token, std::string const &value);
 };

@@ -59,6 +59,48 @@ void Response::setBody(std::vector<char> body)
 	_body = body;
 }
 
+//**************CGI*************************************//
+
+std::pair<std::string, std::string> Response::parsePathQuery(std::string const& URI)
+{
+	std::pair<std::string, std::string>	ret;
+	size_t								queryIndex = URI.find_first_of('?');
+
+	if (queryIndex == std::string::npos)
+	{
+		ret.first = URI;
+		ret.second = String();
+	}
+	else
+	{
+		ret.first = URI.substr(0, queryIndex);
+		ret.second = URI.substr(queryIndex, URI.size());
+	}
+	return (ret);
+}
+
+bool	Response::isCgi(std::string const% URI)
+{
+	std::map<std::string, std::string>::iterator	cgiIterator = this->location_->getCgiConfigs().begin();
+	std::map<std::string, std::string>::iterator	cgiEnd = this->location_->getCgiConfigs().end();
+	size_t											extension;
+
+	while (cgiIterator != cgiEnd)
+	{
+		extension = path.rfind(cgiIterator->first);
+		if (extension != std::string::npos && \
+			(extension + cgiIterator->first.size() == path.size() || \
+			path[extension + cgiIterator->first.size()] == '/'))
+		{
+			cgi = cgiIterator->second;
+			return (true);
+		}
+		++cgiIterator;
+	}
+	return (false);
+}
+
+
 //**************CONSTRUCTOR/DESTRUCTOR******************//
 
 Response::Response(Request const &request, Location &location) : _status_code(0), _location(&location)

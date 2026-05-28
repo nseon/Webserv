@@ -87,13 +87,6 @@ BASE_SRC	+=	$(addprefix $(MANAGER_DIR), $(MANAGER_SRC))
 MANAGER_DIR	=	manager/
 MANAGER_SRC	=	ServerManager.cpp
 
-# --------------CGI-------------- #
-
-# BASE_SRC	+=	$(addprefix $(CGI_DIR), $(CGI_SRC))
-
-# CGI_DIR	=	cgi/
-# CGI_SRC	=	CGIHandler.cpp
-
 # ----------------TEST--------------- #
 
 TEST_SRC	:=	Logger_test.cpp \

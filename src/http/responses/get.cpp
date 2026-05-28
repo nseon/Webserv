@@ -71,25 +71,51 @@ int getFile(std::string const &path, Response &response)
 	return (0);
 }
 
-int handle_get(Request const &request, Response &response)
+// TODO: Environment variables to implement (MANDATORY)
+// AUTH_TYPE
+// CONTENT_LENGTH (if request has a body)
+// CONTENT_TYPE (if request has Content-Type header)
+// GATEWAY_INTERFACE
+// QUERY_STRING
+// REMOTE_ADDR
+// REQUEST_METHOD
+// SCRIPT_NAME
+// SERVER_NAME
+// SERVER_PORT
+// SERVER_PROTOCOL
+// SERVER_SOFTWARE
+//
+//
+// (GOOD OPTIONAL)
+// PATH_INFO
+//
+// (I DONT CARE OPTIONAL)
+// PATH_TRANSLATED
+
+int handle_cgi(std::pair<std::string, std::string> const& pathQuery)
 {
-	if (!response.getLocation().getAllowGet())
-		return (error(response, 405, "Method not allowed"));
-	response.setStatusCode(200);
-	response.setStatusMsg("OK");
+	
+}
 
-	std::string URI= response.getLocation().getRoot() + request.getPath();
+int Response::handle_get(Request const &request)
+{
+	if (!this->getLocation().getAllowGet())
+		return (error(*this, 405, "Method not allowed"));
+	this->setStatusCode(200);
+	this->setStatusMsg("OK");
+
+	std::string URI= this->getLocation().getRoot() + request.getPath();
 	std::pair<std::string, std::string> pathQuery = parsePathQuery(URI);
-
-	if (isCgi(pathQuery.first))
-	{
-		//handle CGI
-	}
 
 	size_t pos = pathQuery.first.find("..");
 
 	if (pos != std::string::npos && (pos == pathQuery.first.size() - 2 || pathQuery.first[pos + 2] == '/'))
-		return (error(response, 400, "Bad Request"));
+		return (error(*this, 400, "Bad Request"));
 
-	return (getFile(pathQuery.first, response));
+	if (isCgi(pathQuery.first))
+	{
+		
+	}
+
+	return (getFile(pathQuery.first, *this));
 }

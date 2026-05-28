@@ -25,7 +25,15 @@ class Response : public AHttpMessage {
 
 		int	_status_code;
 		std::string _status_msg;
+		std::string _cgi;
 		Location *_location;
+
+		int	handle_get(Request const& request);
+		int	handle_post(Request const& request);
+		int	handle_delete(Request const& request);
+
+		bool	isCgi(std::string const& URI);
+		std::pair<std::string, std::string> parsePathQuery(std::string const& URI);
 
 	public:
 		Response(Request const &request, Location &location);
