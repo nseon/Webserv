@@ -30,29 +30,29 @@ static std::vector<char> generate_default_error_page(int code, std::string msg)
 	return (body);
 }
 
-int error(Response &response, int code, std::string msg)
+int Response::error(int code, std::string msg)
 {
-	response.setStatusCode(code);
-	response.setStatusMsg(msg);
+	this->setStatusCode(code);
+	this->setStatusMsg(msg);
 	
-	std::string error_path = response.getLocation().getErrorPath(code);
+	std::string error_path = this->getLocation().getErrorPath(code);
 	
 	if (error_path.empty())
 	{
 		std::stringstream ss;
 		
-		response.setBody(generate_default_error_page(code, msg));
-		ss << response.getBody().size();
-		response.addHeader("Content-Length", ss.str());
+		this->setBody(generate_default_error_page(code, msg));
+		ss << this->getBody().size();
+		this->addHeader("Content-Length", ss.str());
 	}
 	else
 		if (getRessource(error_path, response))
 		{
 			std::stringstream ss;
 			
-			response.setBody(generate_default_error_page(code, msg));
-			ss << response.getBody().size();
-			response.addHeader("Content-Length", ss.str());
+			this->setBody(generate_default_error_page(code, msg));
+			ss << this->getBody().size();
+			this->addHeader("Content-Length", ss.str());
 		}
-	return (response.getStatusCode());
+	return (this->getStatusCode());
 }

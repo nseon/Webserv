@@ -71,32 +71,6 @@ int getFile(std::string const &path, Response &response)
 	return (0);
 }
 
-// TODO: Environment variables to implement (MANDATORY)
-// AUTH_TYPE
-// CONTENT_LENGTH (if request has a body)
-// CONTENT_TYPE (if request has Content-Type header)
-// GATEWAY_INTERFACE
-// QUERY_STRING
-// REMOTE_ADDR
-// REQUEST_METHOD
-// SCRIPT_NAME
-// SERVER_NAME
-// SERVER_PORT
-// SERVER_PROTOCOL
-// SERVER_SOFTWARE
-//
-//
-// (GOOD OPTIONAL)
-// PATH_INFO
-//
-// (I DONT CARE OPTIONAL)
-// PATH_TRANSLATED
-
-int handle_cgi(std::pair<std::string, std::string> const& pathQuery)
-{
-	
-}
-
 int Response::handle_get(Request const &request)
 {
 	if (!this->getLocation().getAllowGet())

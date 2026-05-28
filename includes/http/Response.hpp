@@ -19,6 +19,14 @@
 #include "http/Request.hpp"
 #include "config/Location.hpp"
 
+# ifndef CGIMODE_GET
+#  define CGIMODE_GET
+# endif
+
+# ifndef CGIMODE_POST
+#  define CGIMODE_POST
+# endif
+
 class Response : public AHttpMessage {
 	private:
 		Response(void);
@@ -28,12 +36,17 @@ class Response : public AHttpMessage {
 		std::string _cgi;
 		Location *_location;
 
+		int error(int code, std::string msg);
+
 		int	handle_get(Request const& request);
 		int	handle_post(Request const& request);
 		int	handle_delete(Request const& request);
 
-		bool	isCgi(std::string const& URI);
-		std::pair<std::string, std::string> parsePathQuery(std::string const& URI);
+		int									handle_cgi(std::pair<std::string, std::string> const& pathQuery, int mode);
+		char**								createCgiEnvs(std::pair<std::string, std::string> const& pathQuery);
+		bool								isCgi(std::string const& URI);
+		bool								isExec(std::string const& path);
+		std::pair<std::string, std::string>	parsePathQuery(std::string const& URI);
 
 	public:
 		Response(Request const &request, Location &location);
