@@ -11,12 +11,15 @@ class ASocket
 		int							_socketFd;
 		struct epoll_event			_event;
 		int							_currentEvent;
+		struct sockaddr_in			_address;
 		Server*						_server;
 
 		ASocket(void);
 	public:
 		ASocket(Server* server);
+		ASocket(Server* server, struct sockaddr_in address):
 		ASocket(int socketFd, Server* server);
+		ASocket(int socketFd, Server* server, struct sockaddr_in addr):
 		ASocket(ASocket const& toCopy);
 		virtual ~ASocket(void);
 

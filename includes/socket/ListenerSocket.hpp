@@ -14,8 +14,6 @@ class Server;
 class ListenerSocket: public ASocket
 {
 	private:
-		struct sockaddr_in	_address;
-
 		ListenerSocket(void);
 
 	public:

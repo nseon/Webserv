@@ -3,6 +3,7 @@
 #include "logger/Logger.hpp"
 #include "http/Request.hpp"
 
+#include <netinet/in.h>
 #include <sys/epoll.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -14,7 +15,7 @@
 # define RECV_SIZE 1024
 #endif
 
-ClientSocket::ClientSocket(int fd, Server* server):
+ClientSocket::ClientSocket(int fd, Server* server, struct sockaddr_in):
 ASocket (fd, server) {}
 
 ClientSocket::~ClientSocket(void) {}

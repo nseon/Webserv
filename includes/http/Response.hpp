@@ -18,6 +18,7 @@
 #include "http/AHttpMessage.hpp"
 #include "http/Request.hpp"
 #include "config/Location.hpp"
+#include "socket/ClientSocket.hpp"
 
 # ifndef CGIMODE_GET
 #  define CGIMODE_GET
@@ -31,10 +32,11 @@ class Response : public AHttpMessage {
 	private:
 		Response(void);
 
-		int	_status_code;
-		std::string _status_msg;
-		std::string _cgi;
-		Location *_location;
+		int				_status_code;
+		std::string		_status_msg;
+		std::string		_cgi;
+		Location		*_location;
+		ClientSocket&	_client;
 
 		int error(int code, std::string msg);
 

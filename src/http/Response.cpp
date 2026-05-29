@@ -13,6 +13,7 @@
 #include "http/Response.hpp"
 #include "http/responses.hpp"
 #include "cgi/CGIHandler.hpp"
+#include "socket/ClientSocket.hpp"
 #include <fcntl.h>
 #include <sstream>
 #include <vector>
@@ -103,7 +104,7 @@ bool	Response::isCgi(std::string const% URI)
 
 //**************CONSTRUCTOR/DESTRUCTOR******************//
 
-Response::Response(Request const &request, Location &location) : _status_code(0), _location(&location)
+Response::Response(Request const &request, Location &location, ClientSocket& client) : _status_code(0), _location(&location), _client(client)
 {
 	this->setVersion(request.getVersion());
 	this->addHeader("connection", "keep-alive");

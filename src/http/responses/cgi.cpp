@@ -88,6 +88,11 @@ void	setQueryString(std::vector<std::string>& envs, std::string const& queryStri
 	envs.push_back("QUERY_STRING=" + queryString);
 }
 
+void	setRemoteAddress(std::vector<std::string>& envs, std::string addr)
+{
+	envs.push_back("REMOTE_ADDR=" + addr);
+}
+
 }
 
 char**	Response::createCgiEnvs(std::pair<std::string, std::string> const& pathQuery, Request const& request)
@@ -95,9 +100,11 @@ char**	Response::createCgiEnvs(std::pair<std::string, std::string> const& pathQu
 	std::vector<std::string>	envs(12);
 
 	setAuthType(envs);
-	setContentLength(envs, request)
-	setContentType(envs, request)
-
+	setContentLength(envs, request);
+	setContentType(envs, request);
+	setGatewayInterface(envs);
+	setQueryString(envs, pathQuery.second);
+	setRemoteAddress(envs, this->_client.getNotConstEvent)
 }
 
 int Response::handle_cgi(std::pair<std::string, std::string> const& pathQuery, int mode)
