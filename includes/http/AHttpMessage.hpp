@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/06 16:26:13 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/11 13:44:05 by nseon            ###   ########.fr       */
+/*   Updated: 2026/05/28 13:34:37 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,4 @@ class AHttpMessage {
 		std::string getVersion() const;
 		std::map<std::string, std::string> getHeaders() const;
 		std::vector<char> getBody() const;
-
-		virtual void reset() = 0;
 };
