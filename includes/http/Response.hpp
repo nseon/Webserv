@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 16:07:59 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/25 14:57:54 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/01 14:27:47 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,16 +24,24 @@ class Response : public AHttpMessage {
 		int	_status_code;
 		std::string _status_msg;
 		Location *_location;
+		Request *_request;
 	public:
-		Response(Request const &request, Location &location);
+		Response(int error_code, Server &server);
+		Response(Request &request, Location &location);
 		~Response();
 
-		Location getLocation() const;
 		int getStatusCode() const;
+		Location *getLocation() const;
+		Request *getRequest() const;
 
 		void setStatusCode(int code);
 		void setStatusMsg(std::string msg);
 		void setBody(std::vector<char> body);
+		void setBody(std::string const &str);
 
-		std::string toString();
+		void handle_redirection();
+
+		std::string toString() const;
+
+		static std::string getStatusMessage(int code);
 };
