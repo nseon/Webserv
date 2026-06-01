@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 15:40:21 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/26 14:40:45 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/01 14:55:03 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 #include "http/Response.hpp"
 #include "http/responses.hpp"
 
-static std::vector<char> generate_default_error_page(int code, std::string msg)
+std::vector<char> generate_default_error_page(int code, std::string msg)
 {
 	std::stringstream ss;
 	std::vector<char> body;
@@ -30,12 +30,13 @@ static std::vector<char> generate_default_error_page(int code, std::string msg)
 	return (body);
 }
 
-int error(Response &response, int code, std::string msg)
+int fill_error(Response &response, int code)
 {
 	response.setStatusCode(code);
+	std::string msg = Response::getStatusMessage(code);
 	response.setStatusMsg(msg);
 	
-	std::string error_path = response.getLocation().getErrorPath(code);
+	std::string error_path = response.getLocation()->getErrorPath(code);
 	
 	if (error_path.empty())
 	{
@@ -45,14 +46,13 @@ int error(Response &response, int code, std::string msg)
 		ss << response.getBody().size();
 		response.addHeader("Content-Length", ss.str());
 	}
-	else
-		if (getRessource(error_path, response))
-		{
-			std::stringstream ss;
-			
-			response.setBody(generate_default_error_page(code, msg));
-			ss << response.getBody().size();
-			response.addHeader("Content-Length", ss.str());
-		}
+	else if (getRessource(error_path, response) != 200)
+	{
+		std::stringstream ss;
+		
+		response.setBody(generate_default_error_page(code, msg));
+		ss << response.getBody().size();
+		response.addHeader("Content-Length", ss.str());
+	}
 	return (response.getStatusCode());
 }
