@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/27 14:02:10 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/19 13:58:26 by nseon            ###   ########.fr       */
+/*   Updated: 2026/05/26 17:31:56 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ class Request : public AHttpMessage {
 		std::string getRawData() const;
 		std::string getMethod() const;
 		std::string getPath() const;
+		Server *getServer() const;
 
 		void reset();
 };
