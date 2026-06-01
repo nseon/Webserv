@@ -96,22 +96,23 @@ void	ServerManager::handleHttpRequest(ClientSocket* client, char* msg)
 		requestIterator = this->_requests.find(client);
 		requestIterator->second.setServer(requestIterator->first->getServer());
 	}
-	try
-	{
+	try {
 		requestIterator->second.parseRequest(msg);
-
 		if (requestIterator->second.getParsingState() == DONE)
 		{
 			Response response(requestIterator->second, *(requestIterator->first->getServer()->matchLocation(requestIterator->second.getPath())));
 			std::string response_str = response.toString();
-
+	
 			send(client->getFd(), response_str.c_str(), response_str.size(), 0);
 			requestIterator->second.reset();
 		}
 	}
-	catch (std::exception &e)
+	catch (int error_code)
 	{
-		std::cout << e.what() << std::endl;
+		Response response(error_code, *requestIterator->first->getServer());
+		std::string response_str = response.toString();
+
+		send(client->getFd(), response_str.c_str(), response_str.size(), 0);
 		requestIterator->second.reset();
 	}
 }
