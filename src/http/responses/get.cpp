@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 14:01:26 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/26 14:41:29 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/01 15:26:19 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,21 +21,89 @@
 #include <sys/stat.h>
 #include <vector>
 #include <iostream>
+#include <dirent.h>
 
-void handle_directory()
-{}
+int getFile(std::string const &path, Response &response);
+
+std::string generate_autoindex(const std::string &path, const std::string &uri)
+{
+    DIR *dir = opendir(path.c_str());
+    if (dir == NULL) {
+        return "";
+    }
+
+    std::ostringstream html;
+    
+    html << "<html>\n<head><title>Index of " << uri << "</title></head>\n";
+    html << "<body>\n<h1>Index of " << uri << "</h1>\n<hr>\n<pre>\n";
+
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL)
+    {
+        std::string name = entry->d_name;
+
+        if (name == ".") {
+            continue;
+        }
+
+        if (name == ".." && uri == "/") {
+            continue;
+        }
+
+        std::string full_path = path;
+        if (full_path[full_path.length() - 1] != '/')
+            full_path += "/";
+        full_path += name;
+
+        struct stat st;
+        if (stat(full_path.c_str(), &st) == 0 && S_ISDIR(st.st_mode)) {
+            name += "/";
+        }
+
+        html << "<a href=\"" << name << "\">" << name << "</a>\n";
+    }
+
+    closedir(dir);
+
+    html << "</pre>\n<hr>\n</body>\n</html>\n";
+
+    return html.str();
+}
+
+int handle_directory(std::string const &path, Response &response)
+{
+	if (!response.getRequest()->getServer()->getIndex().empty())
+	{
+		std::string path = response.getLocation()->getRoot() + "/" + response.getRequest()->getServer()->getIndex();
+		std::cout << path << std::endl;
+		getFile(path, response);
+		response.setStatusCode(200);
+		response.setStatusMsg("OK");
+	}
+	else if (response.getLocation()->getAutoIndex())
+	{
+		std::string autoindex = generate_autoindex(path, response.getRequest()->getPath());
+		std::stringstream ss;
+		
+		response.setBody(autoindex);
+		ss << response.getBody().size();
+		response.addHeader("Content-Length", ss.str());
+		response.setStatusCode(200);
+		response.setStatusMsg("OK");
+	}
+	else
+		return (403);
+	return (200);
+}
 
 int getRessource(std::string const &path, Response &response)
 {
 	struct stat st;
 
-	if (stat(path.c_str(), &st))
+	if (stat(path.c_str(), &st) == -1)
 		return (404);
 	else if (S_ISDIR(st.st_mode))
-	{
-		handle_directory();
-		return (1);
-	}
+		return (handle_directory(path, response));
 	else if (!S_ISREG(st.st_mode) || !(st.st_mode & S_IRUSR))
 		return (403);
 	else
@@ -55,34 +123,33 @@ int getRessource(std::string const &path, Response &response)
 		response.addHeader("Content-Length", ss.str());
 		response.setStatusCode(200);
 		response.setStatusMsg("OK");
+		return (200);
 	}
-	return (0);
 }
 
 int getFile(std::string const &path, Response &response)
 {
 	switch (getRessource(path, response))
 	{
-		case 404: return (error(response, 404, "Not found"));
-		case 403: return (error(response, 403, "Forbidden"));
-		case 500: return (error(response, 500, "Internal Server Error"));
+		case 404: return (fill_error(response, 404));
+		case 403: return (fill_error(response, 403));
+		case 500: return (fill_error(response, 500));
 	}
 	return (0);
 }
 
 int handle_get(Request const &request, Response &response)
 {
-	if (!response.getLocation().getAllowGet())
-		return (error(response, 405, "Method not allowed"));
+	if (!response.getLocation()->getAllowGet())
+		return (fill_error(response, 405));
 	response.setStatusCode(200);
 	response.setStatusMsg("OK");
 
-	std::string path = response.getLocation().getRoot() + request.getPath();
-
-	size_t pos = path.find("..");
+	std::string	path = response.getLocation()->getRoot() + request.getPath();
+	size_t		pos = path.find("..");
 
 	if (pos != std::string::npos && (pos == path.size() - 2 || path[pos + 2] == '/'))
-		return (error(response, 400, "Bad Request"));
+		return (fill_error(response, 400));
 
 	return (getFile(path, response));
 }
