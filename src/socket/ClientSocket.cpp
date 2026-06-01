@@ -3,6 +3,7 @@
 #include "logger/Logger.hpp"
 #include "http/Request.hpp"
 
+#include <stdexcept>
 #include <sys/epoll.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -33,6 +34,8 @@ int	ClientSocket::socketBehavior(void *sm)
 	else
 	{
 		msg_length = recv(this->_socketFd, msg, RECV_SIZE, 0);
+		if (msg_length == -1)
+			throw std::logic_error("Error recv");
 		msg[msg_length] = 0;
 		Logger::info() << "Client " << this->_socketFd << " sended a message : " << msg << std::endl;
 		reinterpret_cast<ServerManager*>(sm)->handleHttpRequest(this, msg);
