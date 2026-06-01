@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/27 14:01:57 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/19 16:46:47 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/01 10:53:42 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,10 +55,10 @@ static void parse_request_line(Request &request, std::string request_line)
 				request.setVersion(token);
 		}
 		else
-			throw std::logic_error("Invalid request line: " + request_line);
+			throw 400;
 	}
 	if (ss >> token)
-			throw std::logic_error("Invalid request line: " + request_line);
+			throw 400;
 }
 
 static bool parse_header(Request &request, std::string line)
@@ -71,7 +71,7 @@ static bool parse_header(Request &request, std::string line)
 	
 	pos = header.find_first_of(':');
 	if (pos == std::string::npos)
-		throw std::logic_error("Invalid header in request: " + header);
+		throw 400;
 	
 	std::string key = header.substr(0, pos);
 	std::string value = header.substr(pos + 1);
@@ -85,9 +85,9 @@ static bool parse_header(Request &request, std::string line)
 bool Request::_parseBodyContent(std::map<std::string, std::string>::iterator &i)
 {
 	size_t body_length = std::atoi(i->second.c_str());
+	if (body_length > _server->getClientMaxBodySize())
+		throw 413;
 	size_t bytes_needed = body_length - _body.size();
-	if (bytes_needed  + _body.size() > _server->getClientMaxBodySize())
-		bytes_needed = _server->getClientMaxBodySize() - _body.size();
 	size_t bytes_to_copy = std::min(bytes_needed, _raw_data.size());
 
 	_body.insert(_body.end(), _raw_data.begin(), _raw_data.begin() + bytes_to_copy);
@@ -117,7 +117,7 @@ bool Request::_parseBodyChunked()
 
 			ss << std::hex << size_hex;
 			if (!(ss >> _chunk_size))
-				throw std::logic_error("Invalid chunk size: " + size_hex);
+				throw 400;
 			_raw_data.erase(0, pos + 2);
 			if (_chunk_size == 0)
 			{
@@ -131,7 +131,7 @@ bool Request::_parseBodyChunked()
 			if (_raw_data.size() < _chunk_size)
 				return (false);
 			if (_body.size() + _chunk_size > _server->getClientMaxBodySize())
-				_chunk_size = _server->getClientMaxBodySize() - _body.size();
+				throw 413;
 			_body.insert(_body.end(), _raw_data.begin(), _raw_data.begin() + _chunk_size);
 			_raw_data.erase(0, _chunk_size);
 			if (_body.size() == _server->getClientMaxBodySize())
@@ -143,7 +143,7 @@ bool Request::_parseBodyChunked()
 			if (_raw_data.size() < 2)
 				return (false);
 			if (_raw_data.substr(0, 2) != "\r\n")
-				throw std::logic_error("Invalid chunk");
+				throw 400;
 			_raw_data.erase(0, 2);
 			_chunk_state = CHUNK_SIZE;
 		}
@@ -193,7 +193,7 @@ bool Request::_handleBody()
 	if (i != _headers.end())
 	{
 		if (i->second != "chunked")
-			throw std::logic_error("Transfer encoding non supported: " + i->second);
+			throw 501;
 		else
 		 	return (_parseBodyChunked());
 	}
@@ -303,12 +303,17 @@ std::string Request::getPath() const
 	return (_path);
 }
 
+Server *Request::getServer() const
+{
+	return (_server);
+}
+
 //**********************SETTER**************************//
 
 void Request::setMethod(std::string const &value)
 {
 	if (value != "GET" && value != "POST" && value != "DELETE")
-		throw std::logic_error("Invalid method: " + value);
+		throw 501;
 	_method = value;
 }
 
