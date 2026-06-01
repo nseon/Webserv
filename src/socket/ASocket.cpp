@@ -1,5 +1,6 @@
 #include "socket/ASocket.hpp"
 #include <netinet/in.h>
+#include <sstream>
 #include <sys/epoll.h>
 #include <sys/socket.h>
 #include <stdexcept>
@@ -106,6 +107,24 @@ Server*	ASocket::getServer(void) const
 struct epoll_event*	ASocket::getNotConstEvent(void)
 {
 	return (&this->_event);
+}
+
+std::string	getAddr(void) const
+{
+	uint32_t			addr= ntohl(this->_address.sin_addr.s_addr);
+	std::string			ret;
+
+	for (int i = 24; i >= 0; i -= 8)
+	{
+		std::stringstream	ss;
+		ss << ((addr >> i) & 0xFF);
+		ret += ss.str();
+		if (i)
+		{
+			ret += '.';
+		}
+	}
+	return (ret);
 }
 
 void	ASocket::setCurrentEvent(int event)

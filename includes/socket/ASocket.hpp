@@ -17,7 +17,7 @@ class ASocket
 		ASocket(void);
 	public:
 		ASocket(Server* server);
-		ASocket(Server* server, struct sockaddr_in address):
+		ASocket(Server* server, struct sockaddr_in address);
 		ASocket(int socketFd, Server* server);
 		ASocket(int socketFd, Server* server, struct sockaddr_in addr):
 		ASocket(ASocket const& toCopy);
@@ -28,6 +28,7 @@ class ASocket
 		struct epoll_event const*	getEvent(void) const;
 		Server*						getServer(void) const;
 		struct epoll_event*			getNotConstEvent(void);
+		std::string					getAddress(void) const;
 
 		void						setCurrentEvent(int event);
 

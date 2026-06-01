@@ -10,8 +10,8 @@
 //  CONTENT_TYPE (if request has Content-Type header)
 //  GATEWAY_INTERFACE
 //  QUERY_STRING
-// REMOTE_ADDR
-// REQUEST_METHOD
+//  REMOTE_ADDR
+//  REQUEST_METHOD
 // SCRIPT_NAME
 // SERVER_NAME
 // SERVER_PORT
@@ -93,6 +93,11 @@ void	setRemoteAddress(std::vector<std::string>& envs, std::string addr)
 	envs.push_back("REMOTE_ADDR=" + addr);
 }
 
+void	setRequestMethod(std::vector<std::string>& envs, std::string method)
+{
+	envs.push_back("REQUEST_METHOD=" + method);
+}
+
 }
 
 char**	Response::createCgiEnvs(std::pair<std::string, std::string> const& pathQuery, Request const& request)
@@ -104,7 +109,8 @@ char**	Response::createCgiEnvs(std::pair<std::string, std::string> const& pathQu
 	setContentType(envs, request);
 	setGatewayInterface(envs);
 	setQueryString(envs, pathQuery.second);
-	setRemoteAddress(envs, this->_client.getNotConstEvent)
+	setRemoteAddress(envs, this->_client.getAddress());
+	serRequestMethod(envs, request.getMethod());
 }
 
 int Response::handle_cgi(std::pair<std::string, std::string> const& pathQuery, int mode)
