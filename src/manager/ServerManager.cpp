@@ -177,6 +177,7 @@ void	ServerManager::startCgi(ClientSocket* client, Request const& request,
 
 		size_t	slash = scriptPath.find_last_of('/');
 		if (slash != std::string::npos && chdir(scriptPath.substr(0, slash).c_str()) != 0)
+			// TODO: free everyting
 			_exit(1);
 
 		char*	argv[3];
