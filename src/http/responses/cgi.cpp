@@ -2,41 +2,29 @@
 #include "http/Response.hpp"
 #include <string>
 #include <vector>
+#include <cstring>
 #include <fcntl.h>
 
 // TODO: Environment variables to implement (MANDATORY)
-//  AUTH_TYPE
+// AUTH_TYPE
 //  CONTENT_LENGTH (if request has a body)
 //  CONTENT_TYPE (if request has Content-Type header)
 //  GATEWAY_INTERFACE
 //  QUERY_STRING
 //  REMOTE_ADDR
 //  REQUEST_METHOD
-// SCRIPT_NAME
-// SERVER_NAME
-// SERVER_PORT
-// SERVER_PROTOCOL
+//  SCRIPT_NAME
+//  SERVER_NAME
+//  SERVER_PORT
+//  SERVER_PROTOCOL
 // SERVER_SOFTWARE
 //
 //
 // (GOOD OPTIONAL)
-// PATH_INFO
+//  PATH_INFO
 //
 // (I DONT CARE OPTIONAL)
 // PATH_TRANSLATED
-
-bool	Response::isExec(std::string const& path)
-{
-	struct stat	st;
-
-	if (stat(path.c_str(), &st))
-		return (error(response, 404, "Not found"));
-	if (!st.st_mode & X_OK)
-	{
-		return (error(response, 403, "Forbidden"));
-	}
-	return (false);
-}
 
 namespace
 {
@@ -98,31 +86,96 @@ void	setRequestMethod(std::vector<std::string>& envs, std::string method)
 	envs.push_back("REQUEST_METHOD=" + method);
 }
 
+void	setScriptName(std::vector<std::string>& envs, std::string scriptName)
+{
+	envs.push_back("SCRIPT_NAME=" + scriptName);
 }
 
-char**	Response::createCgiEnvs(std::pair<std::string, std::string> const& pathQuery, Request const& request)
+void	setPathInfo(std::vector<std::string>& envs, std::string pathInfo)
 {
-	std::vector<std::string>	envs(12);
+	envs.push_back("PATH_INFO=" + pathInfo);
+}
+
+void	setServerName(std::vector<std::string>& envs, std::string serverName)
+{
+	envs.push_back("SERVER_NAME=" + serverName);
+}
+
+void	setServerPort(std::vector<std::string>& envs, unsigned int port)
+{
+	std::stringstream	ss;
+
+	ss << port;
+	envs.push_back("SERVER_PORT=" + ss.str());
+}
+
+void	setServerProtocol(std::vector<std::string>& envs)
+{
+	envs.push_back("SERVER_PROTOCOL=HTTP/1.0");
+}
+
+void	setServerSoftware(std::vector<std::string>& envs)
+{
+	envs.push_back("SERVER_SOFTWARE=webserv");
+}
+
+}
+
+char**	Response::createCgiEnvs(Request const& request)
+{
+	std::vector<std::string>	envs;
 
 	setAuthType(envs);
 	setContentLength(envs, request);
 	setContentType(envs, request);
 	setGatewayInterface(envs);
-	setQueryString(envs, pathQuery.second);
+	setQueryString(envs, this->_query_string);
 	setRemoteAddress(envs, this->_client.getAddress());
-	serRequestMethod(envs, request.getMethod());
+	setRequestMethod(envs, request.getMethod());
+	setScriptName(envs, this->_script_name);
+	setPathInfo(envs, this->_path_info);
+	setServerName(envs, request.getServer()->getAddr());
+	setServerPort(envs, request.getServer()->getPort());
+	setServerSoftware(envs);
+
+	char**	ret = new char*[envs.size() + 1];
+
+	for (size_t i = 0; i < envs.size(); ++i)
+	{
+		ret[i] = new char[envs[i].size() + 1];
+		std::strcpy(ret[i], envs[i].c_str());
+	}
+	ret[envs.size()] = NULL;
+	return (ret);
 }
 
-int Response::handle_cgi(std::pair<std::string, std::string> const& pathQuery, int mode)
+int	Response::isExec(std::string const& URI)
 {
-	int	ret;
+	struct stat	st;
 
-	ret = this->isExec(pathQuery.first);
+	if (stat(URI.c_str(), &st))
+		return (this->error(404, "Not found"));
+	if (!(st.st_mode & X_OK))
+	{
+		return (this->error(403, "Forbidden"));
+	}
+	return (0);
+}
+
+int Response::handle_cgi(Request const& request, int mode)
+{
+	std::string	scriptPath = this->getLocation().getRoot() + this->_script_name;
+	int			ret;
+
+	ret = this->isExec(scriptPath);
 	if (ret)
 	{
 		return (ret);
 	}
+	char	**cgiEnvs = this->createCgiEnvs(request);
 
-	char	**cgiEnvs;
+	(void)cgiEnvs;
+	(void)mode;
+	return (0);
 }
 

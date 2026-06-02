@@ -64,6 +64,7 @@ class Request : public AHttpMessage {
 		std::string getRawData() const;
 		std::string getMethod() const;
 		std::string getPath() const;
+		Server*		getServer() const;
 
 		void reset();
 };

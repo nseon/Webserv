@@ -52,6 +52,7 @@ class Server : public Ablock{
 		std::string				getName() const;
 		std::vector<Location>	getLocations() const;
 		struct sockaddr_in		getAddr() const;
+		std::string				getAddr() const;
 		ListenerSocket*			getSocket() const;
 		
 		Location *matchLocation(std::string path);

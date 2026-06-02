@@ -303,6 +303,11 @@ std::string Request::getPath() const
 	return (_path);
 }
 
+Server*		Request::getServer() const
+{
+	return (this->_server);
+}
+
 //**********************SETTER**************************//
 
 void Request::setMethod(std::string const &value)

@@ -46,7 +46,7 @@ int Response::error(int code, std::string msg)
 		this->addHeader("Content-Length", ss.str());
 	}
 	else
-		if (getRessource(error_path, response))
+		if (getRessource(error_path, *this))
 		{
 			std::stringstream ss;
 			

@@ -156,6 +156,11 @@ struct sockaddr_in Server::getAddr() const
 	return addr;
 }
 
+std::string	Server::getAddr(void) const
+{
+	return (this->_socket->getAddress());
+}
+
 ListenerSocket*	Server::getSocket(void) const
 {
 	return (this->_socket);

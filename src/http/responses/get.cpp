@@ -64,9 +64,9 @@ int getFile(std::string const &path, Response &response)
 {
 	switch (getRessource(path, response))
 	{
-		case 404: return (error(response, 404, "Not found"));
-		case 403: return (error(response, 403, "Forbidden"));
-		case 500: return (error(response, 500, "Internal Server Error"));
+		case 404: return (response.error(404, "Not found"));
+		case 403: return (response.error(403, "Forbidden"));
+		case 500: return (response.error(500, "Internal Server Error"));
 	}
 	return (0);
 }
@@ -74,22 +74,20 @@ int getFile(std::string const &path, Response &response)
 int Response::handle_get(Request const &request)
 {
 	if (!this->getLocation().getAllowGet())
-		return (error(*this, 405, "Method not allowed"));
+		return (this->error(405, "Method not allowed"));
 	this->setStatusCode(200);
 	this->setStatusMsg("OK");
 
-	std::string URI= this->getLocation().getRoot() + request.getPath();
-	std::pair<std::string, std::string> pathQuery = parsePathQuery(URI);
+	parseQueryString(request.getPath());
 
-	size_t pos = pathQuery.first.find("..");
+	size_t pos = _script_name.find("..");
 
-	if (pos != std::string::npos && (pos == pathQuery.first.size() - 2 || pathQuery.first[pos + 2] == '/'))
-		return (error(*this, 400, "Bad Request"));
+	if (pos != std::string::npos && (pos == _script_name.size() - 2 || _script_name[pos + 2] == '/'))
+		return (this->error(400, "Bad Request"));
 
-	if (isCgi(pathQuery.first))
-	{
-		
-	}
+	if (isCgi(_script_name))
+		return (handle_cgi(request, CGIMODE_GET));
 
-	return (getFile(pathQuery.first, *this));
+	std::string path = this->getLocation().getRoot() + _script_name + _path_info;
+	return (getFile(path, *this));
 }

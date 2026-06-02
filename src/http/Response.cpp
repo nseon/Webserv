@@ -62,38 +62,62 @@ void Response::setBody(std::vector<char> body)
 
 //**************CGI*************************************//
 
-std::pair<std::string, std::string> Response::parsePathQuery(std::string const& URI)
+// URI is the request path (without the local root): we extract
+// QUERY_STRING, then split the remaining path into SCRIPT_NAME (up to and
+// including the cgi script) and PATH_INFO (the extra path that follows).
+// SCRIPT_NAME therefore never contains the local file root.
+void Response::parseQueryString(std::string const& URI)
 {
-	std::pair<std::string, std::string>	ret;
-	size_t								queryIndex = URI.find_first_of('?');
+	std::string	path;
+	size_t		queryIndex = URI.find_first_of('?');
 
 	if (queryIndex == std::string::npos)
 	{
-		ret.first = URI;
-		ret.second = String();
+		path = URI;
+		_query_string = "";
 	}
 	else
 	{
-		ret.first = URI.substr(0, queryIndex);
-		ret.second = URI.substr(queryIndex, URI.size());
+		path = URI.substr(0, queryIndex);
+		_query_string = URI.substr(queryIndex + 1);
 	}
-	return (ret);
+
+	std::map<std::string, std::string>&				cgi = _location->getCgiConfigs();
+	std::map<std::string, std::string>::iterator	it = cgi.begin();
+
+	for (; it != cgi.end(); ++it)
+	{
+		size_t	extension = path.rfind(it->first);
+
+		if (extension != std::string::npos && \
+			(extension + it->first.size() == path.size() || \
+			path[extension + it->first.size()] == '/'))
+		{
+			size_t	split = extension + it->first.size();
+
+			_script_name = path.substr(0, split);
+			_path_info = path.substr(split);
+			return ;
+		}
+	}
+	_script_name = path;
+	_path_info = "";
 }
 
-bool	Response::isCgi(std::string const% URI)
+bool	Response::isCgi(std::string const& URI)
 {
-	std::map<std::string, std::string>::iterator	cgiIterator = this->location_->getCgiConfigs().begin();
-	std::map<std::string, std::string>::iterator	cgiEnd = this->location_->getCgiConfigs().end();
+	std::map<std::string, std::string>::iterator	cgiIterator = this->_location->getCgiConfigs().begin();
+	std::map<std::string, std::string>::iterator	cgiEnd = this->_location->getCgiConfigs().end();
 	size_t											extension;
 
 	while (cgiIterator != cgiEnd)
 	{
-		extension = path.rfind(cgiIterator->first);
+		extension = URI.rfind(cgiIterator->first);
 		if (extension != std::string::npos && \
-			(extension + cgiIterator->first.size() == path.size() || \
-			path[extension + cgiIterator->first.size()] == '/'))
+			(extension + cgiIterator->first.size() == URI.size() || \
+			URI[extension + cgiIterator->first.size()] == '/'))
 		{
-			cgi = cgiIterator->second;
+			this->_cgi = cgiIterator->second;
 			return (true);
 		}
 		++cgiIterator;
