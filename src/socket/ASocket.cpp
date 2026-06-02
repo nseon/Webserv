@@ -18,6 +18,7 @@ _server(server)
 		throw std::runtime_error("ASocket constructor failed, because socket() function failed.");
 
 	fcntl(this->_socketFd, F_SETFL, O_NONBLOCK);
+	fcntl(this->_socketFd, F_SETFD, FD_CLOEXEC);
 	if (this->_socketFd == -1)
 		throw std::runtime_error("ASocket constructor failed, because fnctl() function failed.");
 
@@ -36,6 +37,7 @@ _server(server)
 		throw std::runtime_error("ASocket constructor failed, because socket() function failed.");
 
 	fcntl(this->_socketFd, F_SETFL, O_NONBLOCK);
+	fcntl(this->_socketFd, F_SETFD, FD_CLOEXEC);
 	if (this->_socketFd == -1)
 		throw std::runtime_error("ASocket constructor failed, because fnctl() function failed.");
 
@@ -49,6 +51,7 @@ _server(server)
 {
 	this->_currentEvent = 0;
 	fcntl(this->_socketFd, F_SETFL, O_NONBLOCK);
+	fcntl(this->_socketFd, F_SETFD, FD_CLOEXEC);
 	if (this->_socketFd == -1)
 		throw std::runtime_error("ASocket constructor failed, because fnctl() function failed.");
 
@@ -64,6 +67,7 @@ _server(server)
 {
 	this->_currentEvent = 0;
 	fcntl(this->_socketFd, F_SETFL, O_NONBLOCK);
+	fcntl(this->_socketFd, F_SETFD, FD_CLOEXEC);
 	if (this->_socketFd == -1)
 		throw std::runtime_error("ASocket constructor failed, because fnctl() function failed.");
 
@@ -140,4 +144,14 @@ void	ASocket::enableWriteEvent(void)
 void	ASocket::disableWriteEvent(void)
 {
 	this->_event.events &= ~EPOLLOUT;
+}
+
+void	ASocket::enableReadEvent(void)
+{
+	this->_event.events |= EPOLLIN;
+}
+
+void	ASocket::disableReadEvent(void)
+{
+	this->_event.events &= ~EPOLLIN;
 }

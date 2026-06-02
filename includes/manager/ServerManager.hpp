@@ -8,6 +8,9 @@
 # include "polling/PollingManager.hpp"
 # include "config/Server.hpp"
 
+class CGISocket;
+struct CgiTarget;
+
 class ServerManager
 {
 	private:
@@ -16,9 +19,12 @@ class ServerManager
 		std::vector<Server>						_servers;
 		std::vector<ClientSocket*>				_clients;
 		std::map<ClientSocket*, Request>		_requests;
+		std::vector<CGISocket*>					_cgis;
 		PollingManager							_pollingManager;
 
 		std::vector<ClientSocket*>::iterator	findClient(int socketFd);
+		void									sendErrorResponse(ClientSocket* client, Location& location,
+													std::string const& version, int code, std::string msg);
 
 	public:
 		ServerManager(std::vector<Server> servers);
@@ -31,6 +37,11 @@ class ServerManager
 
 		void	enableClientWrite(ClientSocket* client);
 		void	disableClientWrite(ClientSocket* client);
+		void	modifyPolling(ASocket* socket);
+
+		void	startCgi(ClientSocket* client, Request const& request, Location& location, CgiTarget const& target);
+		void	finalizeCgi(CGISocket* cgi);
+		void	removeCgiSocket(CGISocket* cgi);
 
 		void	handleHttpRequest(ClientSocket* client, char* msg);
 };

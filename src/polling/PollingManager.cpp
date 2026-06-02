@@ -8,7 +8,7 @@
 
 PollingManager::PollingManager(void)
 {
-	this->_epollInstance = epoll_create(1);
+	this->_epollInstance = epoll_create1(EPOLL_CLOEXEC);
 	if (this->_epollInstance == -1)
 	{
 		throw std::runtime_error("PollingManager constructor failed, because epoll_create() failed.");

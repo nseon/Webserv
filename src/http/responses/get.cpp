@@ -76,16 +76,17 @@ int Response::handle_get(Request const &request)
 	this->setStatusCode(200);
 	this->setStatusMsg("OK");
 
-	parseQueryString(request.getPath());
+	std::string	path = request.getPath();
+	size_t		query = path.find('?');
 
-	size_t pos = _script_name.find("..");
+	if (query != std::string::npos)
+		path = path.substr(0, query);
 
-	if (pos != std::string::npos && (pos == _script_name.size() - 2 || _script_name[pos + 2] == '/'))
+	size_t	pos = path.find("..");
+
+	if (pos != std::string::npos && (pos == path.size() - 2 || path[pos + 2] == '/'))
 		return (this->error(400, "Bad Request"));
 
-	if (isCgi(_script_name))
-		return (handle_cgi(request, CGIMODE_GET));
-
-	std::string path = this->getLocation().getRoot() + _script_name + _path_info;
-	return (getFile(path, *this));
+	std::string	full = this->getLocation().getRoot() + path;
+	return (getFile(full, *this));
 }

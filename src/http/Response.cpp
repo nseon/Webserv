@@ -12,7 +12,6 @@
 
 #include "http/Response.hpp"
 #include "http/responses.hpp"
-#include "socket/ClientSocket.hpp"
 #include <fcntl.h>
 #include <sstream>
 #include <vector>
@@ -70,73 +69,77 @@ void Response::setBody(std::vector<char> body)
 
 //**************CGI*************************************//
 
-// URI is the request path (without the local root): we extract
-// QUERY_STRING, then split the remaining path into SCRIPT_NAME (up to and
-// including the cgi script) and PATH_INFO (the extra path that follows).
-// SCRIPT_NAME therefore never contains the local file root.
-void Response::parseQueryString(std::string const& URI)
+bool Response::buildFromCgiOutput(std::vector<char> const& raw)
 {
-	std::string	path;
-	size_t		queryIndex = URI.find_first_of('?');
+	if (raw.empty())
+		return (false);
 
-	if (queryIndex == std::string::npos)
+	std::string	data(raw.begin(), raw.end());
+	size_t		sep;
+	size_t		sepLen;
+	size_t		crlf = data.find("\r\n\r\n");
+	size_t		lf = data.find("\n\n");
+
+	if (crlf != std::string::npos && (lf == std::string::npos || crlf <= lf))
 	{
-		path = URI;
-		_query_string = "";
+		sep = crlf;
+		sepLen = 4;
+	}
+	else if (lf != std::string::npos)
+	{
+		sep = lf;
+		sepLen = 2;
 	}
 	else
+		return (false);
+
+	std::string			headerBlock = data.substr(0, sep);
+	std::string			body = data.substr(sep + sepLen);
+	std::stringstream	headers(headerBlock);
+	std::string			line;
+
+	this->setStatusCode(200);
+	this->setStatusMsg("OK");
+	while (std::getline(headers, line))
 	{
-		path = URI.substr(0, queryIndex);
-		_query_string = URI.substr(queryIndex + 1);
-	}
-
-	std::map<std::string, std::string>&				cgi = _location->getCgiConfigs();
-	std::map<std::string, std::string>::iterator	it = cgi.begin();
-
-	for (; it != cgi.end(); ++it)
-	{
-		size_t	extension = path.rfind(it->first);
-
-		if (extension != std::string::npos && \
-			(extension + it->first.size() == path.size() || \
-			path[extension + it->first.size()] == '/'))
+		if (!line.empty() && line[line.size() - 1] == '\r')
+			line.erase(line.size() - 1);
+		size_t	colon = line.find(':');
+		if (colon == std::string::npos)
+			continue ;
+		std::string	key = line.substr(0, colon);
+		std::string	value = line.substr(colon + 1);
+		size_t		start = value.find_first_not_of(" \t");
+		value = (start == std::string::npos) ? "" : value.substr(start);
+		if (key == "Status")
 		{
-			size_t	split = extension + it->first.size();
+			std::stringstream	ss(value);
+			int					code = 200;
+			std::string			rest;
 
-			_script_name = path.substr(0, split);
-			_path_info = path.substr(split);
-			return ;
+			ss >> code;
+			std::getline(ss, rest);
+			start = rest.find_first_not_of(" \t");
+			this->setStatusCode(code);
+			this->setStatusMsg(start == std::string::npos ? "" : rest.substr(start));
 		}
+		else
+			this->addHeader(key, value);
 	}
-	_script_name = path;
-	_path_info = "";
-}
 
-bool	Response::isCgi(std::string const& URI)
-{
-	std::map<std::string, std::string>::iterator	cgiIterator = this->_location->getCgiConfigs().begin();
-	std::map<std::string, std::string>::iterator	cgiEnd = this->_location->getCgiConfigs().end();
-	size_t											extension;
+	std::vector<char>	bodyVec(body.begin(), body.end());
+	std::stringstream	length;
 
-	while (cgiIterator != cgiEnd)
-	{
-		extension = URI.rfind(cgiIterator->first);
-		if (extension != std::string::npos && \
-			(extension + cgiIterator->first.size() == URI.size() || \
-			URI[extension + cgiIterator->first.size()] == '/'))
-		{
-			this->_cgi = cgiIterator->second;
-			return (true);
-		}
-		++cgiIterator;
-	}
-	return (false);
+	this->setBody(bodyVec);
+	length << bodyVec.size();
+	this->addHeader("Content-Length", length.str());
+	return (true);
 }
 
 
 //**************CONSTRUCTOR/DESTRUCTOR******************//
 
-Response::Response(Request const &request, Location &location, ClientSocket& client) : _status_code(0), _location(&location), _client(client)
+Response::Response(Request const &request, Location &location) : _status_code(0), _location(&location)
 {
 	this->setVersion(request.getVersion());
 	this->addHeader("connection", "keep-alive");
@@ -146,6 +149,12 @@ Response::Response(Request const &request, Location &location, ClientSocket& cli
 		handle_post(request);
 	else if (request.getMethod() == "DELETE")
 		handle_delete(request);
+}
+
+Response::Response(Location &location, std::string const& version) : _status_code(0), _location(&location)
+{
+	this->setVersion(version);
+	this->addHeader("connection", "keep-alive");
 }
 
 Response::~Response()

@@ -18,15 +18,6 @@
 #include "http/AHttpMessage.hpp"
 #include "http/Request.hpp"
 #include "config/Location.hpp"
-#include "socket/ClientSocket.hpp"
-
-# ifndef CGIMODE_GET
-#  define CGIMODE_GET 0
-# endif
-
-# ifndef CGIMODE_POST
-#  define CGIMODE_POST 1
-# endif
 
 class Response : public AHttpMessage {
 	private:
@@ -34,30 +25,21 @@ class Response : public AHttpMessage {
 
 		int				_status_code;
 		std::string		_status_msg;
-		std::string		_cgi;
-		std::string		_script_name;
-		std::string		_path_info;
-		std::string		_query_string;
 		Location		*_location;
-		ClientSocket&	_client;
 
 		int	handle_get(Request const& request);
 		int	handle_post(Request const& request);
 		int	handle_delete(Request const& request);
 
-		int									handle_cgi(Request const& request, int mode);
-		char**								createCgiEnvs(Request const& request);
-		bool								isCgi(std::string const& URI);
-		int									isExec(std::string const& URI);
-		void								parseQueryString(std::string const& URI);
-
 	public:
-		Response(Request const &request, Location &location, ClientSocket& client);
+		Response(Request const &request, Location &location);
+		Response(Location &location, std::string const& version);
 		~Response();
 
 		void reset();
 
 		int error(int code, std::string msg);
+		bool buildFromCgiOutput(std::vector<char> const& raw);
 
 		Location getLocation() const;
 		int getStatusCode() const;

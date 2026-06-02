@@ -1,10 +1,11 @@
+#include "http/cgi.hpp"
 #include "http/Request.hpp"
-#include "http/Response.hpp"
+#include "config/Location.hpp"
 #include <string>
 #include <vector>
+#include <map>
 #include <cstring>
 #include <sstream>
-#include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -20,7 +21,7 @@ void	setContentLength(std::vector<std::string>& envs, Request const& request)
 {
 	std::string										contentLength;
 	std::map<std::string, std::string>				headers = request.getHeaders();
-	std::map<std::string, std::string>::iterator	it = headers.find("Content-Length");
+	std::map<std::string, std::string>::iterator	it = headers.find("content-length");
 
 	if (it != headers.end())
 	{
@@ -37,7 +38,7 @@ void	setContentType(std::vector<std::string>& envs, Request const& request)
 {
 	std::string										contentLength;
 	std::map<std::string, std::string>				headers = request.getHeaders();
-	std::map<std::string, std::string>::iterator	it = headers.find("Content-Type");
+	std::map<std::string, std::string>::iterator	it = headers.find("content-type");
 
 	if (it != headers.end())
 	{
@@ -105,7 +106,7 @@ void	setServerSoftware(std::vector<std::string>& envs)
 
 }
 
-char**	Response::createCgiEnvs(Request const& request)
+char**	buildCgiEnvs(Request const& request, CgiTarget const& target, std::string const& remoteAddr)
 {
 	std::vector<std::string>	envs;
 
@@ -113,11 +114,11 @@ char**	Response::createCgiEnvs(Request const& request)
 	setContentLength(envs, request);
 	setContentType(envs, request);
 	setGatewayInterface(envs);
-	setQueryString(envs, this->_query_string);
-	setRemoteAddress(envs, this->_client.getAddress());
+	setQueryString(envs, target.queryString);
+	setRemoteAddress(envs, remoteAddr);
 	setRequestMethod(envs, request.getMethod());
-	setScriptName(envs, this->_script_name);
-	setPathInfo(envs, this->_path_info);
+	setScriptName(envs, target.scriptName);
+	setPathInfo(envs, target.pathInfo);
 	setServerName(envs, request.getServer()->getAddr());
 	setServerPort(envs, request.getServer()->getPort());
 	setServerProtocol(envs);
@@ -134,33 +135,61 @@ char**	Response::createCgiEnvs(Request const& request)
 	return (ret);
 }
 
-int	Response::isExec(std::string const& URI)
+void	freeCgiEnvs(char** envs)
+{
+	if (!envs)
+		return ;
+	for (size_t i = 0; envs[i]; ++i)
+		delete[] envs[i];
+	delete[] envs;
+}
+
+int	checkExecutable(std::string const& path)
 {
 	struct stat	st;
 
-	if (stat(URI.c_str(), &st))
-		return (this->error(404, "Not found"));
-	if (!(st.st_mode & X_OK))
-	{
-		return (this->error(403, "Forbidden"));
-	}
+	if (stat(path.c_str(), &st))
+		return (404);
+	if (!S_ISREG(st.st_mode) || access(path.c_str(), X_OK))
+		return (403);
 	return (0);
 }
 
-int Response::handle_cgi(Request const& request, int mode)
+bool	parseCgiTarget(Location& location, std::string const& uri, CgiTarget& out)
 {
-	std::string	scriptPath = this->getLocation().getRoot() + this->_script_name;
-	int			ret;
+	std::string	path;
+	size_t		queryIndex = uri.find_first_of('?');
 
-	ret = this->isExec(scriptPath);
-	if (ret)
+	if (queryIndex == std::string::npos)
 	{
-		return (ret);
+		path = uri;
+		out.queryString = "";
 	}
-	char	**cgiEnvs = this->createCgiEnvs(request);
+	else
+	{
+		path = uri.substr(0, queryIndex);
+		out.queryString = uri.substr(queryIndex + 1);
+	}
 
-	(void)cgiEnvs;
-	(void)mode;
-	return (0);
+	std::map<std::string, std::string>&				cgi = location.getCgiConfigs();
+	std::map<std::string, std::string>::iterator	it = cgi.begin();
+
+	for (; it != cgi.end(); ++it)
+	{
+		size_t	extension = path.rfind(it->first);
+
+		if (extension != std::string::npos && \
+			(extension + it->first.size() == path.size() || \
+			path[extension + it->first.size()] == '/'))
+		{
+			size_t	split = extension + it->first.size();
+
+			out.scriptName = path.substr(0, split);
+			out.pathInfo = path.substr(split);
+			out.interpreter = it->second;
+			return (true);
+		}
+	}
+	return (false);
 }
 

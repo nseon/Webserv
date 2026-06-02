@@ -35,6 +35,8 @@ class ASocket
 		void						setCurrentEvent(int event);
 		void						enableWriteEvent(void);
 		void						disableWriteEvent(void);
+		void						enableReadEvent(void);
+		void						disableReadEvent(void);
 
 		virtual int					socketBehavior(void *) = 0;
 };

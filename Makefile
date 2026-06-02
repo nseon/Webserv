@@ -65,7 +65,8 @@ BASE_SRC	+=	$(addprefix $(SOCKET_DIR), $(SOCKET_SRC))
 SOCKET_DIR	=	socket/
 SOCKET_SRC	=	ASocket.cpp \
 				ClientSocket.cpp \
-				ListenerSocket.cpp
+				ListenerSocket.cpp \
+				CGISocket.cpp
 
 # --------------POLLING--------------#
 
