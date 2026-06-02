@@ -15,7 +15,4 @@
 #include "http/Request.hpp"
 #include "http/Response.hpp"
 
-int handle_get(Request const &request, Response &response);
-int handle_post(Request const &request, Response &response);
-int handle_delete(Request const &request, Response &response);
 int getRessource(std::string const &path, Response &response);

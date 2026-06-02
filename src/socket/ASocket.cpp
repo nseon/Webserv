@@ -1,6 +1,8 @@
 #include "socket/ASocket.hpp"
 #include <netinet/in.h>
 #include <sstream>
+#include <cstring>
+#include <stdint.h>
 #include <sys/epoll.h>
 #include <sys/socket.h>
 #include <stdexcept>
@@ -21,12 +23,12 @@ _server(server)
 
 	this->_event.events = EPOLLIN;
 	this->_event.data.fd = this->_socketFd;
-	this->_address = {0};
+	std::memset(&this->_address, 0, sizeof(this->_address));
 }
 
 ASocket::ASocket(Server* server, struct sockaddr_in address):
-_server(server),
-_address(address)
+_address(address),
+_server(server)
 {
 	this->_currentEvent = 0;
 	this->_socketFd = socket(AF_INET, SOCK_STREAM, 0);
@@ -39,7 +41,6 @@ _address(address)
 
 	this->_event.events = EPOLLIN;
 	this->_event.data.fd = this->_socketFd;
-	this->_address = {0};
 }
 
 ASocket::ASocket(int socketFd, Server* server):
@@ -53,13 +54,13 @@ _server(server)
 
 	this->_event.events = EPOLLIN | EPOLLRDHUP;
 	this->_event.data.fd = this->_socketFd;
-	this->_address = {0};
+	std::memset(&this->_address, 0, sizeof(this->_address));
 }
 
 ASocket::ASocket(int socketFd, Server* server, struct sockaddr_in addr):
 _socketFd(socketFd),
-_server(server),
-_address(addr)
+_address(addr),
+_server(server)
 {
 	this->_currentEvent = 0;
 	fcntl(this->_socketFd, F_SETFL, O_NONBLOCK);
@@ -68,15 +69,14 @@ _address(addr)
 
 	this->_event.events = EPOLLIN | EPOLLRDHUP;
 	this->_event.data.fd = this->_socketFd;
-	this->_address = {0};
 }
 
 ASocket::ASocket(ASocket const& toCopy):
 _socketFd(toCopy._socketFd),
 _event(toCopy._event),
 _currentEvent(toCopy._currentEvent),
+_address(toCopy._address),
 _server(toCopy._server)
-_address(toCopy._address)
 {}
 
 ASocket::~ASocket(void)
@@ -109,7 +109,7 @@ struct epoll_event*	ASocket::getNotConstEvent(void)
 	return (&this->_event);
 }
 
-std::string	getAddr(void) const
+std::string	ASocket::getAddress(void) const
 {
 	uint32_t			addr= ntohl(this->_address.sin_addr.s_addr);
 	std::string			ret;
@@ -130,4 +130,14 @@ std::string	getAddr(void) const
 void	ASocket::setCurrentEvent(int event)
 {
 	this->_currentEvent = event;
+}
+
+void	ASocket::enableWriteEvent(void)
+{
+	this->_event.events |= EPOLLOUT;
+}
+
+void	ASocket::disableWriteEvent(void)
+{
+	this->_event.events &= ~EPOLLOUT;
 }

@@ -11,9 +11,7 @@
 /* ************************************************************************** */
 
 #include "http/Request.hpp"
-#include "cgi/CGIHandler.hpp""
 #include "http/Response.hpp"
-#include "http/errors.hpp"
 #include <cstddef>
 #include <fstream>
 #include <ostream>

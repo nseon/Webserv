@@ -52,8 +52,10 @@ class Response : public AHttpMessage {
 		void								parseQueryString(std::string const& URI);
 
 	public:
-		Response(Request const &request, Location &location);
+		Response(Request const &request, Location &location, ClientSocket& client);
 		~Response();
+
+		void reset();
 
 		int error(int code, std::string msg);
 

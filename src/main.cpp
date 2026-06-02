@@ -13,12 +13,14 @@
 #include <iostream>
 #include <netinet/in.h>
 #include <cstring>
+#include <csignal>
 
 #include "config/Config.hpp"
 #include "manager/ServerManager.hpp"
 
 int	main(int argc, char **argv)
 {
+	std::signal(SIGPIPE, SIG_IGN);
 	if (argc == 2)
 	{
 		Config			conf(argv[1]);

@@ -3,28 +3,10 @@
 #include <string>
 #include <vector>
 #include <cstring>
+#include <sstream>
 #include <fcntl.h>
-
-// TODO: Environment variables to implement (MANDATORY)
-// AUTH_TYPE
-//  CONTENT_LENGTH (if request has a body)
-//  CONTENT_TYPE (if request has Content-Type header)
-//  GATEWAY_INTERFACE
-//  QUERY_STRING
-//  REMOTE_ADDR
-//  REQUEST_METHOD
-//  SCRIPT_NAME
-//  SERVER_NAME
-//  SERVER_PORT
-//  SERVER_PROTOCOL
-// SERVER_SOFTWARE
-//
-//
-// (GOOD OPTIONAL)
-//  PATH_INFO
-//
-// (I DONT CARE OPTIONAL)
-// PATH_TRANSLATED
+#include <sys/stat.h>
+#include <unistd.h>
 
 namespace
 {
@@ -37,9 +19,10 @@ void	setAuthType(std::vector<std::string>& envs)
 void	setContentLength(std::vector<std::string>& envs, Request const& request)
 {
 	std::string										contentLength;
-	std::map<std::string, std::string>::iterator	it = request.getHeaders().find("Content-Length");
+	std::map<std::string, std::string>				headers = request.getHeaders();
+	std::map<std::string, std::string>::iterator	it = headers.find("Content-Length");
 
-	if (it != request.getHeaders().end())
+	if (it != headers.end())
 	{
 		contentLength = "CONTENT_LENGTH=" + it->second;
 	}
@@ -53,9 +36,10 @@ void	setContentLength(std::vector<std::string>& envs, Request const& request)
 void	setContentType(std::vector<std::string>& envs, Request const& request)
 {
 	std::string										contentLength;
-	std::map<std::string, std::string>::iterator	it = request.getHeaders().find("Content-Type");
+	std::map<std::string, std::string>				headers = request.getHeaders();
+	std::map<std::string, std::string>::iterator	it = headers.find("Content-Type");
 
-	if (it != request.getHeaders().end())
+	if (it != headers.end())
 	{
 		contentLength = "CONTENT_TYPE=" + it->second;
 	}
@@ -136,6 +120,7 @@ char**	Response::createCgiEnvs(Request const& request)
 	setPathInfo(envs, this->_path_info);
 	setServerName(envs, request.getServer()->getAddr());
 	setServerPort(envs, request.getServer()->getPort());
+	setServerProtocol(envs);
 	setServerSoftware(envs);
 
 	char**	ret = new char*[envs.size() + 1];

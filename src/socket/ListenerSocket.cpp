@@ -48,7 +48,7 @@ ASocket(server, address)
 }
 
 ListenerSocket::ListenerSocket(ListenerSocket const& toCopy):
-ASocket(toCopy),
+ASocket(toCopy)
 {}
 
 
@@ -56,11 +56,11 @@ ListenerSocket::~ListenerSocket(void) {}
 
 int	ListenerSocket::socketBehavior(void* sm)
 {
-	int				newFd;
-	socklen_t		addrLen = sizeof(struct sockaddr);
-	struct sockaddr	clientAddress;
+	int					newFd;
+	socklen_t			addrLen = sizeof(struct sockaddr_in);
+	struct sockaddr_in	clientAddress;
 
-	newFd = accept(this->_socketFd, &clientAddress, &addrLen);
+	newFd = accept(this->_socketFd, reinterpret_cast<struct sockaddr*>(&clientAddress), &addrLen);
 	if (newFd == -1)
 	{
 		return (1);

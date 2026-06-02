@@ -119,7 +119,7 @@ Location &Server::addLocation(std::string const &value)
 
 void	Server::createSocket(void)
 {
-	this->_socket = new ListenerSocket(this->getAddr(), this);
+	this->_socket = new ListenerSocket(this->getSockAddr(), this);
 }
 
 //**********************GETTER**************************//
@@ -144,7 +144,7 @@ std::vector<Location> Server::getLocations() const
 	return (_locations);
 }
 
-struct sockaddr_in Server::getAddr() const
+struct sockaddr_in Server::getSockAddr() const
 {
 	struct sockaddr_in addr;
 
@@ -229,4 +229,4 @@ std::ostream &operator<<(std::ostream &os, const Server &serv) {
     
     os << "    }\n";
     return os;
-n
+}

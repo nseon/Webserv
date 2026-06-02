@@ -27,6 +27,14 @@ void	PollingManager::addSocket(ASocket* toAdd)
 	}
 }
 
+void	PollingManager::modifySocket(ASocket* toModify)
+{
+	if (epoll_ctl(this->_epollInstance, EPOLL_CTL_MOD, toModify->getFd(), toModify->getNotConstEvent()))
+	{
+		throw std::runtime_error("PollingManager::modifySocket failed because epoll_ctl() failed.");
+	}
+}
+
 void	PollingManager::removeSocket(int socketFd)
 {
 	std::vector<ASocket*>::iterator	toDel = this->findSocket(socketFd);

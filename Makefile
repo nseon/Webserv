@@ -45,7 +45,8 @@ RSPS_DIR	+=	responses/
 RSPS_SRC	+=	delete.cpp \
 				errors.cpp \
 				get.cpp \
-				post.cpp
+				post.cpp \
+				cgi.cpp
 
 # --------------CONFIG--------------- #
 

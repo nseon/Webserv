@@ -2,6 +2,8 @@
 # define ASOCKET_HPP
 
 # include <sys/epoll.h>
+# include <netinet/in.h>
+# include <string>
 
 class Server;
 
@@ -19,7 +21,7 @@ class ASocket
 		ASocket(Server* server);
 		ASocket(Server* server, struct sockaddr_in address);
 		ASocket(int socketFd, Server* server);
-		ASocket(int socketFd, Server* server, struct sockaddr_in addr):
+		ASocket(int socketFd, Server* server, struct sockaddr_in addr);
 		ASocket(ASocket const& toCopy);
 		virtual ~ASocket(void);
 
@@ -31,6 +33,8 @@ class ASocket
 		std::string					getAddress(void) const;
 
 		void						setCurrentEvent(int event);
+		void						enableWriteEvent(void);
+		void						disableWriteEvent(void);
 
 		virtual int					socketBehavior(void *) = 0;
 };

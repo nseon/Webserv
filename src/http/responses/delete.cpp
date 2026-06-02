@@ -13,5 +13,8 @@
 #include "http/Request.hpp"
 #include "http/Response.hpp"
 
-int handle_delete(Request const &request, Response &response)
-{}
+int Response::handle_delete(Request const &request)
+{
+	(void)request;
+	return (this->error(501, "Not Implemented"));
+}

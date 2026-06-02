@@ -12,7 +12,6 @@
 
 #include "http/Response.hpp"
 #include "http/responses.hpp"
-#include "cgi/CGIHandler.hpp"
 #include "socket/ClientSocket.hpp"
 #include <fcntl.h>
 #include <sstream>
@@ -29,6 +28,15 @@ std::string Response::toString() const
 	response += "\r\n";
 	response.insert(response.end(), _body.begin(), _body.end());
 	return (response);
+}
+
+void Response::reset()
+{
+	_status_code = 0;
+	_status_msg.clear();
+	_version.clear();
+	_headers.clear();
+	_body.clear();
 }
 
 //**********************GETTER**************************//
@@ -133,11 +141,11 @@ Response::Response(Request const &request, Location &location, ClientSocket& cli
 	this->setVersion(request.getVersion());
 	this->addHeader("connection", "keep-alive");
 	if (request.getMethod() == "GET")
-		handle_get(request, this);
+		handle_get(request);
 	else if (request.getMethod() == "POST")
-		handle_post(request, this);
+		handle_post(request);
 	else if (request.getMethod() == "DELETE")
-		handle_delete(request, this);
+		handle_delete(request);
 }
 
 Response::~Response()

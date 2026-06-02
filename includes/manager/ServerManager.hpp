@@ -26,8 +26,11 @@ class ServerManager
 
 		void	serverLoop(void);
 
-		void	addClientSocket(int socketFd, Server* server);
+		void	addClientSocket(int socketFd, struct sockaddr_in addr, Server* server);
 		void	removeClientSocket(int socketFd);
+
+		void	enableClientWrite(ClientSocket* client);
+		void	disableClientWrite(ClientSocket* client);
 
 		void	handleHttpRequest(ClientSocket* client, char* msg);
 };

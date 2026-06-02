@@ -51,7 +51,7 @@ class Server : public Ablock{
 		std::string				getIp() const;
 		std::string				getName() const;
 		std::vector<Location>	getLocations() const;
-		struct sockaddr_in		getAddr() const;
+		struct sockaddr_in		getSockAddr() const;
 		std::string				getAddr() const;
 		ListenerSocket*			getSocket() const;
 		

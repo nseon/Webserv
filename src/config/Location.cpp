@@ -180,7 +180,12 @@ std::pair<int, std::string> Location::getReturn() const
 	return (_return);
 }
 
-std::map<std::string, std::string>& Location::getCgiConfigs() const
+std::map<std::string, std::string>& Location::getCgiConfigs()
+{
+	return (_cgi_configs);
+}
+
+std::map<std::string, std::string> const& Location::getCgiConfigs() const
 {
 	return (_cgi_configs);
 }

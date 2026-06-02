@@ -85,6 +85,18 @@ void	ServerManager::removeClientSocket(int socketFd)
 	}
 }
 
+void	ServerManager::enableClientWrite(ClientSocket* client)
+{
+	client->enableWriteEvent();
+	this->_pollingManager.modifySocket(client);
+}
+
+void	ServerManager::disableClientWrite(ClientSocket* client)
+{
+	client->disableWriteEvent();
+	this->_pollingManager.modifySocket(client);
+}
+
 void	ServerManager::handleHttpRequest(ClientSocket* client, char* msg)
 {
 	std::map<ClientSocket*, Request>::iterator	requestIterator;
@@ -102,10 +114,10 @@ void	ServerManager::handleHttpRequest(ClientSocket* client, char* msg)
 
 		if (requestIterator->second.getParsingState() == DONE)
 		{
-			Response response(requestIterator->second, *(requestIterator->first->getServer()->matchLocation(requestIterator->second.getPath())));
-			std::string response_str = response.toString();
+			Response response(requestIterator->second, *(requestIterator->first->getServer()->matchLocation(requestIterator->second.getPath())), *client);
 
-			send(client->getFd(), response_str.c_str(), response_str.size(), 0);
+			client->appendOutput(response.toString());
+			this->enableClientWrite(client);
 			requestIterator->second.reset();
 		}
 	}
