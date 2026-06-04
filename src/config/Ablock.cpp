@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 15:58:31 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/12 11:44:51 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/02 15:36:47 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,16 +67,36 @@ void Ablock::setRoot(std::string const &value)
 	ss >> path;
 	if (ss >> path)
 		throw std::logic_error("invalid index: " + value);
+	if (path[path.size() - 1] == '/')
+		path.erase(path.size() - 1, 1);
 	_root = path;
 }
 
 void Ablock::setClientMaxBodySize(std::string const &value)
 {
 	std::stringstream ss(value);
-	unsigned int nb;
+	size_t nb;
 	
 	if (ss >> nb)
+	{
 		_client_max_body_size = nb;
+		
+		char unit;
+		if (ss >> unit)
+		{
+			switch (unit)
+			{
+				case 'K': _client_max_body_size *= 1024; break;
+				case 'M': _client_max_body_size *= 1024 * 1024; break;
+				case 'G': _client_max_body_size *= 1024 * 1024 * 1024; break;
+				default: throw std::logic_error("invalid unit for client max body size: " + value);
+			}
+		}
+		std::string test;
+
+		if (ss >> test)
+			throw std::logic_error("invalid client max body size: " + value);
+	}
 	else
 		throw std::logic_error("invalid client max body size: " + value);
 }
