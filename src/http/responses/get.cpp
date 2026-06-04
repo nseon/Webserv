@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 14:01:26 by nseon             #+#    #+#             */
-/*   Updated: 2026/06/01 15:26:19 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/02 16:15:39 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,6 +121,7 @@ int getRessource(std::string const &path, Response &response)
 		
 		response.setBody(content);
 		response.addHeader("Content-Length", ss.str());
+		response.addHeader("Content-Type", Response::getContentType(path));
 		response.setStatusCode(200);
 		response.setStatusMsg("OK");
 		return (200);
@@ -145,7 +146,12 @@ int handle_get(Request const &request, Response &response)
 	response.setStatusCode(200);
 	response.setStatusMsg("OK");
 
-	std::string	path = response.getLocation()->getRoot() + request.getPath();
+	std::string	path = response.getLocation()->getRoot();
+	
+	if (request.getPath()[0] != '/')
+		path += '/';
+	path += request.getPath();
+	
 	size_t		pos = path.find("..");
 
 	if (pos != std::string::npos && (pos == path.size() - 2 || path[pos + 2] == '/'))
