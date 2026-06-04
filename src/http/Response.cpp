@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 13:34:54 by nseon             #+#    #+#             */
-/*   Updated: 2026/06/01 14:31:06 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/02 16:14:27 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,30 @@
 #include <fcntl.h>
 #include <sstream>
 #include <vector>
+
+std::string Response::getContentType(std::string const &path)
+{
+	size_t dotPos = path.find_last_of('.');
+	if (dotPos == std::string::npos)
+		return "text/html";
+
+	std::string ext = path.substr(dotPos);
+
+	if (ext == ".html" || ext == ".htm")
+		return "text/html";
+	if (ext == ".css")
+		return "text/text/css";
+	if (ext == ".ico")
+		return "image/x-icon";
+	if (ext == ".svg")
+		return "image/svg+xml";
+	if (ext == ".png")
+		return "image/png";
+	if (ext == ".jpg" || ext == ".jpeg")
+		return "image/jpeg";
+	
+	return "text/plain";
+}
 
 std::string Response::getStatusMessage(int code)
 {
@@ -131,7 +155,7 @@ Response::Response(int error_code, Server &server) : _status_code(error_code), _
 Response::Response(Request &request, Location &location) : _status_code(0), _location(&location), _request(&request)
 {
 	setVersion("HTTP/1.1");
-	addHeader("connection", "keep-alive");
+	addHeader("connection", "clo");
 	if (!getLocation()->getReturn().second.empty())
 		handle_redirection();
 	else if (request.getMethod() == "GET")

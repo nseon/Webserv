@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 16:07:59 by nseon             #+#    #+#             */
-/*   Updated: 2026/06/01 14:27:47 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/02 16:14:50 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,4 +44,5 @@ class Response : public AHttpMessage {
 		std::string toString() const;
 
 		static std::string getStatusMessage(int code);
+		static std::string getContentType(std::string const &path);
 };
