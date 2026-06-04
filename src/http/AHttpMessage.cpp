@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 11:37:15 by nseon             #+#    #+#             */
-/*   Updated: 2026/06/01 15:42:26 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/04 12:25:22 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,12 @@ std::string AHttpMessage::getVersion() const
 	return (_version);
 }
 
-std::map<std::string, std::string> AHttpMessage::getHeaders() const
+std::map<std::string, std::string> const &AHttpMessage::getHeaders() const
 {
 	return (_headers);
 }
 
-std::vector<char> AHttpMessage::getBody() const
+std::vector<char> const &AHttpMessage::getBody() const
 {
 	return (_body);
 }
