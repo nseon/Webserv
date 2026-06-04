@@ -1,7 +1,6 @@
 #include "socket/ClientSocket.hpp"
 #include "manager/ServerManager.hpp"
 #include "logger/Logger.hpp"
-#include "http/Request.hpp"
 
 #include <stdexcept>
 #include <sys/epoll.h>
@@ -36,9 +35,10 @@ int	ClientSocket::socketBehavior(void *sm)
 		msg_length = recv(this->_socketFd, msg, RECV_SIZE, 0);
 		if (msg_length == -1)
 			throw std::logic_error("Error recv");
+		std::string msg_str(msg, msg_length);
 		msg[msg_length] = 0;
-		Logger::info() << "Client " << this->_socketFd << " sended a message : " << msg << std::endl;
-		reinterpret_cast<ServerManager*>(sm)->handleHttpRequest(this, msg);
+		Logger::info() << "Client " << this->_socketFd << " sended a message : " << msg_str << std::endl;
+		reinterpret_cast<ServerManager*>(sm)->handleHttpRequest(this, msg_str);
 	}
 	return (0);
 }

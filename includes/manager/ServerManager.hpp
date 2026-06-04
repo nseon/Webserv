@@ -29,7 +29,7 @@ class ServerManager
 		void	addClientSocket(int socketFd, Server* server);
 		void	removeClientSocket(int socketFd);
 
-		void	handleHttpRequest(ClientSocket* client, char* msg);
+		void	handleHttpRequest(ClientSocket* client, std::string &msg);
 };
 
 #endif
