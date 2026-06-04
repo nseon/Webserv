@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 14:05:47 by nseon             #+#    #+#             */
-/*   Updated: 2026/06/04 14:08:53 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/04 15:39:09 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,14 +40,14 @@ static std::vector<char> getContent(Request const &request)
 	return (body);
 }
 
-int post_ressource(std::string &path, Request const &request, Response &response)
+static int post_ressource(std::string &path, Request const &request, Response &response)
 {
 	std::ofstream file(path.c_str(), std::ios::out | std::ios::binary);
 	
 	if (!file)
 		return fill_error(response, 500);
 	
-	std::vector<char> const &body = getContent(request);
+	std::vector<char> const body = getContent(request);
 
 	if (!body.empty())
 		file.write(&body[0], body.size());
