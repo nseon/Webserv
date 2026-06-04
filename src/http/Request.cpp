@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/27 14:01:57 by nseon             #+#    #+#             */
-/*   Updated: 2026/06/01 10:53:42 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/04 11:08:56 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 #include <cstddef>
 #include <cstdlib>
 #include <sstream>
-#include <stdexcept>
 #include <iostream>
 #include <string>
 #include <algorithm>
