@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 17:39:59 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/26 12:13:25 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/02 14:35:34 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,8 @@ void Location::setUploadStore(std::string const &value)
 	ss >> path;
 	if (ss >> path)
 		throw std::logic_error("Invalid path for upload_store: " + value);
+	if (path[path.size() - 1] == '/')
+		path.erase(path.size() - 1, 1);
 	_upload_store = value;
 }
 
