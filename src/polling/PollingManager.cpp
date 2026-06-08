@@ -54,7 +54,7 @@ std::vector<ASocket*>::iterator	PollingManager::findSocket(int socketFd)
 	return (this->_sockets.end());
 }
 
-std::vector<ASocket*>	PollingManager::poll(void)
+std::vector<ASocket*>	PollingManager::poll(int timeout)
 {
 	struct epoll_event*		events = new struct epoll_event[this->_sockets.size()];
 	int						nbEvents;
@@ -65,7 +65,7 @@ std::vector<ASocket*>	PollingManager::poll(void)
 	}
 	else
 	{
-		nbEvents = epoll_wait(this->_epollInstance, events, static_cast<int>(this->_sockets.size()), -1);
+		nbEvents = epoll_wait(this->_epollInstance, events, static_cast<int>(this->_sockets.size()), timeout);
 	}
 	std::vector<ASocket*>	ret(static_cast<unsigned long>(nbEvents));
 	for (int i = 0; i < nbEvents; i++)
