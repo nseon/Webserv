@@ -8,10 +8,12 @@
 #include <stdexcept>
 #include <fcntl.h>
 #include <unistd.h>
+#include <ctime>
 
 ASocket::ASocket(Server* server):
-_server(server)
+_server(server),
 {
+	std::time(&this->_lastTimeUsed);
 	this->_currentEvent = 0;
 	this->_socketFd = socket(AF_INET, SOCK_STREAM, 0);
 	if (this->_socketFd == -1)
@@ -31,6 +33,7 @@ ASocket::ASocket(Server* server, struct sockaddr_in address):
 _address(address),
 _server(server)
 {
+	std::time(&this->_lastTimeUsed);
 	this->_currentEvent = 0;
 	this->_socketFd = socket(AF_INET, SOCK_STREAM, 0);
 	if (this->_socketFd == -1)
@@ -49,6 +52,7 @@ ASocket::ASocket(int socketFd, Server* server):
 _socketFd(socketFd),
 _server(server)
 {
+	std::time(&this->_lastTimeUsed);
 	this->_currentEvent = 0;
 	fcntl(this->_socketFd, F_SETFL, O_NONBLOCK);
 	fcntl(this->_socketFd, F_SETFD, FD_CLOEXEC);
@@ -65,6 +69,7 @@ _socketFd(socketFd),
 _address(addr),
 _server(server)
 {
+	std::time(&this->_lastTimeUsed);
 	this->_currentEvent = 0;
 	fcntl(this->_socketFd, F_SETFL, O_NONBLOCK);
 	fcntl(this->_socketFd, F_SETFD, FD_CLOEXEC);
@@ -80,7 +85,8 @@ _socketFd(toCopy._socketFd),
 _event(toCopy._event),
 _currentEvent(toCopy._currentEvent),
 _address(toCopy._address),
-_server(toCopy._server)
+_server(toCopy._server),
+_lastTimeUsed(toCopy._lastTimeUsed)
 {}
 
 ASocket::~ASocket(void)
@@ -131,6 +137,11 @@ std::string	ASocket::getAddress(void) const
 	return (ret);
 }
 
+time_t	ASocket::getLastTimeUsed(void) const
+{
+	return (this->_lastTimeUsed);
+}
+
 void	ASocket::setCurrentEvent(int event)
 {
 	this->_currentEvent = event;
@@ -154,4 +165,9 @@ void	ASocket::enableReadEvent(void)
 void	ASocket::disableReadEvent(void)
 {
 	this->_event.events &= ~EPOLLIN;
+}
+
+void	ASocket::updateLastTimeUsed(void)
+{
+	std::time(&this->_lastTimeUsed);
 }

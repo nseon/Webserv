@@ -15,6 +15,7 @@ class ASocket
 		int							_currentEvent;
 		struct sockaddr_in			_address;
 		Server*						_server;
+		time_t						_lastTimeUsed;
 
 		ASocket(void);
 	public:
@@ -31,6 +32,7 @@ class ASocket
 		Server*						getServer(void) const;
 		struct epoll_event*			getNotConstEvent(void);
 		std::string					getAddress(void) const;
+		time_t						getLastTimeUsed(void) const;
 
 		void						setCurrentEvent(int event);
 		void						enableWriteEvent(void);
@@ -38,7 +40,10 @@ class ASocket
 		void						enableReadEvent(void);
 		void						disableReadEvent(void);
 
+		void						updateLastTimeUsed(void);
+
 		virtual int					socketBehavior(void *) = 0;
+		virtual int					onTimeOut(void *) = 0;
 };
 
 #endif

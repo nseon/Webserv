@@ -8,6 +8,18 @@
 # include "polling/PollingManager.hpp"
 # include "config/Server.hpp"
 
+# ifndef POLLING_TIMEOUT
+#  define POLLING_TIMEOUT 60000
+# endif
+
+# ifndef CLIENT_TIMEOUT
+#  define CLIENT_TIMEOUT 60
+# endif
+
+# ifndef CGI_TIMEOUT
+#  define CGI_TIMEOUT 60
+# endif
+
 class CGISocket;
 struct CgiTarget;
 

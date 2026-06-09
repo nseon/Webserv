@@ -1,3 +1,4 @@
+#include <ctime>
 #include <iostream>
 #include <sys/socket.h>
 #include <sys/wait.h>
@@ -58,7 +59,15 @@ void	ServerManager::serverLoop(void)
 
 		for (std::vector<ASocket*>::iterator it = readyList.begin(); it < readyList.end(); it++)
 		{
+			(*it)->updateLastTimeUsed();
 			(*it)->socketBehavior(this);
+		}
+		for (std::vector<ClientSocket*>::iterator it = _clients.begin(), it < _clients.end(); it++)
+		{
+			if (difftime(std::time(nullptr), it->getLastTimeUsed()) >= CLIENT_TIMEOUT)
+			{
+				this->removeClientSocket();
+			}
 		}
 	}
 }
