@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 16:07:59 by nseon             #+#    #+#             */
-/*   Updated: 2026/06/02 16:14:50 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/09 14:58:07 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ class Response : public AHttpMessage {
 		Request *_request;
 	public:
 		Response(int error_code, Server &server);
-		Response(Request &request, Location &location);
+		Response(Request &request, Location *location);
 		~Response();
 
 		int getStatusCode() const;

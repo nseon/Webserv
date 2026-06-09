@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 15:40:21 by nseon             #+#    #+#             */
-/*   Updated: 2026/06/01 14:55:03 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/09 15:14:22 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include "config/Location.hpp"
 #include "http/Response.hpp"
 #include "http/responses.hpp"
 
@@ -36,7 +37,13 @@ int fill_error(Response &response, int code)
 	std::string msg = Response::getStatusMessage(code);
 	response.setStatusMsg(msg);
 	
-	std::string error_path = response.getLocation()->getErrorPath(code);
+	std::string error_path;
+	Location *loc = response.getLocation();
+	
+	if (!loc)
+		error_path = response.getRequest()->getServer()->getErrorPath(code);
+	else
+		error_path = loc->getErrorPath(code);
 	
 	if (error_path.empty())
 	{

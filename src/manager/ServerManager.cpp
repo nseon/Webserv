@@ -100,7 +100,7 @@ void	ServerManager::handleHttpRequest(ClientSocket* client, std::string &msg)
 		requestIterator->second.parseRequest(msg);
 		if (requestIterator->second.getParsingState() == DONE)
 		{
-			Response response(requestIterator->second, *(requestIterator->first->getServer()->matchLocation(requestIterator->second.getPath())));
+			Response response(requestIterator->second, requestIterator->first->getServer()->matchLocation(requestIterator->second.getPath()));
 			std::string response_str = response.toString();
 	
 			send(client->getFd(), response_str.c_str(), response_str.size(), 0);

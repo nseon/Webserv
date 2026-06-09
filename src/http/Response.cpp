@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 13:34:54 by nseon             #+#    #+#             */
-/*   Updated: 2026/06/02 16:14:27 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/09 14:59:29 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,12 @@
 
 std::string Response::getContentType(std::string const &path)
 {
-	size_t dotPos = path.find_last_of('.');
-	if (dotPos == std::string::npos)
+	size_t pos = path.find_last_of('.');
+	
+	if (pos == std::string::npos)
 		return "text/html";
 
-	std::string ext = path.substr(dotPos);
+	std::string ext = path.substr(pos);
 
 	if (ext == ".html" || ext == ".htm")
 		return "text/html";
@@ -46,6 +47,7 @@ std::string Response::getStatusMessage(int code)
 	switch (code)
 	{
 		case 200: return "OK";
+		case 204: return "No Content";
 		case 301: return "Moved Permanently";
 		case 302: return "Found";
 		case 400: return "Bad Request";
@@ -152,11 +154,13 @@ Response::Response(int error_code, Server &server) : _status_code(error_code), _
 	}
 }
 
-Response::Response(Request &request, Location &location) : _status_code(0), _location(&location), _request(&request)
+Response::Response(Request &request, Location *location) : _status_code(0), _location(location), _request(&request)
 {
 	setVersion("HTTP/1.1");
-	addHeader("connection", "clo");
-	if (!getLocation()->getReturn().second.empty())
+	addHeader("connection", "keep-alive");
+	if (!getLocation())
+		fill_error(*this, 404);
+	else if (!getLocation()->getReturn().second.empty())
 		handle_redirection();
 	else if (request.getMethod() == "GET")
 		handle_get(request, *this);
