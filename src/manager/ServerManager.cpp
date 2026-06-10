@@ -62,6 +62,13 @@ void	ServerManager::serverLoop(void)
 			(*it)->updateLastTimeUsed();
 			(*it)->socketBehavior(this);
 		}
+		for (std::vector<CGIClientSocket*>::iterator it = _cgis.begin(), it < _cgis.end(); it++)
+		{
+			if (difftime(std::time(nullptr), it->getLastTimeUsed()) >= CGI_TIMEOUT)
+			{
+				// insert behavior
+			}
+		}
 		for (std::vector<ClientSocket*>::iterator it = _clients.begin(), it < _clients.end(); it++)
 		{
 			if (difftime(std::time(nullptr), it->getLastTimeUsed()) >= CLIENT_TIMEOUT)
