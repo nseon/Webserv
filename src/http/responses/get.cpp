@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 14:01:26 by nseon             #+#    #+#             */
-/*   Updated: 2026/06/02 16:15:39 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/11 14:16:32 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,71 +27,76 @@ int getFile(std::string const &path, Response &response);
 
 std::string generate_autoindex(const std::string &path, const std::string &uri)
 {
-    DIR *dir = opendir(path.c_str());
-    if (dir == NULL) {
-        return "";
-    }
+	DIR *dir = opendir(path.c_str());
+	if (dir == NULL)
+		return ("");
 
-    std::ostringstream html;
-    
-    html << "<html>\n<head><title>Index of " << uri << "</title></head>\n";
-    html << "<body>\n<h1>Index of " << uri << "</h1>\n<hr>\n<pre>\n";
+	std::ostringstream html;
+	
+	html << "<html>\n<head><title>Index of " << uri << "</title></head>\n";
+	html << "<body>\n<h1>Index of " << uri << "</h1>\n<hr>\n<pre>\n";
 
-    struct dirent *entry;
-    while ((entry = readdir(dir)) != NULL)
-    {
-        std::string name = entry->d_name;
+	std::string base_uri = uri;
+	
+	if (base_uri.empty() || base_uri[base_uri.length() - 1] != '/')
+		base_uri += "/";
 
-        if (name == ".") {
-            continue;
-        }
+	struct dirent *entry;
 
-        if (name == ".." && uri == "/") {
-            continue;
-        }
+	while ((entry = readdir(dir)) != NULL)
+	{
+		std::string name = entry->d_name;
 
-        std::string full_path = path;
-        if (full_path[full_path.length() - 1] != '/')
-            full_path += "/";
-        full_path += name;
+		if (name == ".")
+			continue;
+		if (name == ".." && uri == "/")
+			continue;
+		
+		std::string full_path = path;
+		
+		if (full_path[full_path.length() - 1] != '/')
+			full_path += "/";
+		full_path += name;
 
-        struct stat st;
-        if (stat(full_path.c_str(), &st) == 0 && S_ISDIR(st.st_mode)) {
-            name += "/";
-        }
+		std::string link_name = name;
+		struct stat st;
 
-        html << "<a href=\"" << name << "\">" << name << "</a>\n";
-    }
-
-    closedir(dir);
-
-    html << "</pre>\n<hr>\n</body>\n</html>\n";
-
-    return html.str();
+		if (stat(full_path.c_str(), &st) == 0 && S_ISDIR(st.st_mode))
+			link_name += "/";
+		if (name == "..")
+			html << "<a href=\"" << base_uri << "../\">" << link_name << "</a>\n";
+		else
+			html << "<a href=\"" << base_uri << link_name << "\">" << link_name << "</a>\n";
+	}
+	closedir(dir);
+	html << "</pre>\n<hr>\n</body>\n</html>\n";
+	return (html.str());
 }
 
 int handle_directory(std::string const &path, Response &response)
 {
 	if (!response.getRequest()->getServer()->getIndex().empty())
 	{
-		std::string path = response.getLocation()->getRoot() + "/" + response.getRequest()->getServer()->getIndex();
-		std::cout << path << std::endl;
-		getFile(path, response);
+		std::string new_path(path);
+		if (new_path[new_path.size() - 1] != '/')
+			new_path += '/';
+		new_path += response.getRequest()->getServer()->getIndex();
 		response.setStatusCode(200);
 		response.setStatusMsg("OK");
+		getFile(new_path, response);
 	}
-	else if (response.getLocation()->getAutoIndex())
+	if (response.getLocation()->getAutoIndex() && response.getStatusCode() != 200)
 	{
 		std::string autoindex = generate_autoindex(path, response.getRequest()->getPath());
 		std::stringstream ss;
-		
+
 		response.setBody(autoindex);
 		ss << response.getBody().size();
 		response.addHeader("Content-Length", ss.str());
 		response.setStatusCode(200);
 		response.setStatusMsg("OK");
 	}
-	else
+	else if (response.getStatusCode() != 200)
 		return (403);
 	return (200);
 }
@@ -136,7 +141,7 @@ int getFile(std::string const &path, Response &response)
 		case 403: return (fill_error(response, 403));
 		case 500: return (fill_error(response, 500));
 	}
-	return (0);
+	return (200);
 }
 
 int handle_get(Request const &request, Response &response)

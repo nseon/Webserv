@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 15:40:21 by nseon             #+#    #+#             */
-/*   Updated: 2026/06/09 15:14:22 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/10 16:54:49 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,10 +33,8 @@ std::vector<char> generate_default_error_page(int code, std::string msg)
 
 int fill_error(Response &response, int code)
 {
-	response.setStatusCode(code);
 	std::string msg = Response::getStatusMessage(code);
-	response.setStatusMsg(msg);
-	
+
 	std::string error_path;
 	Location *loc = response.getLocation();
 	
@@ -44,7 +42,7 @@ int fill_error(Response &response, int code)
 		error_path = response.getRequest()->getServer()->getErrorPath(code);
 	else
 		error_path = loc->getErrorPath(code);
-	
+
 	if (error_path.empty())
 	{
 		std::stringstream ss;
@@ -61,5 +59,7 @@ int fill_error(Response &response, int code)
 		ss << response.getBody().size();
 		response.addHeader("Content-Length", ss.str());
 	}
+	response.setStatusCode(code);
+	response.setStatusMsg(msg);
 	return (response.getStatusCode());
 }
