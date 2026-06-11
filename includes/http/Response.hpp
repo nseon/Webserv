@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 16:07:59 by nseon             #+#    #+#             */
-/*   Updated: 2026/06/09 14:58:07 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/10 16:44:31 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ class Response : public AHttpMessage {
 		int getStatusCode() const;
 		Location *getLocation() const;
 		Request *getRequest() const;
+		static std::string getStatusMessage(int code);
+		static std::string getContentType(std::string const &path);
 
 		void setStatusCode(int code);
 		void setStatusMsg(std::string msg);
@@ -42,7 +44,6 @@ class Response : public AHttpMessage {
 		void handle_redirection();
 
 		std::string toString() const;
-
-		static std::string getStatusMessage(int code);
-		static std::string getContentType(std::string const &path);
+		
+		void reset();
 };

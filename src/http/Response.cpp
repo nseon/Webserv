@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 13:34:54 by nseon             #+#    #+#             */
-/*   Updated: 2026/06/09 14:59:29 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/10 16:46:02 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,15 @@
 #include <fcntl.h>
 #include <sstream>
 #include <vector>
+
+void Response::reset()
+{
+	_version.clear();
+	_headers.clear();
+	_body.clear();
+	_status_code = 0;
+	_status_msg.clear();
+}
 
 std::string Response::getContentType(std::string const &path)
 {
@@ -122,7 +131,7 @@ void Response::setBody(std::vector<char> body)
 
 void Response::setBody(std::string const &str)
 {
-    _body.assign(str.begin(), str.end());
+	_body.assign(str.begin(), str.end());
 }
 
 //**************CONSTRUCTOR/DESTRUCTOR******************//
