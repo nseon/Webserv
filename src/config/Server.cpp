@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 17:39:51 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/25 13:39:02 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/10 13:46:36 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,18 +50,18 @@ static std::string parseIp(std::string const &ip)
 	for (int i = 0; i < 4; ++i)
 	{
 		if (!(ss >> nb))
-			throw std::logic_error("Invalid ip1: " + ip);
+			throw std::logic_error("Invalid ip: " + ip);
 		if (!(0 <= nb && nb <= 255))
-			throw std::logic_error("Invalid ip2: " + ip);
+			throw std::logic_error("Invalid ip: " + ip);
 		if (i != 3)
 		{
 			if (ss >> c)
 			{
 				if (c != '.')
-					throw std::logic_error("Invalid ip3: " + ip);
+					throw std::logic_error("Invalid ip: " + ip);
 			}
 			else
-				throw std::logic_error("Invalid ip4: " + ip);
+				throw std::logic_error("Invalid ip: " + ip);
 		}
 	}
 	return (ip);
