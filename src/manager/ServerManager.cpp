@@ -52,188 +52,196 @@ void	ServerManager::serverLoop(void)
 {
 	std::vector<ASocket*>	readyList;
 
-	Logger::info() << "Server Manager begins to loop !" << std::endl;
-	while (1)
-	{
-		readyList = this->_pollingManager.poll();
+		Logger::info() << "Server Manager begins to loop !" << std::endl;
+		while (1)
+		{
+			readyList = this->_pollingManager.poll(POLLING_TIMEOUT);
 
-		for (std::vector<ASocket*>::iterator it = readyList.begin(); it < readyList.end(); it++)
-		{
-			(*it)->updateLastTimeUsed();
-			(*it)->socketBehavior(this);
-		}
-		for (std::vector<CGIClientSocket*>::iterator it = _cgis.begin(), it < _cgis.end(); it++)
-		{
-			if (difftime(std::time(nullptr), it->getLastTimeUsed()) >= CGI_TIMEOUT)
+			for (std::vector<ASocket*>::iterator it = readyList.begin(); it < readyList.end(); it++)
 			{
-				// insert behavior
+				(*it)->updateLastTimeUsed();
+				(*it)->socketBehavior(this);
+			}
+			for (std::vector<CGISocket*>::iterator it = _cgis.begin(); it < _cgis.end(); it++)
+			{
+				if (difftime(std::time(NULL), (*it)->getLastTimeUsed()) >= CGI_TIMEOUT)
+				{
+					Response		response(*(*it)->getLocation(), (*it)->getVersion());
+					ClientSocket*	client = (*it)->getClient();
+
+					kill((*it)->getPid(), SIGKILL);
+					waitpid((*it)->getPid(), NULL, 0);
+					response.error(504, "Gateway Timeout");
+					client->appendOutput(response.toString());
+					this->enableClientWrite(client);
+					this->removeCgiSocket(*it);
+				}
+			}
+			for (std::vector<ClientSocket*>::iterator it = _clients.begin(); it < _clients.end(); it++)
+			{
+				if (difftime(std::time(NULL), (*it)->getLastTimeUsed()) >= CLIENT_TIMEOUT)
+				{
+					this->removeClientSocket((*it)->getFd());
+				}
 			}
 		}
-		for (std::vector<ClientSocket*>::iterator it = _clients.begin(), it < _clients.end(); it++)
+	}
+
+	std::vector<ClientSocket*>::iterator	ServerManager::findClient(int socketFd)
+	{
+		for (std::vector<ClientSocket*>::iterator it = this->_clients.begin(); it < this->_clients.end(); it++)
 		{
-			if (difftime(std::time(nullptr), it->getLastTimeUsed()) >= CLIENT_TIMEOUT)
+			if ((*it)->getFd() == socketFd)
 			{
-				this->removeClientSocket();
+				return (it);
 			}
 		}
+		return (this->_clients.end());
 	}
-}
 
-std::vector<ClientSocket*>::iterator	ServerManager::findClient(int socketFd)
-{
-	for (std::vector<ClientSocket*>::iterator it = this->_clients.begin(); it < this->_clients.end(); it++)
+	void	ServerManager::addClientSocket(int socketFd, struct sockaddr_in addr, Server* server)
 	{
-		if ((*it)->getFd() == socketFd)
-		{
-			return (it);
-		}
+		ClientSocket*	newCs = new ClientSocket(socketFd, server, addr);
+
+		this->_clients.push_back(newCs);
+		this->_pollingManager.addSocket(newCs);
+		Logger::info() << socketFd << " joined the room." << std::endl;
 	}
-	return (this->_clients.end());
-}
 
-void	ServerManager::addClientSocket(int socketFd, struct sockaddr_in addr, Server* server)
-{
-	ClientSocket*	newCs = new ClientSocket(socketFd, server, addr);
-
-	this->_clients.push_back(newCs);
-	this->_pollingManager.addSocket(newCs);
-	Logger::info() << socketFd << " joined the room." << std::endl;
-}
-
-void	ServerManager::removeClientSocket(int socketFd)
-{
-	std::vector<ClientSocket*>::iterator	toRemove = this->findClient(socketFd);
-
-	if (toRemove != this->_clients.end())
+	void	ServerManager::removeClientSocket(int socketFd)
 	{
-		ClientSocket*	client = *toRemove;
+		std::vector<ClientSocket*>::iterator	toRemove = this->findClient(socketFd);
 
-		for (std::vector<CGISocket*>::iterator it = this->_cgis.begin(); it < this->_cgis.end(); it++)
+		if (toRemove != this->_clients.end())
 		{
-			if ((*it)->getClient() == client)
+			ClientSocket*	client = *toRemove;
+
+			for (std::vector<CGISocket*>::iterator it = this->_cgis.begin(); it < this->_cgis.end(); it++)
 			{
-				kill((*it)->getPid(), SIGKILL);
-				waitpid((*it)->getPid(), NULL, 0);
-				this->removeCgiSocket(*it);
-				break ;
+				if ((*it)->getClient() == client)
+				{
+					kill((*it)->getPid(), SIGKILL);
+					waitpid((*it)->getPid(), NULL, 0);
+					this->removeCgiSocket(*it);
+					break ;
+				}
 			}
+			this->_requests.erase(client);
+			this->_pollingManager.removeSocket(socketFd);
+			delete client;
+			this->_clients.erase(toRemove);
 		}
-		this->_requests.erase(client);
-		this->_pollingManager.removeSocket(socketFd);
-		delete client;
-		this->_clients.erase(toRemove);
 	}
-}
 
-void	ServerManager::enableClientWrite(ClientSocket* client)
-{
-	client->enableWriteEvent();
-	this->_pollingManager.modifySocket(client);
-}
-
-void	ServerManager::disableClientWrite(ClientSocket* client)
-{
-	client->disableWriteEvent();
-	this->_pollingManager.modifySocket(client);
-}
-
-void	ServerManager::modifyPolling(ASocket* socket)
-{
-	this->_pollingManager.modifySocket(socket);
-}
-
-void	ServerManager::sendErrorResponse(ClientSocket* client, Location& location,
-	std::string const& version, int code, std::string msg)
-{
-	Response	response(location, version);
-
-	response.error(code, msg);
-	client->appendOutput(response.toString());
-	this->enableClientWrite(client);
-}
-
-void	ServerManager::startCgi(ClientSocket* client, Request const& request,
-	Location& location, CgiTarget const& target)
-{
-	std::string	version = request.getVersion();
-	std::string	method = request.getMethod();
-
-	if ((method == "GET" && !location.getAllowGet())
-		|| (method == "POST" && !location.getAllowPost()))
-		return (this->sendErrorResponse(client, location, version, 405, "Method not allowed"));
-
-	std::string	scriptPath = location.getRoot() + target.scriptName;
-	int			execStatus = checkExecutable(scriptPath);
-
-	if (execStatus == 404)
-		return (this->sendErrorResponse(client, location, version, 404, "Not found"));
-	if (execStatus == 403)
-		return (this->sendErrorResponse(client, location, version, 403, "Forbidden"));
-
-	int	sv[2];
-	if (socketpair(AF_UNIX, SOCK_STREAM, 0, sv))
-		return (this->sendErrorResponse(client, location, version, 500, "Internal Server Error"));
-
-	char**	envs = buildCgiEnvs(request, target, client->getAddress());
-	pid_t	pid = fork();
-
-	if (pid < 0)
+	void	ServerManager::enableClientWrite(ClientSocket* client)
 	{
-		close(sv[0]);
-		close(sv[1]);
-		freeCgiEnvs(envs);
-		return (this->sendErrorResponse(client, location, version, 500, "Internal Server Error"));
+		client->enableWriteEvent();
+		this->_pollingManager.modifySocket(client);
 	}
-	if (pid == 0)
-	{
-		dup2(sv[1], STDIN_FILENO);
-		dup2(sv[1], STDOUT_FILENO);
-		close(sv[0]);
-		close(sv[1]);
 
-		size_t	slash = scriptPath.find_last_of('/');
-		if (slash != std::string::npos && chdir(scriptPath.substr(0, slash).c_str()) != 0)
+	void	ServerManager::disableClientWrite(ClientSocket* client)
+	{
+		client->disableWriteEvent();
+		this->_pollingManager.modifySocket(client);
+	}
+
+	void	ServerManager::modifyPolling(ASocket* socket)
+	{
+		this->_pollingManager.modifySocket(socket);
+	}
+
+	void	ServerManager::sendErrorResponse(ClientSocket* client, Location& location,
+		std::string const& version, int code, std::string msg)
+	{
+		Response	response(location, version);
+
+		response.error(code, msg);
+		client->appendOutput(response.toString());
+		this->enableClientWrite(client);
+	}
+
+	void	ServerManager::startCgi(ClientSocket* client, Request const& request,
+		Location& location, CgiTarget const& target)
+	{
+		std::string	version = request.getVersion();
+		std::string	method = request.getMethod();
+
+		if ((method == "GET" && !location.getAllowGet())
+			|| (method == "POST" && !location.getAllowPost()))
+			return (this->sendErrorResponse(client, location, version, 405, "Method not allowed"));
+
+		std::string	scriptPath = location.getRoot() + target.scriptName;
+		int			execStatus = checkExecutable(scriptPath);
+
+		if (execStatus == 404)
+			return (this->sendErrorResponse(client, location, version, 404, "Not found"));
+		if (execStatus == 403)
+			return (this->sendErrorResponse(client, location, version, 403, "Forbidden"));
+
+		int	sv[2];
+		if (socketpair(AF_UNIX, SOCK_STREAM, 0, sv))
+			return (this->sendErrorResponse(client, location, version, 500, "Internal Server Error"));
+
+		char**	envs = buildCgiEnvs(request, target, client->getAddress());
+		pid_t	pid = fork();
+
+		if (pid < 0)
+		{
+			close(sv[0]);
+			close(sv[1]);
+			freeCgiEnvs(envs);
+			return (this->sendErrorResponse(client, location, version, 500, "Internal Server Error"));
+		}
+		if (pid == 0)
+		{
+			dup2(sv[1], STDIN_FILENO);
+			dup2(sv[1], STDOUT_FILENO);
+			close(sv[0]);
+			close(sv[1]);
+
+			size_t	slash = scriptPath.find_last_of('/');
+			if (slash != std::string::npos && chdir(scriptPath.substr(0, slash).c_str()) != 0)
+				// TODO: free everyting
+				_exit(1);
+
+			char*	argv[3];
+			argv[0] = const_cast<char*>(target.interpreter.c_str());
+			argv[1] = const_cast<char*>(scriptPath.c_str());
+			argv[2] = NULL;
+			execve(target.interpreter.c_str(), argv, envs);
 			// TODO: free everyting
 			_exit(1);
+		}
+		close(sv[1]);
+		freeCgiEnvs(envs);
 
-		char*	argv[3];
-		argv[0] = const_cast<char*>(target.interpreter.c_str());
-		argv[1] = const_cast<char*>(scriptPath.c_str());
-		argv[2] = NULL;
-		execve(target.interpreter.c_str(), argv, envs);
-		// TODO: free everyting
-		_exit(1);
-	}
-	close(sv[1]);
-	freeCgiEnvs(envs);
+		CGISocket*	cgi = new CGISocket(sv[0], pid, client, request.getBody(), &location, version);
 
-	CGISocket*	cgi = new CGISocket(sv[0], pid, client, request.getBody(), &location, version);
-
-	this->_pollingManager.addSocket(cgi);
-	this->_cgis.push_back(cgi);
-	client->disableReadEvent();
-	this->_pollingManager.modifySocket(client);
-}
-
-void	ServerManager::finalizeCgi(CGISocket* cgi)
-{
-	pid_t	pid = cgi->getPid();
-	int		status;
-
-	if (waitpid(pid, &status, WNOHANG) == 0)
-	{
-		kill(pid, SIGKILL);
-		waitpid(pid, &status, 0);
+		this->_pollingManager.addSocket(cgi);
+		this->_cgis.push_back(cgi);
+		client->disableReadEvent();
+		this->_pollingManager.modifySocket(client);
 	}
 
-	ClientSocket*	client = cgi->getClient();
-	bool			alive = false;
-
-	for (std::vector<ClientSocket*>::iterator it = this->_clients.begin(); it < this->_clients.end(); it++)
-		if (*it == client)
-			alive = true;
-	if (alive)
+	void	ServerManager::finalizeCgi(CGISocket* cgi)
 	{
+		pid_t	pid = cgi->getPid();
+		int		status;
+
+		if (waitpid(pid, &status, WNOHANG) == 0)
+		{
+			kill(pid, SIGKILL);
+			waitpid(pid, &status, 0);
+		}
+
+		ClientSocket*	client = cgi->getClient();
+		bool			alive = false;
+
+		for (std::vector<ClientSocket*>::iterator it = this->_clients.begin(); it < this->_clients.end(); it++)
+			if (*it == client)
+				alive = true;
+		if (alive)
+		{
 		Response	response(*cgi->getLocation(), cgi->getVersion());
 
 		if (!response.buildFromCgiOutput(cgi->getOutput()))

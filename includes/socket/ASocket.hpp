@@ -43,7 +43,6 @@ class ASocket
 		void						updateLastTimeUsed(void);
 
 		virtual int					socketBehavior(void *) = 0;
-		virtual int					onTimeOut(void *) = 0;
 };
 
 #endif

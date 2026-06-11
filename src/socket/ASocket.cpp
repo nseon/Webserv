@@ -11,7 +11,7 @@
 #include <ctime>
 
 ASocket::ASocket(Server* server):
-_server(server),
+_server(server)
 {
 	std::time(&this->_lastTimeUsed);
 	this->_currentEvent = 0;

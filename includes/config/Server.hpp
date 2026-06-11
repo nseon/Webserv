@@ -41,8 +41,9 @@ class Server : public Ablock{
 		Server();
 		~Server();
 
-		void					setPort(std::string &value);
+		void					setPort(std::string const &value);
 		void 					setName(std::string const &value);
+		void					setLocation(std::string const &value);
 		Location				&addLocation(std::string const &value);
 		
 		void					createSocket(void);

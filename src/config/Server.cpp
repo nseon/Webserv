@@ -26,9 +26,9 @@ Server::Server()
 	_client_max_body_size = DEFAULT_MAX_SIZE;
 	initDispatchMap();
 	_socket = NULL;
-	_dispatchMap["listen"] = reinterpret_cast<SetterFunc>(&Server::setPort);
-	_dispatchMap["server_name"] = reinterpret_cast<SetterFunc>(&Server::setName);
-	_dispatchMap["location"] = reinterpret_cast<SetterFunc>(&Server::addLocation);
+	_dispatchMap["listen"] = static_cast<SetterFunc>(&Server::setPort);
+	_dispatchMap["server_name"] = static_cast<SetterFunc>(&Server::setName);
+	_dispatchMap["location"] = static_cast<SetterFunc>(&Server::setLocation);
 }
 
 Server::~Server()
@@ -67,27 +67,28 @@ static std::string parseIp(std::string const &ip)
 	return (ip);
 }
 
-void Server::setPort(std::string &value)
+void Server::setPort(std::string const &value)
 {
-	size_t	i = value.find(':');
-	
+	std::string	port(value);
+	size_t		i = port.find(':');
+
 	if (i != std::string::npos)
 	{
-		_ip = parseIp(value.substr(0, i));
-		value.erase(0, i + 1);
+		_ip = parseIp(port.substr(0, i));
+		port.erase(0, i + 1);
 	}
 
-	std::stringstream ss(value);
+	std::stringstream ss(port);
 	unsigned int nb;
 	std::string str;
 	if (ss >> nb)
 	{
 		if (ss >> str)
-			throw std::logic_error("Invalid port: " + value);
+			throw std::logic_error("Invalid port: " + port);
 		_port = nb;
 	}
 	else
-		throw std::logic_error("Invalid port: " + value);
+		throw std::logic_error("Invalid port: " + port);
 }
 
 void Server::setName(std::string const &value)
@@ -101,6 +102,11 @@ void Server::setName(std::string const &value)
 		throw std::logic_error("Invalid name: " + value);
 	}
 	_name = value;
+}
+
+void Server::setLocation(std::string const &value)
+{
+	addLocation(value);
 }
 
 Location &Server::addLocation(std::string const &value)
