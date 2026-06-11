@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 15:58:31 by nseon             #+#    #+#             */
-/*   Updated: 2026/06/02 15:36:47 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/10 15:18:52 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,12 +104,14 @@ void Ablock::setClientMaxBodySize(std::string const &value)
 void Ablock::setIndex(std::string const &value)
 {
 	std::stringstream ss(value);
-	std::string file;
+	std::string path;
 	
-	ss >> file;
-	if (ss >> file)
+	ss >> path;
+	if (ss >> path)
 		throw std::logic_error("invalid index: " + value);
-	_index = value;
+	if (path[0] == '/')
+		path.erase(0, 1);
+	_index = path;
 }
 
 void Ablock::addErrorPage(std::string const &value)
