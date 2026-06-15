@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 13:34:54 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/25 15:36:39 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/11 14:16:32 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,73 @@ void Response::reset()
 	_body.clear();
 }
 
+std::string Response::getContentType(std::string const &path)
+{
+	size_t pos = path.find_last_of('.');
+
+	if (pos == std::string::npos)
+		return "text/html";
+
+	std::string ext = path.substr(pos);
+
+	if (ext == ".html" || ext == ".htm")
+		return "text/html";
+	if (ext == ".css")
+		return "text/css";
+	if (ext == ".ico")
+		return "image/x-icon";
+	if (ext == ".svg")
+		return "image/svg+xml";
+	if (ext == ".png")
+		return "image/png";
+	if (ext == ".jpg" || ext == ".jpeg")
+		return "image/jpeg";
+
+	return "text/plain";
+}
+
+std::string Response::getStatusMessage(int code)
+{
+	switch (code)
+	{
+		case 200: return "OK";
+		case 201: return "Created";
+		case 204: return "No Content";
+		case 301: return "Moved Permanently";
+		case 302: return "Found";
+		case 400: return "Bad Request";
+		case 403: return "Forbidden";
+		case 404: return "Not Found";
+		case 405: return "Method Not Allowed";
+		case 413: return "Payload Too Large";
+		case 500: return "Internal Server Error";
+		case 501: return "Not Implemented";
+		case 505: return "HTTP Version Not Supported";
+		default:  return "Unknown Status";
+	}
+}
+
+void Response::handle_redirection()
+{
+	if (getLocation().getReturn().first != 0)
+		setStatusCode(getLocation().getReturn().first);
+	else
+		setStatusCode(301);
+	setStatusMsg(getStatusMessage(getStatusCode()));
+	addHeader("Location", getLocation().getReturn().second);
+	addHeader("Content-Length", "0");
+}
+
 //**********************GETTER**************************//
 
 Location Response::getLocation() const
 {
 	return (*_location);
+}
+
+Request const *Response::getRequest() const
+{
+	return (_request);
 }
 
 int Response::getStatusCode() const
@@ -65,6 +127,11 @@ void Response::setStatusMsg(std::string msg)
 void Response::setBody(std::vector<char> body)
 {
 	_body = body;
+}
+
+void Response::setBody(std::string const &str)
+{
+	_body.assign(str.begin(), str.end());
 }
 
 //**************CGI*************************************//
@@ -139,11 +206,16 @@ bool Response::buildFromCgiOutput(std::vector<char> const& raw)
 
 //**************CONSTRUCTOR/DESTRUCTOR******************//
 
-Response::Response(Request const &request, Location &location) : _status_code(0), _location(&location)
+Response::Response(Request const &request, Location *location)
+	: _status_code(0), _location(location), _request(&request)
 {
 	this->setVersion(request.getVersion());
 	this->addHeader("connection", "keep-alive");
-	if (request.getMethod() == "GET")
+	if (!_location)
+		this->error(404, getStatusMessage(404));
+	else if (!getLocation().getReturn().second.empty())
+		handle_redirection();
+	else if (request.getMethod() == "GET")
 		handle_get(request);
 	else if (request.getMethod() == "POST")
 		handle_post(request);
@@ -151,12 +223,35 @@ Response::Response(Request const &request, Location &location) : _status_code(0)
 		handle_delete(request);
 }
 
-Response::Response(Location &location, std::string const& version) : _status_code(0), _location(&location)
+Response::Response(Location &location, std::string const& version)
+	: _status_code(0), _location(&location), _request(NULL)
 {
 	this->setVersion(version);
 	this->addHeader("connection", "keep-alive");
 }
 
+Response::Response(int code, Server &server)
+	: _status_code(code), _location(NULL), _request(NULL)
+{
+	std::string	msg = getStatusMessage(code);
+
+	this->setVersion("HTTP/1.1");
+	this->addHeader("connection", "keep-alive");
+	this->setStatusMsg(msg);
+
+	std::string	error_path = server.getErrorPath(code);
+
+	if (error_path.empty() || getRessource(error_path, *this) != 200)
+	{
+		std::stringstream	ss;
+
+		this->setBody(generate_default_error_page(code, msg));
+		ss << this->getBody().size();
+		this->addHeader("Content-Length", ss.str());
+	}
+	this->setStatusCode(code);
+	this->setStatusMsg(msg);
+}
+
 Response::~Response()
 {}
-

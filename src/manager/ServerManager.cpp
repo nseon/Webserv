@@ -287,11 +287,11 @@ void	ServerManager::handleHttpRequest(ClientSocket* client, char* msg)
 		if (requestIterator->second.getParsingState() == DONE)
 		{
 			Request&	request = requestIterator->second;
-			Location&	location = *(request.getServer()->matchLocation(request.getPath()));
+			Location*	location = request.getServer()->matchLocation(request.getPath());
 			CgiTarget	target;
 
-			if (parseCgiTarget(location, request.getPath(), target))
-				this->startCgi(client, request, location, target);
+			if (location && parseCgiTarget(*location, request.getPath(), target))
+				this->startCgi(client, request, *location, target);
 			else
 			{
 				Response	response(request, location);

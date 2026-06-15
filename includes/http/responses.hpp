@@ -16,3 +16,4 @@
 #include "http/Response.hpp"
 
 int getRessource(std::string const &path, Response &response);
+std::vector<char> generate_default_error_page(int code, std::string msg);

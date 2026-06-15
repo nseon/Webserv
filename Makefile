@@ -92,7 +92,10 @@ MANAGER_SRC	=	ServerManager.cpp
 # ----------------TEST--------------- #
 
 TEST_SRC	:=	Logger_test.cpp \
-				CGIHandler_test.cpp \
+				Request_test.cpp \
+				Response_test.cpp \
+				Cgi_test.cpp \
+				Timeout_test.cpp \
 				PollingManager_test.cpp \
 				ServerManager_test.cpp \
 
