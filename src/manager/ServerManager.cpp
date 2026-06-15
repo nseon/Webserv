@@ -81,6 +81,7 @@ void	ServerManager::serverLoop(void)
 			{
 				if (difftime(std::time(NULL), (*it)->getLastTimeUsed()) >= CLIENT_TIMEOUT)
 				{
+					Logger::info() << "Client" << (*it)->getFd() << " timed out." << std::endl;
 					this->removeClientSocket((*it)->getFd());
 				}
 			}
