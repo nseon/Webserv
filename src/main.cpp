@@ -20,9 +20,16 @@
 #include "config/Config.hpp"
 #include "manager/ServerManager.hpp"
 
+ServerManager*	serverManagerPtr;
+
+void	handler(int)
+{
+	serverManagerPtr->setShouldStop();
+}
+
 int	main(int argc, char **argv)
 {
-	std::signal(SIGPIPE, SIG_IGN);
+	std::signal(SIGINT, handler);
 	if (argc == 2)
 	{
 		try {
@@ -38,8 +45,9 @@ int	main(int argc, char **argv)
 			}
 
 			ServerManager	sm(conf.getServers());
-			
-	
+
+			serverManagerPtr = &sm;
+			std::signal(SIGINT, handler);
 			std::cout << conf << std::endl;
 			sm.serverLoop();
 		}

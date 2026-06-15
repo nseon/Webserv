@@ -66,6 +66,10 @@ std::vector<ASocket*>	PollingManager::poll(int timeout)
 	else
 	{
 		nbEvents = epoll_wait(this->_epollInstance, events, static_cast<int>(this->_sockets.size()), timeout);
+		if (nbEvents < 0)
+		{
+			nbEvents = 0;
+		}
 	}
 	std::vector<ASocket*>	ret(static_cast<unsigned long>(nbEvents));
 	for (int i = 0; i < nbEvents; i++)

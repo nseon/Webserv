@@ -16,7 +16,8 @@
 ServerManager::ServerManager(void) {}
 
 ServerManager::ServerManager(std::vector<Server> servers):
-_servers(servers)
+_servers(servers),
+_shouldStop(false)
 {
 	for (std::vector<Server>::iterator it = this->_servers.begin(); it < this->_servers.end(); it++)
 	{
@@ -38,7 +39,7 @@ ServerManager::~ServerManager(void)
 {
 	for (std::vector<ClientSocket*>::iterator it = this->_clients.begin(); it < this->_clients.end(); it++)
 	{
-		delete *it;
+		this->removeClientSocket((*it)->getFd());
 	}
 	for (std::vector<CGISocket*>::iterator it = this->_cgis.begin(); it < this->_cgis.end(); it++)
 	{
@@ -52,41 +53,41 @@ void	ServerManager::serverLoop(void)
 {
 	std::vector<ASocket*>	readyList;
 
-		Logger::info() << "Server Manager begins to loop !" << std::endl;
-		while (1)
+	Logger::info() << "Server Manager begins to loop !" << std::endl;
+	while (!this->_shouldStop)
+	{
+		readyList = this->_pollingManager.poll(POLLING_TIMEOUT);
+
+		for (std::vector<ASocket*>::iterator it = readyList.begin(); it < readyList.end(); it++)
 		{
-			readyList = this->_pollingManager.poll(POLLING_TIMEOUT);
+			(*it)->updateLastTimeUsed();
+			(*it)->socketBehavior(this);
+		}
+		for (std::vector<CGISocket*>::iterator it = _cgis.begin(); it < _cgis.end(); it++)
+		{
+			if (difftime(std::time(NULL), (*it)->getLastTimeUsed()) >= CGI_TIMEOUT)
+			{
+				Response		response(*(*it)->getLocation(), (*it)->getVersion());
+				ClientSocket*	client = (*it)->getClient();
 
-			for (std::vector<ASocket*>::iterator it = readyList.begin(); it < readyList.end(); it++)
-			{
-				(*it)->updateLastTimeUsed();
-				(*it)->socketBehavior(this);
+				kill((*it)->getPid(), SIGKILL);
+				waitpid((*it)->getPid(), NULL, 0);
+				response.error(504, "Gateway Timeout");
+				client->appendOutput(response.toString());
+				this->enableClientWrite(client);
+				this->removeCgiSocket(*it);
 			}
-			for (std::vector<CGISocket*>::iterator it = _cgis.begin(); it < _cgis.end(); it++)
+		}
+		for (std::vector<ClientSocket*>::iterator it = _clients.begin(); it < _clients.end(); it++)
+		{
+			if (difftime(std::time(NULL), (*it)->getLastTimeUsed()) >= CLIENT_TIMEOUT)
 			{
-				if (difftime(std::time(NULL), (*it)->getLastTimeUsed()) >= CGI_TIMEOUT)
-				{
-					Response		response(*(*it)->getLocation(), (*it)->getVersion());
-					ClientSocket*	client = (*it)->getClient();
-
-					kill((*it)->getPid(), SIGKILL);
-					waitpid((*it)->getPid(), NULL, 0);
-					response.error(504, "Gateway Timeout");
-					client->appendOutput(response.toString());
-					this->enableClientWrite(client);
-					this->removeCgiSocket(*it);
-				}
-			}
-			for (std::vector<ClientSocket*>::iterator it = _clients.begin(); it < _clients.end(); it++)
-			{
-				if (difftime(std::time(NULL), (*it)->getLastTimeUsed()) >= CLIENT_TIMEOUT)
-				{
-					Logger::info() << "Client" << (*it)->getFd() << " timed out." << std::endl;
-					this->removeClientSocket((*it)->getFd());
-				}
+				Logger::info() << "Client" << (*it)->getFd() << " timed out." << std::endl;
+				this->removeClientSocket((*it)->getFd());
 			}
 		}
 	}
+}
 
 	std::vector<ClientSocket*>::iterator	ServerManager::findClient(int socketFd)
 	{
@@ -202,16 +203,14 @@ void	ServerManager::serverLoop(void)
 
 			size_t	slash = scriptPath.find_last_of('/');
 			if (slash != std::string::npos && chdir(scriptPath.substr(0, slash).c_str()) != 0)
-				// TODO: free everyting
-				_exit(1);
+				this->setShouldStop();
 
 			char*	argv[3];
 			argv[0] = const_cast<char*>(target.interpreter.c_str());
 			argv[1] = const_cast<char*>(scriptPath.c_str());
 			argv[2] = NULL;
 			execve(target.interpreter.c_str(), argv, envs);
-			// TODO: free everyting
-			_exit(1);
+			this->setShouldStop();
 		}
 		close(sv[1]);
 		freeCgiEnvs(envs);
@@ -307,4 +306,9 @@ void	ServerManager::handleHttpRequest(ClientSocket* client, char* msg)
 		std::cout << e.what() << std::endl;
 		requestIterator->second.reset();
 	}
+}
+
+void	ServerManager::setShouldStop(void)
+{
+	this->_shouldStop = true;
 }

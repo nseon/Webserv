@@ -37,6 +37,7 @@ class ServerManager
 		std::vector<ClientSocket*>::iterator	findClient(int socketFd);
 		void									sendErrorResponse(ClientSocket* client, Location& location,
 													std::string const& version, int code, std::string msg);
+		bool									_shouldStop;
 
 	public:
 		ServerManager(std::vector<Server> servers);
@@ -56,6 +57,8 @@ class ServerManager
 		void	removeCgiSocket(CGISocket* cgi);
 
 		void	handleHttpRequest(ClientSocket* client, char* msg);
+
+		void	setShouldStop(void);
 };
 
 #endif
