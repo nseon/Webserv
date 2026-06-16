@@ -301,6 +301,14 @@ void	ServerManager::handleHttpRequest(ClientSocket* client, char* msg)
 			request.reset();
 		}
 	}
+	catch (int error_code)
+	{
+		Response	response(error_code, *requestIterator->first->getServer());
+
+		client->appendOutput(response.toString());
+		this->enableClientWrite(client);
+		requestIterator->second.reset();
+	}
 	catch (std::exception &e)
 	{
 		std::cout << e.what() << std::endl;
