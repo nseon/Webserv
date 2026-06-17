@@ -44,7 +44,7 @@ class Response : public AHttpMessage {
 		void handle_redirection();
 		bool buildFromCgiOutput(std::vector<char> const& raw);
 
-		Location getLocation() const;
+		Location const& getLocation() const;
 		Request const *getRequest() const;
 		int getStatusCode() const;
 

@@ -97,7 +97,7 @@ void Response::handle_redirection()
 
 //**********************GETTER**************************//
 
-Location Response::getLocation() const
+Location const& Response::getLocation() const
 {
 	return (*_location);
 }
