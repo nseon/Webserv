@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 15:40:21 by nseon             #+#    #+#             */
-/*   Updated: 2026/06/10 16:54:49 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/17 16:02:38 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,15 +35,22 @@ int fill_error(Response &response, int code)
 {
 	std::string msg = Response::getStatusMessage(code);
 
-	std::string error_path;
+	std::string error_path = response.getRequest()->getServer()->getRoot();
 	Location *loc = response.getLocation();
 	
 	if (!loc)
-		error_path = response.getRequest()->getServer()->getErrorPath(code);
+	{
+		if (response.getRequest()->getServer()->getErrorPath(code)[0] != '/')
+			error_path += '/';
+		error_path += response.getRequest()->getServer()->getErrorPath(code);
+	}
 	else
-		error_path = loc->getErrorPath(code);
-
-	if (error_path.empty())
+	{
+		if (loc->getErrorPath(code)[0] != '/')
+			error_path += '/';
+		error_path += loc->getErrorPath(code);
+	}
+	if (error_path == response.getRequest()->getServer()->getRoot() + '/')
 	{
 		std::stringstream ss;
 		
