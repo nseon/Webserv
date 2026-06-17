@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 15:40:21 by nseon             #+#    #+#             */
-/*   Updated: 2026/06/11 14:16:32 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/17 16:02:38 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,16 +31,26 @@ std::vector<char> generate_default_error_page(int code, std::string msg)
 	return (body);
 }
 
-int Response::error(int code, std::string msg)
+int Response::error(int code)
 {
-	std::string error_path;
+	std::string msg = Response::getStatusMessage(code);
 
-	if (_location)
-		error_path = _location->getErrorPath(code);
-	else if (_request)
-		error_path = _request->getServer()->getErrorPath(code);
+	std::string error_path = this->getRequest()->getServer()->getRoot();
+	Location const* loc = this->_location;
 
-	if (error_path.empty() || getRessource(error_path, *this) != 200)
+	if (!loc)
+	{
+		if (this->getRequest()->getServer()->getErrorPath(code)[0] != '/')
+			error_path += '/';
+		error_path += this->getRequest()->getServer()->getErrorPath(code);
+	}
+	else
+	{
+		if (loc->getErrorPath(code)[0] != '/')
+			error_path += '/';
+		error_path += loc->getErrorPath(code);
+	}
+	if (error_path == this->getRequest()->getServer()->getRoot() + '/')
 	{
 		std::stringstream ss;
 
@@ -48,6 +58,14 @@ int Response::error(int code, std::string msg)
 		ss << this->getBody().size();
 		this->addHeader("Content-Length", ss.str());
 	}
+	else if (getRessource(error_path, *this) != 200)
+    {
+        std::stringstream ss;
+
+        this->setBody(generate_default_error_page(code, msg));
+        ss << this->getBody().size();
+        this->addHeader("Content-Length", ss.str());
+    }
 	this->setStatusCode(code);
 	this->setStatusMsg(msg);
 	return (this->getStatusCode());

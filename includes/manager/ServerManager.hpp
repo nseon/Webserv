@@ -36,7 +36,7 @@ class ServerManager
 
 		std::vector<ClientSocket*>::iterator	findClient(int socketFd);
 		void									sendErrorResponse(ClientSocket* client, Location& location,
-													std::string const& version, int code, std::string msg);
+													std::string const& version, int code);
 		bool									_shouldStop;
 
 	public:

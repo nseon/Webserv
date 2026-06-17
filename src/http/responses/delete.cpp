@@ -21,11 +21,11 @@ static int delete_ressource(std::string &path, Response &response)
 	struct stat sb;
 
 	if (stat(path.c_str(), &sb) != 0)
-		return (response.error(404, Response::getStatusMessage(404)));
+		return (response.error(404));
 	if (S_ISDIR(sb.st_mode))
-		return (response.error(403, Response::getStatusMessage(403)));
+		return (response.error(403));
 	if (unlink(path.c_str()) != 0)
-		return (response.error(500, Response::getStatusMessage(500)));
+		return (response.error(500));
 	response.setStatusCode(204);
 	response.setStatusMsg(Response::getStatusMessage(204));
 	response.addHeader("Content-Length", "0");
@@ -35,9 +35,9 @@ static int delete_ressource(std::string &path, Response &response)
 int Response::handle_delete(Request const &request)
 {
 	if (!this->getLocation().getAllowDelete())
-		return (this->error(405, Response::getStatusMessage(405)));
+		return (this->error(405));
 	if (this->getLocation().getUploadStore().empty())
-		return (this->error(403, Response::getStatusMessage(403)));
+		return (this->error(403));
 
 	size_t pos = request.getPath().rfind("/");
 	std::string filename;
@@ -47,7 +47,7 @@ int Response::handle_delete(Request const &request)
 	else
 		filename = request.getPath();
 	if (filename.empty())
-		return (this->error(400, Response::getStatusMessage(400)));
+		return (this->error(400));
 
 	std::string path = this->getLocation().getUploadStore() + "/" + filename;
 	return (delete_ressource(path, *this));

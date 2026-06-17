@@ -40,7 +40,7 @@ class Response : public AHttpMessage {
 
 		void reset();
 
-		int error(int code, std::string msg);
+		int error(int code);
 		void handle_redirection();
 		bool buildFromCgiOutput(std::vector<char> const& raw);
 

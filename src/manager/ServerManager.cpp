@@ -72,7 +72,7 @@ void	ServerManager::serverLoop(void)
 
 				kill((*it)->getPid(), SIGKILL);
 				waitpid((*it)->getPid(), NULL, 0);
-				response.error(504, "Gateway Timeout");
+				response.error(504);
 				client->appendOutput(response.toString());
 				this->enableClientWrite(client);
 				this->removeCgiSocket(*it);
@@ -153,11 +153,11 @@ void	ServerManager::serverLoop(void)
 	}
 
 	void	ServerManager::sendErrorResponse(ClientSocket* client, Location& location,
-		std::string const& version, int code, std::string msg)
+		std::string const& version, int code)
 	{
 		Response	response(location, version);
 
-		response.error(code, msg);
+		response.error(code);
 		client->appendOutput(response.toString());
 		this->enableClientWrite(client);
 	}
@@ -170,19 +170,19 @@ void	ServerManager::serverLoop(void)
 
 		if ((method == "GET" && !location.getAllowGet())
 			|| (method == "POST" && !location.getAllowPost()))
-			return (this->sendErrorResponse(client, location, version, 405, "Method not allowed"));
+			return (this->sendErrorResponse(client, location, version, 405));
 
 		std::string	scriptPath = location.getRoot() + target.scriptName;
 		int			execStatus = checkExecutable(scriptPath);
 
 		if (execStatus == 404)
-			return (this->sendErrorResponse(client, location, version, 404, "Not found"));
+			return (this->sendErrorResponse(client, location, version, 404));
 		if (execStatus == 403)
-			return (this->sendErrorResponse(client, location, version, 403, "Forbidden"));
+			return (this->sendErrorResponse(client, location, version, 403));
 
 		int	sv[2];
 		if (socketpair(AF_UNIX, SOCK_STREAM, 0, sv))
-			return (this->sendErrorResponse(client, location, version, 500, "Internal Server Error"));
+			return (this->sendErrorResponse(client, location, version, 500));
 
 		char**	envs = buildCgiEnvs(request, target, client->getAddress());
 		pid_t	pid = fork();
@@ -192,7 +192,7 @@ void	ServerManager::serverLoop(void)
 			close(sv[0]);
 			close(sv[1]);
 			freeCgiEnvs(envs);
-			return (this->sendErrorResponse(client, location, version, 500, "Internal Server Error"));
+			return (this->sendErrorResponse(client, location, version, 500));
 		}
 		if (pid == 0)
 		{
@@ -245,7 +245,7 @@ void	ServerManager::serverLoop(void)
 		Response	response(*cgi->getLocation(), cgi->getVersion());
 
 		if (!response.buildFromCgiOutput(cgi->getOutput()))
-			response.error(502, "Bad Gateway");
+			response.error(502);
 		client->appendOutput(response.toString());
 		client->enableReadEvent();
 		client->enableWriteEvent();

@@ -212,7 +212,7 @@ Response::Response(Request const &request, Location *location)
 	this->setVersion(request.getVersion());
 	this->addHeader("connection", "keep-alive");
 	if (!_location)
-		this->error(404, getStatusMessage(404));
+		this->error(404);
 	else if (!getLocation().getReturn().second.empty())
 		handle_redirection();
 	else if (request.getMethod() == "GET")

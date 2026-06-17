@@ -139,9 +139,9 @@ int getFile(std::string const &path, Response &response)
 {
 	switch (getRessource(path, response))
 	{
-		case 404: return (response.error(404, Response::getStatusMessage(404)));
-		case 403: return (response.error(403, Response::getStatusMessage(403)));
-		case 500: return (response.error(500, Response::getStatusMessage(500)));
+		case 404: return (response.error(404));
+		case 403: return (response.error(403));
+		case 500: return (response.error(500));
 	}
 	return (200);
 }
@@ -149,7 +149,7 @@ int getFile(std::string const &path, Response &response)
 int Response::handle_get(Request const &request)
 {
 	if (!this->getLocation().getAllowGet())
-		return (this->error(405, Response::getStatusMessage(405)));
+		return (this->error(405));
 	this->setStatusCode(200);
 	this->setStatusMsg("OK");
 
@@ -162,7 +162,7 @@ int Response::handle_get(Request const &request)
 	size_t	pos = path.find("..");
 
 	if (pos != std::string::npos && (pos == path.size() - 2 || path[pos + 2] == '/'))
-		return (this->error(400, Response::getStatusMessage(400)));
+		return (this->error(400));
 
 	std::string	full = this->getLocation().getRoot() + path;
 	return (getFile(full, *this));

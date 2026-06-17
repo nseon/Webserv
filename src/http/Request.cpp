@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/27 14:01:57 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/19 16:46:47 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/17 14:52:06 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,9 @@ bool Request::_parseBodyContent(std::map<std::string, std::string>::iterator &i)
 
 	_body.insert(_body.end(), _raw_data.begin(), _raw_data.begin() + bytes_to_copy);
 	_raw_data.erase(0, bytes_to_copy);
-	if (_body.size() == body_length || _body.size() == _server->getClientMaxBodySize())
+	if (_body.size() > _server->getClientMaxBodySize())
+		throw 413;
+	if (_body.size() == body_length)
 	{
 		_parsing_state = DONE;
 		return (true);

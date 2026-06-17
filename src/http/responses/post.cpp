@@ -44,7 +44,7 @@ static int post_ressource(std::string &path, Request const &request, Response &r
 	std::ofstream file(path.c_str(), std::ios::out | std::ios::binary);
 
 	if (!file)
-		return response.error(500, Response::getStatusMessage(500));
+		return response.error(500);
 
 	std::vector<char> const body = getContent(request);
 
@@ -60,9 +60,9 @@ static int post_ressource(std::string &path, Request const &request, Response &r
 int Response::handle_post(Request const &request)
 {
 	if (!this->getLocation().getAllowPost())
-		return (this->error(405, Response::getStatusMessage(405)));
+		return (this->error(405));
 	if (this->getLocation().getUploadStore().empty())
-		return (this->error(403, Response::getStatusMessage(403)));
+		return (this->error(403));
 
 	size_t pos = request.getPath().rfind("/");
 	std::string filename;
@@ -72,7 +72,7 @@ int Response::handle_post(Request const &request)
 	else
 		filename = request.getPath();
 	if (filename.empty())
-		return (this->error(400, Response::getStatusMessage(400)));
+		return (this->error(400));
 
 	std::string path = this->getLocation().getUploadStore() + "/" + filename;
 
