@@ -67,7 +67,7 @@ a{{color:#fff;display:inline-block;margin-top:15px}}
 <h1>Calculatrice CGI 🧮</h1>
 <p>Calcul effectué côté serveur par <code>calc.py</code> à partir du corps POST.</p>
 <div class="res">{}</div>
-<a href="/html/pages/cgi.html">← Retour aux démos CGI</a>
+<a href="/pages/cgi.html">← Retour aux démos CGI</a>
 </div></body></html>""".format(display)
 
 print("Content-Type: text/html; charset=utf-8\r")

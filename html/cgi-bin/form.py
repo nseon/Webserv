@@ -49,7 +49,7 @@ a{{color:#fff;display:inline-block;margin-top:20px}}
 <h1>Message bien reçu ! ✅</h1>
 <p>Le script <code>form.py</code> a traité votre envoi POST côté serveur :</p>
 <table>{}</table>
-<a href="/html/pages/cgi.html">← Retour aux démos CGI</a>
+<a href="/pages/cgi.html">← Retour aux démos CGI</a>
 </div></body></html>""".format(rows)
 
 print("Content-Type: text/html; charset=utf-8\r")

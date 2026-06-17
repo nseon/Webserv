@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # CGI demo (GET) : lit la QUERY_STRING et renvoie une page personnalisee.
-# Exemple d'URL : /html/cgi-bin/greet.py?name=Leo&color=tomato
+# Exemple d'URL : /cgi-bin/greet.py?name=Leo&color=tomato
 import os
 import html
 from urllib.parse import parse_qs
@@ -29,7 +29,7 @@ a{{color:#fff;display:inline-block;margin-top:25px}}
 <h1>Bonjour, {name} ! 👋</h1>
 <p>Cette page a été générée dynamiquement par un script CGI Python à partir des paramètres GET.</p>
 <p class="q">QUERY_STRING reçue : <code>{query}</code></p>
-<a href="/html/pages/cgi.html">← Retour aux démos CGI</a>
+<a href="/pages/cgi.html">← Retour aux démos CGI</a>
 </div></body></html>""".format(
     color=safe_color, name=name, query=html.escape(query) or "<em>aucune</em>"
 )

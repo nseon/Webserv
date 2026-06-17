@@ -35,7 +35,7 @@ a{{color:#fff;display:inline-block;margin-top:20px}}
 <h1>Variables d'environnement CGI 🌱</h1>
 <p>Ce script Python (<code>env.py</code>) a été exécuté par Webserv via <strong>{}</strong>. Voici l'environnement qu'il a reçu :</p>
 <table>{}</table>
-<a href="/html/pages/cgi.html">← Retour aux démos CGI</a>
+<a href="/pages/cgi.html">← Retour aux démos CGI</a>
 </div></body></html>""".format(
     html.escape(os.environ.get("REQUEST_METHOD", "?")), rows
 )
