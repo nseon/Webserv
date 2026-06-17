@@ -56,7 +56,7 @@ class ServerManager
 		void	finalizeCgi(CGISocket* cgi);
 		void	removeCgiSocket(CGISocket* cgi);
 
-		void	handleHttpRequest(ClientSocket* client, char* msg);
+		void	handleHttpRequest(ClientSocket* client, std::string &msg);
 
 		void	setShouldStop(void);
 };

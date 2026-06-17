@@ -71,9 +71,9 @@ int	ClientSocket::socketBehavior(void *sm)
 			manager->removeClientSocket(this->_socketFd);
 			return (0);
 		}
-		msg[msg_length] = 0;
-		Logger::info() << "Client " << this->_socketFd << " sended a message : " << msg << std::endl;
-		manager->handleHttpRequest(this, msg);
+		std::string	msg_str(msg, msg_length);
+		Logger::info() << "Client " << this->_socketFd << " sended a message : " << msg_str << std::endl;
+		manager->handleHttpRequest(this, msg_str);
 	}
 	if (this->_currentEvent & EPOLLOUT)
 	{

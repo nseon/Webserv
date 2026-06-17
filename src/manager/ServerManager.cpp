@@ -268,7 +268,7 @@ void	ServerManager::removeCgiSocket(CGISocket* cgi)
 	delete cgi;
 }
 
-void	ServerManager::handleHttpRequest(ClientSocket* client, char* msg)
+void	ServerManager::handleHttpRequest(ClientSocket* client, std::string &msg)
 {
 	std::map<ClientSocket*, Request>::iterator	requestIterator;
 
