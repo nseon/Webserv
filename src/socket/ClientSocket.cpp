@@ -43,11 +43,16 @@ int	ClientSocket::flush(void)
 	this->_out_off += static_cast<size_t>(sent);
 	if (this->_out_off >= this->_out.size())
 	{
-		this->_out.clear();
-		this->_out_off = 0;
+		this->clearOutput();
 		return (1);
 	}
 	return (0);
+}
+
+void	ClientSocket::clearOutput(void)
+{
+	this->_out.clear();
+	this->_out_off = 0;
 }
 
 int	ClientSocket::socketBehavior(void *sm)

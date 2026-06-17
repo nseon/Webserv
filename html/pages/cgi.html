@@ -101,7 +101,7 @@
                 Le script <code>env.py</code> affiche les variables CGI que le serveur lui transmet
                 (méthode, query string, ports, adresse cliente…).
             </p>
-            <a href="/html/cgi-bin/env.py"><button type="button">Voir l'environnement CGI</button></a>
+            <a href="/cgi-bin/env.py"><button type="button">Voir l'environnement CGI</button></a>
         </div>
 
         <!-- ============ GET : salutation paramétrée ============ -->
@@ -111,7 +111,7 @@
                 <code>greet.py</code> lit la <code>QUERY_STRING</code> et génère une page personnalisée.
                 Les champs sont envoyés dans l'URL (GET).
             </p>
-            <form action="/html/cgi-bin/greet.py" method="GET">
+            <form action="/cgi-bin/greet.py" method="GET">
                 <label for="name">Votre prénom</label>
                 <input type="text" id="name" name="name" placeholder="Léo" required>
                 <label for="color">Couleur du titre</label>
@@ -127,7 +127,7 @@
                 <code>calc.py</code> lit le corps de la requête POST sur son <code>stdin</code>
                 (selon <code>CONTENT_LENGTH</code>) et calcule le résultat côté serveur.
             </p>
-            <form action="/html/cgi-bin/calc.py" method="POST">
+            <form action="/cgi-bin/calc.py" method="POST">
                 <div class="row">
                     <div>
                         <label for="a">Nombre A</label>
@@ -157,7 +157,7 @@
             <p class="desc">
                 <code>form.py</code> reçoit les champs du formulaire en POST et renvoie un récapitulatif.
             </p>
-            <form action="/html/cgi-bin/form.py" method="POST">
+            <form action="/cgi-bin/form.py" method="POST">
                 <label for="cname">Nom</label>
                 <input type="text" id="cname" name="name" placeholder="Votre nom" required>
                 <label for="email">Email</label>

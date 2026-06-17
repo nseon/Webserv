@@ -25,6 +25,7 @@ class ClientSocket: public ASocket
 		void		appendOutput(std::string const& data);
 		bool		hasPendingOutput(void) const;
 		int			flush(void);
+		void		clearOutput(void);
 
 		virtual int	socketBehavior(void *);
 };
