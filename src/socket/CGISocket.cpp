@@ -5,7 +5,7 @@
 #include <sys/epoll.h>
 
 #ifndef CGI_READ_SIZE
-# define CGI_READ_SIZE 4096
+# define CGI_READ_SIZE 40000
 #endif
 
 CGISocket::CGISocket(int fd, pid_t pid, ClientSocket* client,
