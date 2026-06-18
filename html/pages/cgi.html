@@ -90,8 +90,8 @@
 
         <h1>Démonstrations CGI ⚙️</h1>
         <p class="desc" style="text-align:center;">
-            Webserv exécute des scripts <strong>Python (CGI/1.1)</strong> et renvoie leur sortie.
-            Chaque démo ci-dessous appelle un script <code>.py</code> via <strong>GET</strong> ou <strong>POST</strong>.
+            Webserv exécute des scripts <strong>CGI/1.1</strong> (Python et Perl) et renvoie leur sortie.
+            Chaque démo ci-dessous appelle un script via <strong>GET</strong> ou <strong>POST</strong>.
         </p>
 
         <!-- ============ GET : variables d'environnement ============ -->
@@ -165,6 +165,20 @@
                 <label for="message">Message</label>
                 <textarea id="message" name="message" rows="3" placeholder="Votre message…"></textarea>
                 <button type="submit">Envoyer (POST)</button>
+            </form>
+        </div>
+
+        <!-- ============ POST : analyse de texte en Perl ============ -->
+        <div class="card">
+            <h2>Analyse de texte <span class="badge post">POST</span> <span class="badge" style="background:#7a52cc;">Perl</span></h2>
+            <p class="desc">
+                Démo dans un <strong>autre langage</strong> : le script Perl <code>analyze.pl</code>
+                reçoit un texte en POST et renvoie le nombre de caractères, mots et lignes.
+            </p>
+            <form action="/cgi-bin/analyze.pl" method="POST">
+                <label for="text">Votre texte</label>
+                <textarea id="text" name="text" rows="4" placeholder="Collez ou tapez un texte à analyser…" required>Webserv exécute du CGI en Perl !</textarea>
+                <button type="submit">Analyser (POST · Perl)</button>
             </form>
         </div>
     </div>

@@ -12,7 +12,7 @@
 #include <iostream> //tmp
 
 #ifndef RECV_SIZE
-# define RECV_SIZE 1024
+# define RECV_SIZE 40000
 #endif
 
 ClientSocket::ClientSocket(int fd, Server* server, struct sockaddr_in addr):
