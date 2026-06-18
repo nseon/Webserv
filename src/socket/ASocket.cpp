@@ -12,7 +12,7 @@ ASocket::ASocket(void)
 	if (this->_socketFd == -1)
 		throw std::runtime_error("ASocket constructor failed, because socket() function failed.");
 
-	fcntl(this->_socketFd, F_SETFL, O_NONBLOCK);
+	fcntl(this->_socketFd, F_SETFL, O_NONBLOCK | O_CLOEXEC);
 	if (this->_socketFd == -1)
 		throw std::runtime_error("ASocket constructor failed, because fnctl() function failed.");
 
