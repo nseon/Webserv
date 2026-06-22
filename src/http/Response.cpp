@@ -6,15 +6,18 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 13:34:54 by nseon             #+#    #+#             */
-/*   Updated: 2026/06/11 14:16:32 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/18 16:46:56 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "http/Response.hpp"
 #include "http/responses.hpp"
+#include <cstddef>
 #include <fcntl.h>
 #include <sstream>
+#include <string>
 #include <vector>
+#include <ctime>
 
 std::string Response::toString() const
 {
@@ -207,9 +210,18 @@ bool Response::buildFromCgiOutput(std::vector<char> const& raw)
 
 //**************CONSTRUCTOR/DESTRUCTOR******************//
 
-Response::Response(Request const &request, Location *location)
+Response::Response(Request const &request, Location *location, int socketfd)
 	: _status_code(0), _location(location), _request(&request)
 {
+	std::map<std::string, std::string>::const_iterator i = getRequest()->getHeaders().find("Cookie");
+	
+	if (i == getRequest()->getHeaders().end())
+	{
+		std::stringstream ss;
+
+		ss << socketfd << "_" << std::time(NULL);
+		this->addHeader("Set-Cookie", "id=" + ss.str());
+	}
 	this->setVersion(request.getVersion());
 	this->addHeader("connection", "keep-alive");
 	if (!_location)

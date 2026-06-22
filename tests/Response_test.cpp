@@ -83,7 +83,7 @@ TEST_SUITE("Response — GET")
 		Request	request;
 		fill_request(request, server, "GET", "/hello.txt");
 
-		Response	response(request, &location);
+		Response	response(request, &location, 0);
 
 		CHECK(response.getStatusCode() == 200);
 		std::vector<char> const& body = response.getBody();
@@ -102,7 +102,7 @@ TEST_SUITE("Response — GET")
 		Request	request;
 		fill_request(request, server, "GET", "/missing.txt");
 
-		Response	response(request, &location);
+		Response	response(request, &location, 0);
 		CHECK(response.getStatusCode() == 404);
 	}
 
@@ -119,7 +119,7 @@ TEST_SUITE("Response — GET")
 		Request	request;
 		fill_request(request, server, "GET", "/hello.txt");
 
-		Response	response(request, &location);
+		Response	response(request, &location, 0);
 		CHECK(response.getStatusCode() == 405);
 	}
 
@@ -133,7 +133,7 @@ TEST_SUITE("Response — GET")
 		Request	request;
 		fill_request(request, server, "GET", "/../etc/passwd");
 
-		Response	response(request, &location);
+		Response	response(request, &location, 0);
 		CHECK(response.getStatusCode() == 400);
 	}
 
@@ -143,7 +143,7 @@ TEST_SUITE("Response — GET")
 		Request	request;
 		fill_request(request, server, "GET", "/whatever");
 
-		Response	response(request, NULL);
+		Response	response(request, NULL, 0);
 		CHECK(response.getStatusCode() == 404);
 	}
 }
@@ -164,7 +164,7 @@ TEST_SUITE("Response — DELETE")
 		Request	request;
 		fill_request(request, server, "DELETE", "/todelete.txt");
 
-		Response	response(request, &location);
+		Response	response(request, &location, 0);
 		CHECK(response.getStatusCode() == 204);
 		struct stat st;
 		CHECK(stat(file.c_str(), &st) != 0);
@@ -182,7 +182,7 @@ TEST_SUITE("Response — DELETE")
 		Request	request;
 		fill_request(request, server, "DELETE", "/missing.txt");
 
-		Response	response(request, &location);
+		Response	response(request, &location, 0);
 		CHECK(response.getStatusCode() == 404);
 	}
 
@@ -198,7 +198,7 @@ TEST_SUITE("Response — DELETE")
 		Request	request;
 		fill_request(request, server, "DELETE", "/x.txt");
 
-		Response	response(request, &location);
+		Response	response(request, &location, 0);
 		CHECK(response.getStatusCode() == 405);
 	}
 }
@@ -222,7 +222,7 @@ TEST_SUITE("Response — POST")
 			"POST /uploaded.txt HTTP/1.1\r\ncontent-length: 5\r\n\r\nhello");
 		REQUIRE(done == true);
 
-		Response	response(request, &location);
+		Response	response(request, &location, 0);
 		CHECK(response.getStatusCode() == 201);
 
 		std::ifstream f((tmp.path + "/uploaded.txt").c_str(), std::ios::binary);
@@ -241,7 +241,7 @@ TEST_SUITE("Response — POST")
 		Request	request;
 		fill_request(request, server, "POST", "/x.txt");
 
-		Response	response(request, &location);
+		Response	response(request, &location, 0);
 		CHECK(response.getStatusCode() == 403);
 	}
 }
@@ -259,7 +259,7 @@ TEST_SUITE("Response — redirection")
 		Request	request;
 		fill_request(request, server, "GET", "/old");
 
-		Response	response(request, &location);
+		Response	response(request, &location, 0);
 		CHECK(response.getStatusCode() == 301);
 
 		std::map<std::string, std::string> const& h = response.getHeaders();
