@@ -293,7 +293,7 @@ void	ServerManager::handleHttpRequest(ClientSocket* client, std::string &msg)
 				this->startCgi(client, request, *location, target);
 			else
 			{
-				Response	response(request, location);
+				Response	response(request, location, client->getFd());
 
 				client->appendOutput(response.toString());
 				this->enableClientWrite(client);

@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/07 16:07:59 by nseon             #+#    #+#             */
-/*   Updated: 2026/06/11 14:16:32 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/18 13:41:19 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ class Response : public AHttpMessage {
 		int	handle_delete(Request const& request);
 
 	public:
-		Response(Request const &request, Location *location);
+		Response(Request const &request, Location *location, int socketfd);
 		Response(Location &location, std::string const& version);
 		Response(int code, Server &server);
 		~Response();
