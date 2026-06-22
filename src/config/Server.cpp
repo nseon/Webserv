@@ -6,14 +6,16 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 17:39:51 by nseon             #+#    #+#             */
-/*   Updated: 2026/06/10 13:46:36 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/22 16:22:46 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <sstream>
+#include <stdexcept>
 #include <string>
 #include <iostream>
 #include <vector>
+#include <netdb.h>
 
 #include "config/Server.hpp"
 #include "config/Location.hpp"
@@ -153,11 +155,18 @@ std::vector<Location> Server::getLocations() const
 struct sockaddr_in Server::getSockAddr() const
 {
 	struct sockaddr_in addr;
+	struct addrinfo* res;
 
 	std::memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(_port);
-	addr.sin_addr.s_addr = inet_addr(_ip.c_str());
+	if (getaddrinfo(_ip.c_str(), NULL, NULL, &res))
+		throw std::runtime_error("getaddrinfo failed");
+
+	struct sockaddr_in* ipv4 = reinterpret_cast<struct sockaddr_in*>(res->ai_addr);
+
+	addr.sin_addr.s_addr = ipv4->sin_addr.s_addr;
+	freeaddrinfo(res);
 
 	return addr;
 }
