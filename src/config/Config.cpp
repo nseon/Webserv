@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/15 14:59:37 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/06 15:53:34 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/09 13:40:34 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,13 +88,7 @@ Config::Config(std::string const &filename)
 		content += line + " ";
 	}
 	file.close();
-	try {
-		parseBloc(*this, content);
-	}
-	catch (std::exception &e)
-	{
-		std::cout << e.what() << std::endl;
-	}
+	parseBloc(*this, content);
 }
 
 Config::~Config()

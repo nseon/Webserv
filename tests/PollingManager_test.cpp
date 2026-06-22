@@ -33,7 +33,7 @@
 class MockSocket : public ASocket
 {
 public:
-    MockSocket(int fd) : ASocket(fd) {}
+    MockSocket(int fd) : ASocket(fd, NULL) {}
     virtual int socketBehavior(void*) { return 0; }
 };
 
@@ -258,7 +258,7 @@ TEST_SUITE("PollingManager — poll")
     TEST_CASE("poll with no sockets returns empty vector immediately")
     {
         PollingManager pm;
-        std::vector<ASocket*> ready = pm.poll();
+        std::vector<ASocket*> ready = pm.poll(-1);
         CHECK(ready.empty());
     }
 
@@ -272,7 +272,7 @@ TEST_SUITE("PollingManager — poll")
         pm.addSocket(sp.ms);
 
         pthread_t tid = async_send(sp.peer);
-        std::vector<ASocket*> ready = pm.poll();
+        std::vector<ASocket*> ready = pm.poll(-1);
         pthread_join(tid, NULL);
 
         CHECK(ready.size() >= 1);
@@ -296,7 +296,7 @@ TEST_SUITE("PollingManager — poll")
         pm.addSocket(sp2.ms);
 
         pthread_t tid = async_send(sp1.peer); // only sp1 gets data
-        std::vector<ASocket*> ready = pm.poll();
+        std::vector<ASocket*> ready = pm.poll(-1);
         pthread_join(tid, NULL);
 
         bool sp1_ready = false;
@@ -328,7 +328,7 @@ TEST_SUITE("PollingManager — poll")
         write(sp2.peer, "b", 1);
 
         pthread_t tid = async_send(sp1.peer, 1); // dummy unblock (already written)
-        std::vector<ASocket*> ready = pm.poll();
+        std::vector<ASocket*> ready = pm.poll(-1);
         pthread_join(tid, NULL);
 
         CHECK(ready.size() >= 2);
@@ -346,7 +346,7 @@ TEST_SUITE("PollingManager — poll")
         pm.addSocket(sp.ms);
 
         pthread_t tid = async_send(sp.peer);
-        std::vector<ASocket*> ready = pm.poll();
+        std::vector<ASocket*> ready = pm.poll(-1);
         pthread_join(tid, NULL);
 
         REQUIRE(ready.size() >= 1);
@@ -366,7 +366,7 @@ TEST_SUITE("PollingManager — poll")
 
         // Close peer in background thread — triggers HUP/RDHUP
         pthread_t tid = async_close(sp.peer);
-        std::vector<ASocket*> ready = pm.poll();
+        std::vector<ASocket*> ready = pm.poll(-1);
         pthread_join(tid, NULL);
 
         CHECK(ready.size() >= 1);

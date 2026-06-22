@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 17:39:59 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/06 15:58:54 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/02 14:35:34 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,23 @@ Location::Location(Ablock const &m)
 	_dispatchMap["upload_store"] = reinterpret_cast<SetterFunc>(&Location::setUploadStore);
 	_dispatchMap["return"] = reinterpret_cast<SetterFunc>(&Location::setReturn);
 	_dispatchMap["cgi"] = reinterpret_cast<SetterFunc>(&Location::addCgi);
+}
+
+Location::Location(Location const &m)
+{
+	_dispatchMap = m.getDispatchMap();
+	_root = m.getRoot();
+	_client_max_body_size = m.getClientMaxBodySize();
+	_index = m.getIndex();
+	_error_pages = m.getErrorPages();
+	_path = m.getPath();
+	_allow_get = m.getAllowGet();
+	_allow_post = m.getAllowPost();
+	_allow_delete = m.getAllowDelete();
+	_autoindex = m.getAutoIndex();
+	_upload_store = m.getUploadStore();
+	_return = m.getReturn();
+	_cgi_configs = m.getCgiConfigs();
 }
 
 Location::~Location()
@@ -88,6 +105,8 @@ void Location::setUploadStore(std::string const &value)
 	ss >> path;
 	if (ss >> path)
 		throw std::logic_error("Invalid path for upload_store: " + value);
+	if (path[path.size() - 1] == '/')
+		path.erase(path.size() - 1, 1);
 	_upload_store = value;
 }
 
@@ -119,7 +138,7 @@ void Location::addCgi(std::string const &value)
 	if (ss >> extension >> path)
 	{
 		if (ss >> path)
-			throw std::logic_error("Invalid return: " + value);
+			throw std::logic_error("Invalid cgi: " + value);
 		_cgi_configs[extension] = path;
 	}
 	else
@@ -163,9 +182,14 @@ std::pair<int, std::string> Location::getReturn() const
 	return (_return);
 }
 
-std::map<std::string, std::string> Location::getCgiConfigs() const
+std::map<std::string, std::string>& Location::getCgiConfigs()
 {
-	return(_cgi_configs);
+	return (_cgi_configs);
+}
+
+std::map<std::string, std::string> const& Location::getCgiConfigs() const
+{
+	return (_cgi_configs);
 }
 
 //******************************************************//

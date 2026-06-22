@@ -6,15 +6,17 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 17:39:51 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/06 15:56:19 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/10 13:46:36 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <sstream>
 #include <string>
 #include <iostream>
+#include <vector>
 
 #include "config/Server.hpp"
+#include "config/Location.hpp"
 #include "socket/ListenerSocket.hpp"
 
 Server::Server()
@@ -24,9 +26,9 @@ Server::Server()
 	_client_max_body_size = DEFAULT_MAX_SIZE;
 	initDispatchMap();
 	_socket = NULL;
-	_dispatchMap["listen"] = reinterpret_cast<SetterFunc>(&Server::setPort);
-	_dispatchMap["server_name"] = reinterpret_cast<SetterFunc>(&Server::setName);
-	_dispatchMap["location"] = reinterpret_cast<SetterFunc>(&Server::addLocation);
+	_dispatchMap["listen"] = static_cast<SetterFunc>(&Server::setPort);
+	_dispatchMap["server_name"] = static_cast<SetterFunc>(&Server::setName);
+	_dispatchMap["location"] = static_cast<SetterFunc>(&Server::setLocation);
 }
 
 Server::~Server()
@@ -48,44 +50,45 @@ static std::string parseIp(std::string const &ip)
 	for (int i = 0; i < 4; ++i)
 	{
 		if (!(ss >> nb))
-			throw std::logic_error("Invalid ip1: " + ip);
+			throw std::logic_error("Invalid ip: " + ip);
 		if (!(0 <= nb && nb <= 255))
-			throw std::logic_error("Invalid ip2: " + ip);
+			throw std::logic_error("Invalid ip: " + ip);
 		if (i != 3)
 		{
 			if (ss >> c)
 			{
 				if (c != '.')
-					throw std::logic_error("Invalid ip3: " + ip);
+					throw std::logic_error("Invalid ip: " + ip);
 			}
 			else
-				throw std::logic_error("Invalid ip4: " + ip);
+				throw std::logic_error("Invalid ip: " + ip);
 		}
 	}
 	return (ip);
 }
 
-void Server::setPort(std::string &value)
+void Server::setPort(std::string const &value)
 {
-	size_t	i = value.find(':');
-	
+	std::string	port(value);
+	size_t		i = port.find(':');
+
 	if (i != std::string::npos)
 	{
-		_ip = parseIp(value.substr(0, i));
-		value.erase(0, i + 1);
+		_ip = parseIp(port.substr(0, i));
+		port.erase(0, i + 1);
 	}
 
-	std::stringstream ss(value);
+	std::stringstream ss(port);
 	unsigned int nb;
 	std::string str;
 	if (ss >> nb)
 	{
 		if (ss >> str)
-			throw std::logic_error("Invalid port: " + value);
+			throw std::logic_error("Invalid port: " + port);
 		_port = nb;
 	}
 	else
-		throw std::logic_error("Invalid port: " + value);
+		throw std::logic_error("Invalid port: " + port);
 }
 
 void Server::setName(std::string const &value)
@@ -99,6 +102,11 @@ void Server::setName(std::string const &value)
 		throw std::logic_error("Invalid name: " + value);
 	}
 	_name = value;
+}
+
+void Server::setLocation(std::string const &value)
+{
+	addLocation(value);
 }
 
 Location &Server::addLocation(std::string const &value)
@@ -117,7 +125,7 @@ Location &Server::addLocation(std::string const &value)
 
 void	Server::createSocket(void)
 {
-	this->_socket = new ListenerSocket(this->getAddr(), this);
+	this->_socket = new ListenerSocket(this->getSockAddr(), this);
 }
 
 //**********************GETTER**************************//
@@ -142,7 +150,7 @@ std::vector<Location> Server::getLocations() const
 	return (_locations);
 }
 
-struct sockaddr_in Server::getAddr() const
+struct sockaddr_in Server::getSockAddr() const
 {
 	struct sockaddr_in addr;
 
@@ -154,9 +162,46 @@ struct sockaddr_in Server::getAddr() const
 	return addr;
 }
 
+std::string	Server::getAddr(void) const
+{
+	return (this->_socket->getAddress());
+}
+
 ListenerSocket*	Server::getSocket(void) const
 {
 	return (this->_socket);
+}
+
+Location *Server::matchLocation(std::string uri)
+{
+	Location *best_match = NULL;
+	int longest = -1;
+	
+	for (std::vector<Location>::iterator it = _locations.begin(); it != _locations.end(); ++it)
+	{
+		int i = 0;
+		while (it->getPath()[i])
+		{
+			if (!(uri[i]) || it->getPath()[i] != uri[i])
+			{
+				i = 0;
+				break;
+			}
+			++i;
+		}
+		if (i > 0)
+		{
+			if (it->getPath()[i - 1] == '/' || uri[i] == '\0' || uri[i] == '/')
+			{
+				if (i > longest || best_match == NULL)
+				{
+					longest = i;
+					best_match = &(*it);
+				}
+			}
+		}
+	}
+	return (best_match);
 }
 
 //******************************************************//

@@ -3,6 +3,7 @@
 #include "logger/Logger.hpp"
 #include "http/Request.hpp"
 
+#include <netinet/in.h>
 #include <sys/epoll.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -11,44 +12,84 @@
 #include <iostream> //tmp
 
 #ifndef RECV_SIZE
-# define RECV_SIZE 10
+# define RECV_SIZE 40000
 #endif
 
-ClientSocket::ClientSocket(void) {}
-
-ClientSocket::ClientSocket(int fd):
-ASocket (fd) {}
+ClientSocket::ClientSocket(int fd, Server* server, struct sockaddr_in addr):
+ASocket (fd, server, addr), _out_off(0) {}
 
 ClientSocket::~ClientSocket(void) {}
 
-int	ClientSocket::socketBehavior(void *pm)
+void	ClientSocket::appendOutput(std::string const& data)
 {
-	char	msg[RECV_SIZE];
-	ssize_t	msg_length;
+	this->_out.insert(this->_out.end(), data.begin(), data.end());
+}
+
+bool	ClientSocket::hasPendingOutput(void) const
+{
+	return (this->_out_off < this->_out.size());
+}
+
+int	ClientSocket::flush(void)
+{
+	ssize_t	sent;
+
+	if (!this->hasPendingOutput())
+		return (1);
+	sent = send(this->_socketFd, &this->_out[this->_out_off],
+		this->_out.size() - this->_out_off, MSG_NOSIGNAL);
+	if (sent <= 0)
+		return (-1);
+	this->_out_off += static_cast<size_t>(sent);
+	if (this->_out_off >= this->_out.size())
+	{
+		this->clearOutput();
+		return (1);
+	}
+	return (0);
+}
+
+void	ClientSocket::clearOutput(void)
+{
+	this->_out.clear();
+	this->_out_off = 0;
+}
+
+int	ClientSocket::socketBehavior(void *sm)
+{
+	ServerManager*	manager = reinterpret_cast<ServerManager*>(sm);
+	char			msg[RECV_SIZE + 1];
+	ssize_t			msg_length;
 
 	if (this->_currentEvent & EPOLLRDHUP)
 	{
-		int		socketFd = this->_socketFd;
-		reinterpret_cast<ServerManager*>(pm)->removeClientSocket(this->_socketFd);
+		int	socketFd = this->_socketFd;
+		manager->removeClientSocket(this->_socketFd);
 		Logger::info() << "Client " << socketFd << " disconnected." << std::endl;
+		return (0);
 	}
-	else
+	if (this->_currentEvent & EPOLLIN)
 	{
 		msg_length = recv(this->_socketFd, msg, RECV_SIZE, 0);
-		msg[msg_length] = 0;
-		Logger::info() << "Client " << this->_socketFd << " sended a message : " << msg << std::endl;
-		try {
-			_request.parseRequest(msg);
-	
-			if (_request.getParsingState() == DONE)
-			{
-				std::cout << _socketFd << ' ' << _request << std::flush;
-				_request.reset();
-			}
+		if (msg_length <= 0)
+		{
+			manager->removeClientSocket(this->_socketFd);
+			return (0);
 		}
-		catch (std::exception &e) {
-			std::cout << e.what() << std::endl;
-			_request.reset();
+		std::string	msg_str(msg, msg_length);
+		Logger::info() << "Client " << this->_socketFd << " sended a message : " << msg_str << std::endl;
+		manager->handleHttpRequest(this, msg_str);
+	}
+	if (this->_currentEvent & EPOLLOUT)
+	{
+		int	state = this->flush();
+
+		if (state == 1)
+			manager->disableClientWrite(this);
+		else if (state == -1)
+		{
+			manager->removeClientSocket(this->_socketFd);
+			return (0);
 		}
 	}
 	return (0);

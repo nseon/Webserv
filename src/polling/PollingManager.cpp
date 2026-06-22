@@ -8,7 +8,7 @@
 
 PollingManager::PollingManager(void)
 {
-	this->_epollInstance = epoll_create(1);
+	this->_epollInstance = epoll_create1(EPOLL_CLOEXEC);
 	if (this->_epollInstance == -1)
 	{
 		throw std::runtime_error("PollingManager constructor failed, because epoll_create() failed.");
@@ -24,6 +24,14 @@ void	PollingManager::addSocket(ASocket* toAdd)
 	if (epoll_ctl(this->_epollInstance, EPOLL_CTL_ADD, toAdd->getFd(), toAdd->getNotConstEvent()))
 	{
 		throw std::runtime_error("PollingManager::addSocket failed because epoll_ctl() failed.");
+	}
+}
+
+void	PollingManager::modifySocket(ASocket* toModify)
+{
+	if (epoll_ctl(this->_epollInstance, EPOLL_CTL_MOD, toModify->getFd(), toModify->getNotConstEvent()))
+	{
+		throw std::runtime_error("PollingManager::modifySocket failed because epoll_ctl() failed.");
 	}
 }
 
@@ -46,7 +54,7 @@ std::vector<ASocket*>::iterator	PollingManager::findSocket(int socketFd)
 	return (this->_sockets.end());
 }
 
-std::vector<ASocket*>	PollingManager::poll(void)
+std::vector<ASocket*>	PollingManager::poll(int timeout)
 {
 	struct epoll_event*		events = new struct epoll_event[this->_sockets.size()];
 	int						nbEvents;
@@ -57,7 +65,11 @@ std::vector<ASocket*>	PollingManager::poll(void)
 	}
 	else
 	{
-		nbEvents = epoll_wait(this->_epollInstance, events, static_cast<int>(this->_sockets.size()), -1);
+		nbEvents = epoll_wait(this->_epollInstance, events, static_cast<int>(this->_sockets.size()), timeout);
+		if (nbEvents < 0)
+		{
+			nbEvents = 0;
+		}
 	}
 	std::vector<ASocket*>	ret(static_cast<unsigned long>(nbEvents));
 	for (int i = 0; i < nbEvents; i++)

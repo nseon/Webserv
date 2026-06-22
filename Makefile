@@ -6,7 +6,7 @@
 #    By: nseon <nseon@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/10/13 10:54:16 by nseon             #+#    #+#              #
-#    Updated: 2026/04/28 12:15:55 by nseon            ###   ########.fr        #
+#    Updated: 2026/05/25 15:03:45 by nseon            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,8 +34,19 @@ SRC			=	$(MAIN) $(BASE_SRC)
 
 BASE_SRC	+=	$(addprefix $(HTTP_DIR), $(HTTP_SRC))
 
-HTTP_DIR = http/
-HTTP_SRC = Request.cpp \
+HTTP_DIR 	=	http/
+HTTP_SRC	=	Request.cpp \
+				AHttpMessage.cpp \
+				Response.cpp
+				
+HTTP_SRC	+=	$(addprefix $(RSPS_DIR), $(RSPS_SRC))
+
+RSPS_DIR	+=	responses/
+RSPS_SRC	+=	delete.cpp \
+				errors.cpp \
+				get.cpp \
+				post.cpp \
+				cgi.cpp
 
 # --------------CONFIG--------------- #
 
@@ -54,7 +65,8 @@ BASE_SRC	+=	$(addprefix $(SOCKET_DIR), $(SOCKET_SRC))
 SOCKET_DIR	=	socket/
 SOCKET_SRC	=	ASocket.cpp \
 				ClientSocket.cpp \
-				ListenerSocket.cpp
+				ListenerSocket.cpp \
+				CGISocket.cpp
 
 # --------------POLLING--------------#
 
@@ -79,9 +91,13 @@ MANAGER_SRC	=	ServerManager.cpp
 
 # ----------------TEST--------------- #
 
-TEST_SRC	:=	PollingManager_test.cpp \
-				Logger_test.cpp \
-				ServerManager_test.cpp
+TEST_SRC	:=	Logger_test.cpp \
+				Request_test.cpp \
+				Response_test.cpp \
+				Cgi_test.cpp \
+				Timeout_test.cpp \
+				PollingManager_test.cpp \
+				ServerManager_test.cpp \
 
 # --------------INCLUDES------------- #
 

@@ -2,3 +2,8 @@ webserv
 .make/
 compile_commands.json
 .cache/
+note.md
+CLAUDE.md
+TODO.md
+uploads/
+.claude/

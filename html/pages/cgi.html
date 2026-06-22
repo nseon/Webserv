@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webserv - Démos CGI</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container { width: 100%; max-width: 640px; }
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 25px;
+            box-sizing: border-box;
+        }
+        h1 { text-align: center; }
+        h2 {
+            font-size: 1.4rem;
+            margin-top: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 10px;
+        }
+        .badge {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: bold;
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+        .get { background: #4ca3ff; }
+        .post { background: #ff8a4c; }
+        p.desc { opacity: 0.9; font-size: 0.95rem; }
+        label { display: block; margin: 12px 0 4px; font-size: 0.9rem; opacity: 0.9; }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+        }
+        input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.6); }
+        select option { color: #333; }
+        .row { display: flex; gap: 12px; }
+        .row > div { flex: 1; }
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 16px;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            background: #fff;
+            color: #764ba2;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        button:hover { transform: translateY(-2px); background: #f1f1f1; }
+        .back-link { color: rgba(255,255,255,0.7); text-decoration: none; font-weight: 500; }
+        .back-link:hover { color: #fff; }
+        code { background: rgba(0,0,0,0.25); padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="margin-bottom: 20px;">
+            <a href="/" class="back-link">← Retour à l'accueil</a>
+        </div>
+
+        <h1>Démonstrations CGI ⚙️</h1>
+        <p class="desc" style="text-align:center;">
+            Webserv exécute des scripts <strong>CGI/1.1</strong> (Python et Perl) et renvoie leur sortie.
+            Chaque démo ci-dessous appelle un script via <strong>GET</strong> ou <strong>POST</strong>.
+        </p>
+
+        <!-- ============ GET : variables d'environnement ============ -->
+        <div class="card">
+            <h2>Variables d'environnement <span class="badge get">GET</span></h2>
+            <p class="desc">
+                Le script <code>env.py</code> affiche les variables CGI que le serveur lui transmet
+                (méthode, query string, ports, adresse cliente…).
+            </p>
+            <a href="/cgi-bin/env.py"><button type="button">Voir l'environnement CGI</button></a>
+        </div>
+
+        <!-- ============ GET : salutation paramétrée ============ -->
+        <div class="card">
+            <h2>Salutation dynamique <span class="badge get">GET</span></h2>
+            <p class="desc">
+                <code>greet.py</code> lit la <code>QUERY_STRING</code> et génère une page personnalisée.
+                Les champs sont envoyés dans l'URL (GET).
+            </p>
+            <form action="/cgi-bin/greet.py" method="GET">
+                <label for="name">Votre prénom</label>
+                <input type="text" id="name" name="name" placeholder="Léo" required>
+                <label for="color">Couleur du titre</label>
+                <input type="text" id="color" name="color" placeholder="tomato, #a3ffd1, gold…">
+                <button type="submit">Générer la page (GET)</button>
+            </form>
+        </div>
+
+        <!-- ============ POST : calculatrice ============ -->
+        <div class="card">
+            <h2>Calculatrice <span class="badge post">POST</span></h2>
+            <p class="desc">
+                <code>calc.py</code> lit le corps de la requête POST sur son <code>stdin</code>
+                (selon <code>CONTENT_LENGTH</code>) et calcule le résultat côté serveur.
+            </p>
+            <form action="/cgi-bin/calc.py" method="POST">
+                <div class="row">
+                    <div>
+                        <label for="a">Nombre A</label>
+                        <input type="number" step="any" id="a" name="a" value="12" required>
+                    </div>
+                    <div>
+                        <label for="op">Opération</label>
+                        <select id="op" name="op">
+                            <option value="+">+</option>
+                            <option value="-">−</option>
+                            <option value="*">×</option>
+                            <option value="/">÷</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="b">Nombre B</label>
+                        <input type="number" step="any" id="b" name="b" value="30" required>
+                    </div>
+                </div>
+                <button type="submit">Calculer (POST)</button>
+            </form>
+        </div>
+
+        <!-- ============ POST : formulaire de contact ============ -->
+        <div class="card">
+            <h2>Formulaire de contact <span class="badge post">POST</span></h2>
+            <p class="desc">
+                <code>form.py</code> reçoit les champs du formulaire en POST et renvoie un récapitulatif.
+            </p>
+            <form action="/cgi-bin/form.py" method="POST">
+                <label for="cname">Nom</label>
+                <input type="text" id="cname" name="name" placeholder="Votre nom" required>
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="vous@example.com">
+                <label for="message">Message</label>
+                <textarea id="message" name="message" rows="3" placeholder="Votre message…"></textarea>
+                <button type="submit">Envoyer (POST)</button>
+            </form>
+        </div>
+
+        <!-- ============ POST : analyse de texte en Perl ============ -->
+        <div class="card">
+            <h2>Analyse de texte <span class="badge post">POST</span> <span class="badge" style="background:#7a52cc;">Perl</span></h2>
+            <p class="desc">
+                Démo dans un <strong>autre langage</strong> : le script Perl <code>analyze.pl</code>
+                reçoit un texte en POST et renvoie le nombre de caractères, mots et lignes.
+            </p>
+            <form action="/cgi-bin/analyze.pl" method="POST">
+                <label for="text">Votre texte</label>
+                <textarea id="text" name="text" rows="4" placeholder="Collez ou tapez un texte à analyser…" required>Webserv exécute du CGI en Perl !</textarea>
+                <button type="submit">Analyser (POST · Perl)</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

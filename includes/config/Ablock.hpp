@@ -6,12 +6,13 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 15:56:20 by nseon             #+#    #+#             */
-/*   Updated: 2026/04/16 14:33:01 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/04 14:09:44 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
+#include <cstddef>
 #include <string>
 #include <map>
 
@@ -20,7 +21,7 @@ class Ablock {
 		typedef void (Ablock::*SetterFunc)(std::string const&);
 	
 		std::string							_root;
-		unsigned int						_client_max_body_size;
+		size_t								_client_max_body_size;
 		std::string							_index;
 		std::map<int, std::string>			_error_pages;
 		
@@ -33,6 +34,7 @@ class Ablock {
 		std::string							getIndex() const;
 		std::map<int, std::string>			getErrorPages() const;
 		std::map<std::string, SetterFunc>	getDispatchMap() const;
+		std::string							getErrorPath(int code) const;
 
 		void setRoot(std::string const &value);
 		void setClientMaxBodySize(std::string const &value);

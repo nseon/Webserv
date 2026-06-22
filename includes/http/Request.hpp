@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/27 14:02:10 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/06 11:26:51 by nseon            ###   ########.fr       */
+/*   Updated: 2026/05/19 13:58:26 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,9 @@
 #include <cstddef>
 #include <string>
 #include <map>
-#include <vector>
+
+#include "config/Server.hpp"
+#include "http/AHttpMessage.hpp"
 
 enum parsing_state {
 	REQUEST,
@@ -31,7 +33,7 @@ enum chunk_state {
 	CHUNK_CRLF,
 };
 
-class Request {
+class Request : public AHttpMessage {
 	private:
 		std::string _raw_data;
 		int	_parsing_state;
@@ -40,10 +42,9 @@ class Request {
 
 		std::string _method;
 		std::string _path;
-		std::string _version;
-		std::map<std::string, std::string>	_headers;
-		std::vector<char> _body;
 		
+		Server *_server;
+
 		bool _handleRequestLine();
 		bool _handleHeaders();
 		bool _handleBody();
@@ -57,17 +58,14 @@ class Request {
 
 		void setMethod(std::string const &value);
 		void setPath(std::string const &value);
-		void setVersion(std::string const &value);
-		void addHeader(std::string const &key, std::string const &value);
+		void setServer(Server *ptr);
 		
 		int getParsingState() const;
 		std::string getRawData() const;
 		std::string getMethod() const;
 		std::string getPath() const;
-		std::string getVersion() const;
-		std::map<std::string, std::string> getHeaders() const;
-		std::vector<char> getBody() const;
-		
+		Server*		getServer() const;
+
 		void reset();
 };
 

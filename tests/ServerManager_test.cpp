@@ -19,13 +19,24 @@
 #include "config/Server.hpp"
 
 #include <sys/socket.h>   // socketpair()
+#include <netinet/in.h>   // sockaddr_in
 #include <unistd.h>       // close()
+#include <cstring>        // memset()
 #include <stdexcept>
 #include <vector>
 
 // =============================================================================
 // Helpers
 // =============================================================================
+
+// A zeroed client address — addClientSocket now takes (fd, addr, server).
+static struct sockaddr_in zero_addr()
+{
+    struct sockaddr_in addr;
+    std::memset(&addr, 0, sizeof(addr));
+    addr.sin_family = AF_INET;
+    return addr;
+}
 
 // Returns a ServerManager with NO servers.
 // No bind(), no listen(), no real network — safe for unit tests.
@@ -77,7 +88,7 @@ TEST_SUITE("ServerManager — addClientSocket")
         ServerManager sm = make_empty_manager();
         SockPair sp = make_sock_pair();
 
-        CHECK_NOTHROW(sm.addClientSocket(sp.client));
+        CHECK_NOTHROW(sm.addClientSocket(sp.client, zero_addr(), NULL));
         // sp.client is now owned by the ClientSocket inside sm
 
         close(sp.peer);
@@ -91,9 +102,9 @@ TEST_SUITE("ServerManager — addClientSocket")
         SockPair sp2 = make_sock_pair();
         SockPair sp3 = make_sock_pair();
 
-        CHECK_NOTHROW(sm.addClientSocket(sp1.client));
-        CHECK_NOTHROW(sm.addClientSocket(sp2.client));
-        CHECK_NOTHROW(sm.addClientSocket(sp3.client));
+        CHECK_NOTHROW(sm.addClientSocket(sp1.client, zero_addr(), NULL));
+        CHECK_NOTHROW(sm.addClientSocket(sp2.client, zero_addr(), NULL));
+        CHECK_NOTHROW(sm.addClientSocket(sp3.client, zero_addr(), NULL));
 
         close(sp1.peer);
         close(sp2.peer);
@@ -112,7 +123,7 @@ TEST_SUITE("ServerManager — removeClientSocket")
         ServerManager sm = make_empty_manager();
         SockPair sp = make_sock_pair();
 
-        sm.addClientSocket(sp.client);
+        sm.addClientSocket(sp.client, zero_addr(), NULL);
         CHECK_NOTHROW(sm.removeClientSocket(sp.client));
         // ClientSocket dtor closed sp.client
 
@@ -131,7 +142,7 @@ TEST_SUITE("ServerManager — removeClientSocket")
         ServerManager sm = make_empty_manager();
         SockPair sp = make_sock_pair();
 
-        sm.addClientSocket(sp.client);
+        sm.addClientSocket(sp.client, zero_addr(), NULL);
         sm.removeClientSocket(sp.client); // first: client deleted, fd closed
         CHECK_NOTHROW(sm.removeClientSocket(sp.client)); // second: no-op
 
@@ -144,8 +155,8 @@ TEST_SUITE("ServerManager — removeClientSocket")
         SockPair sp1 = make_sock_pair();
         SockPair sp2 = make_sock_pair();
 
-        sm.addClientSocket(sp1.client);
-        sm.addClientSocket(sp2.client);
+        sm.addClientSocket(sp1.client, zero_addr(), NULL);
+        sm.addClientSocket(sp2.client, zero_addr(), NULL);
 
         sm.removeClientSocket(sp1.client);
 
@@ -165,7 +176,7 @@ TEST_SUITE("ServerManager — removeClientSocket")
         for (int i = 0; i < N; ++i)
         {
             pairs[i] = make_sock_pair();
-            sm.addClientSocket(pairs[i].client);
+            sm.addClientSocket(pairs[i].client, zero_addr(), NULL);
         }
 
         for (int i = 0; i < N; ++i)
@@ -188,10 +199,10 @@ TEST_SUITE("ServerManager — add/remove round-trips")
         SockPair sp1 = make_sock_pair();
         SockPair sp2 = make_sock_pair();
 
-        sm.addClientSocket(sp1.client);
+        sm.addClientSocket(sp1.client, zero_addr(), NULL);
         sm.removeClientSocket(sp1.client); // sp1.client closed internally
 
-        CHECK_NOTHROW(sm.addClientSocket(sp2.client));
+        CHECK_NOTHROW(sm.addClientSocket(sp2.client, zero_addr(), NULL));
 
         close(sp1.peer);
         close(sp2.peer);
@@ -207,7 +218,7 @@ TEST_SUITE("ServerManager — add/remove round-trips")
         for (int i = 0; i < N; ++i)
         {
             pairs[i] = make_sock_pair();
-            sm.addClientSocket(pairs[i].client);
+            sm.addClientSocket(pairs[i].client, zero_addr(), NULL);
         }
 
         // Remove even-indexed clients

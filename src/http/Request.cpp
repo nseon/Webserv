@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/27 14:01:57 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/06 15:56:31 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/17 14:52:06 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 #include <cstddef>
 #include <cstdlib>
 #include <sstream>
-#include <stdexcept>
 #include <iostream>
 #include <string>
 #include <algorithm>
@@ -55,47 +54,45 @@ static void parse_request_line(Request &request, std::string request_line)
 				request.setVersion(token);
 		}
 		else
-			throw std::logic_error("Invalid request line: " + request_line);
+			throw 400;
 	}
 	if (ss >> token)
-			throw std::logic_error("Invalid request line: " + request_line);
+			throw 400;
 }
 
-static void parse_headers(Request &request, std::string line)
+static bool parse_header(Request &request, std::string line)
 {
-	while (line.size())
-	{
-		size_t pos = line.find("\r\n");
-		
-		if (pos == std::string::npos)
-			throw std::logic_error("Invalid header in request: " + line);
+	if (line == "\r\n")
+		return (true);
+	
+	size_t pos = line.find("\r\n");
+	std::string header = line.substr(0, pos);
 
-		std::string header = line.substr(0, pos);
-		
-		line.erase(0, pos + 2);
-		if (header.empty())
-            continue;
-		pos = header.find_first_of(':');
-		if (pos == std::string::npos)
-			throw std::logic_error("Invalid header in request: " + header);
-		
-		std::string key = header.substr(0, pos);
-		std::string value = header.substr(pos + 1);
-		
-		trim(value);
-		std::transform(key.begin(), key.end(), key.begin(), ::tolower);
-		request.addHeader(key, value);
-	}
+	pos = header.find_first_of(':');
+	if (pos == std::string::npos)
+		throw 400;
+	
+	std::string key = header.substr(0, pos);
+	std::string value = header.substr(pos + 1);
+
+	trim(value);
+	std::transform(key.begin(), key.end(), key.begin(), ::tolower);
+	request.addHeader(key, value);
+	return (false);
 }
 
 bool Request::_parseBodyContent(std::map<std::string, std::string>::iterator &i)
 {
 	size_t body_length = std::atoi(i->second.c_str());
+	if (body_length > _server->getClientMaxBodySize())
+		throw 413;
 	size_t bytes_needed = body_length - _body.size();
 	size_t bytes_to_copy = std::min(bytes_needed, _raw_data.size());
-	
+
 	_body.insert(_body.end(), _raw_data.begin(), _raw_data.begin() + bytes_to_copy);
 	_raw_data.erase(0, bytes_to_copy);
+	if (_body.size() > _server->getClientMaxBodySize())
+		throw 413;
 	if (_body.size() == body_length)
 	{
 		_parsing_state = DONE;
@@ -121,7 +118,7 @@ bool Request::_parseBodyChunked()
 
 			ss << std::hex << size_hex;
 			if (!(ss >> _chunk_size))
-				throw std::logic_error("Invalid chunk size: " + size_hex);
+				throw 400;
 			_raw_data.erase(0, pos + 2);
 			if (_chunk_size == 0)
 			{
@@ -134,8 +131,12 @@ bool Request::_parseBodyChunked()
 		{
 			if (_raw_data.size() < _chunk_size)
 				return (false);
+			if (_body.size() + _chunk_size > _server->getClientMaxBodySize())
+				throw 413;
 			_body.insert(_body.end(), _raw_data.begin(), _raw_data.begin() + _chunk_size);
 			_raw_data.erase(0, _chunk_size);
+			if (_body.size() == _server->getClientMaxBodySize())
+				return (true);
 			_chunk_state = CHUNK_CRLF;
 		}
 		if (_chunk_state == CHUNK_CRLF)
@@ -143,7 +144,7 @@ bool Request::_parseBodyChunked()
 			if (_raw_data.size() < 2)
 				return (false);
 			if (_raw_data.substr(0, 2) != "\r\n")
-				throw std::logic_error("Invalid chunk");
+				throw 400;
 			_raw_data.erase(0, 2);
 			_chunk_state = CHUNK_SIZE;
 		}
@@ -166,17 +167,21 @@ bool Request::_handleRequestLine()
 
 bool Request::_handleHeaders()
 {
-	size_t pos = _raw_data.find("\r\n\r\n");
-		
-	if (pos != std::string::npos)
+	size_t pos = _raw_data.find("\r\n");
+
+	while (pos != std::string::npos)
 	{
-		parse_headers(*this, _raw_data.substr(0, pos + 2));
-		_raw_data.erase(0, pos + 4);
-		if (_parsing_state == TRAILERS)
-			_parsing_state = DONE;
-		else
-			_parsing_state = BODY;
-		return (true);
+		bool done = parse_header(*this, _raw_data.substr(0, pos + 2));
+		_raw_data.erase(0, pos + 2);
+		if (done)
+		{
+			if (_parsing_state == TRAILERS)
+				_parsing_state = DONE;
+			else
+				_parsing_state = BODY;
+			return (true);
+		}
+		pos = _raw_data.find("\r\n");
 	}
 	return (false);
 }
@@ -189,7 +194,7 @@ bool Request::_handleBody()
 	if (i != _headers.end())
 	{
 		if (i->second != "chunked")
-			throw std::logic_error("Transfer encoding non supported: " + i->second);
+			throw 501;
 		else
 		 	return (_parseBodyChunked());
 	}
@@ -226,7 +231,7 @@ bool Request::parseRequest(std::string msg)
 
 //**************CONSTRUCTOR/DESTRUCTOR******************//
 
-Request::Request() : _parsing_state(REQUEST), _chunk_state(CHUNK_SIZE), _chunk_size(0)
+Request::Request() : _parsing_state(REQUEST), _chunk_state(CHUNK_SIZE), _chunk_size(0), _server(NULL)
 {}
 
 Request::~Request()
@@ -299,39 +304,26 @@ std::string Request::getPath() const
 	return (_path);
 }
 
-std::string Request::getVersion() const
+Server*		Request::getServer() const
 {
-	return (_version);
-}
-
-std::map<std::string, std::string> Request::getHeaders() const
-{
-	return (_headers);
-}
-
-std::vector<char> Request::getBody() const
-{
-	return (_body);
+	return (this->_server);
 }
 
 //**********************SETTER**************************//
 
 void Request::setMethod(std::string const &value)
 {
+	if (value != "GET" && value != "POST" && value != "DELETE")
+		throw 501;
 	_method = value;
 }
 
 void Request::setPath(std::string const &value)
 {
 	_path = value;
-}		
-
-void Request::setVersion(std::string const &value)
-{
-	_version = value;
 }
 
-void Request::addHeader(std::string const &key, std::string const &value)
+void Request::setServer(Server *ptr)
 {
-	_headers[key] = value;
+	_server = ptr;
 }

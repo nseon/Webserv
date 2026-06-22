@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 17:18:42 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/06 15:54:34 by nseon            ###   ########.fr       */
+/*   Updated: 2026/05/19 16:56:52 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,14 @@
 #include <cstring>
 
 #include "Ablock.hpp"
-#include "socket/ListenerSocket.hpp"
 #include "Location.hpp"
+#include "socket/ListenerSocket.hpp"
 
 #define DEFAULT_PORT 3030
 #define DEFAULT_MAX_SIZE 10
 #define DEFAULT_IP "0.0.0.0"
+
+class ListenerSocket;
 
 class Server : public Ablock{
 	private:
@@ -39,8 +41,9 @@ class Server : public Ablock{
 		Server();
 		~Server();
 
-		void					setPort(std::string &value);
+		void					setPort(std::string const &value);
 		void 					setName(std::string const &value);
+		void					setLocation(std::string const &value);
 		Location				&addLocation(std::string const &value);
 		
 		void					createSocket(void);
@@ -49,8 +52,11 @@ class Server : public Ablock{
 		std::string				getIp() const;
 		std::string				getName() const;
 		std::vector<Location>	getLocations() const;
-		struct sockaddr_in		getAddr() const;
+		struct sockaddr_in		getSockAddr() const;
+		std::string				getAddr() const;
 		ListenerSocket*			getSocket() const;
+		
+		Location *matchLocation(std::string path);
 
 		Ablock &createBlock(std::string token, std::string const &value);
 };

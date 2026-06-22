@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Webserv - Accueil</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .welcome-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 50px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            max-width: 500px;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+        .btn {
+            display: inline-block;
+            background: #fff;
+            color: #764ba2;
+            padding: 12px 30px;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            background: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="welcome-container">
+        <h1>Bienvenue sur Webserv ! 🚀</h1>
+        <p>Un serveur HTTP codé en C++98.</p>
+        <a href="pages/files.html" class="btn">Gérer mes fichiers</a>
+        <a href="pages/cgi.html" class="btn" style="margin-left:10px;">Démos CGI ⚙️</a>
+    </div>
+
+</body>
+</html>

@@ -1,5 +1,6 @@
 #include "socket/ListenerSocket.hpp"
 #include "manager/ServerManager.hpp"
+#include "socket/ASocket.hpp"
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
@@ -11,7 +12,7 @@
 #endif
 
 ListenerSocket::ListenerSocket(unsigned short port):
-_server(NULL)
+ASocket(NULL)
 {
 	this->_address.sin_family = AF_INET;
 	this->_address.sin_port = htons(port);
@@ -30,8 +31,7 @@ _server(NULL)
 }
 
 ListenerSocket::ListenerSocket(struct sockaddr_in address, Server* server):
-_address(address),
-_server(server)
+ASocket(server, address)
 {
 	int yes = 1;
 
@@ -48,21 +48,23 @@ _server(server)
 }
 
 ListenerSocket::ListenerSocket(ListenerSocket const& toCopy):
-ASocket(toCopy),
-_address(toCopy._address) {}
+ASocket(toCopy)
+{}
 
 
 ListenerSocket::~ListenerSocket(void) {}
 
 int	ListenerSocket::socketBehavior(void* sm)
 {
-	int				newFd;
+	int					newFd;
+	socklen_t			addrLen = sizeof(struct sockaddr_in);
+	struct sockaddr_in	clientAddress;
 
-	newFd = accept(this->_socketFd, NULL, NULL);
+	newFd = accept(this->_socketFd, reinterpret_cast<struct sockaddr*>(&clientAddress), &addrLen);
 	if (newFd == -1)
 	{
 		return (1);
 	}
-	reinterpret_cast<ServerManager*>(sm)->addClientSocket(newFd);
+	reinterpret_cast<ServerManager*>(sm)->addClientSocket(newFd, clientAddress, this->getServer());
 	return (0);
 }

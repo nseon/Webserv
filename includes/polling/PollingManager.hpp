@@ -19,7 +19,8 @@ class PollingManager
 
 		void							addSocket(ASocket* toAdd);
 		void							removeSocket(int socketFd);
-		std::vector<ASocket*>			poll(void);
+		void							modifySocket(ASocket* toModify);
+		std::vector<ASocket*>			poll(int timeout);
 };
 
 #endif

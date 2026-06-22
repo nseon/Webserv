@@ -6,10 +6,11 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/13 15:58:31 by nseon             #+#    #+#             */
-/*   Updated: 2026/05/06 15:53:23 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/10 15:18:52 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <cstddef>
 #include <sstream>
 #include <vector>
 #include <iostream>
@@ -42,6 +43,15 @@ std::map<int, std::string> Ablock::getErrorPages() const
 	return (_error_pages);
 }
 
+std::string Ablock::getErrorPath(int code) const
+{
+	std::map<int, std::string>::const_iterator pos = _error_pages.find(code);
+	
+	if (pos != _error_pages.end())
+		return (pos->second);
+	return ("");
+}
+
 std::map<std::string, SetterFunc> Ablock::getDispatchMap() const
 {
 	return (_dispatchMap);
@@ -57,16 +67,36 @@ void Ablock::setRoot(std::string const &value)
 	ss >> path;
 	if (ss >> path)
 		throw std::logic_error("invalid index: " + value);
+	if (path[path.size() - 1] == '/')
+		path.erase(path.size() - 1, 1);
 	_root = path;
 }
 
 void Ablock::setClientMaxBodySize(std::string const &value)
 {
 	std::stringstream ss(value);
-	unsigned int nb;
+	size_t nb;
 	
 	if (ss >> nb)
+	{
 		_client_max_body_size = nb;
+		
+		char unit;
+		if (ss >> unit)
+		{
+			switch (unit)
+			{
+				case 'K': _client_max_body_size *= 1024; break;
+				case 'M': _client_max_body_size *= 1024 * 1024; break;
+				case 'G': _client_max_body_size *= 1024 * 1024 * 1024; break;
+				default: throw std::logic_error("invalid unit for client max body size: " + value);
+			}
+		}
+		std::string test;
+
+		if (ss >> test)
+			throw std::logic_error("invalid client max body size: " + value);
+	}
 	else
 		throw std::logic_error("invalid client max body size: " + value);
 }
@@ -74,12 +104,14 @@ void Ablock::setClientMaxBodySize(std::string const &value)
 void Ablock::setIndex(std::string const &value)
 {
 	std::stringstream ss(value);
-	std::string file;
+	std::string path;
 	
-	ss >> file;
-	if (ss >> file)
+	ss >> path;
+	if (ss >> path)
 		throw std::logic_error("invalid index: " + value);
-	_index = value;
+	if (path[0] == '/')
+		path.erase(0, 1);
+	_index = path;
 }
 
 void Ablock::addErrorPage(std::string const &value)
