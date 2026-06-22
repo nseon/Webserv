@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/15 14:59:37 by nseon             #+#    #+#             */
-/*   Updated: 2026/06/22 17:03:53 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/22 20:10:00 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ static void parseBloc(Ablock &block, std::string const &content)
 			}
 			size_t pos = value.find(';');
 			if (pos == std::string::npos)
-				throw std::logic_error("invalid config");
+				throw std::logic_error("missing ;");
 			value.erase(pos);
 			block.launchAction(action, value);
 		}

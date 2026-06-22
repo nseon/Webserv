@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/11 13:34:54 by nseon             #+#    #+#             */
-/*   Updated: 2026/06/18 16:46:56 by nseon            ###   ########.fr       */
+/*   Updated: 2026/06/22 20:15:45 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <string>
 #include <vector>
 #include <ctime>
+#include <iostream>
 
 std::string Response::toString() const
 {
