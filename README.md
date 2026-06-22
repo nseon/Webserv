@@ -3,7 +3,7 @@
 # Webserv
 
 ## Description
-Webserv is a lightweight and robust HTTP/1.1 server written entirely in C++98 from scratch. The primary goal of this project is to understand the underlying mechanics of the World Wide Web by recreating a server architecture inspired by NGINX. 
+Webserv is a lightweight and robust HTTP/1.0 (with the 1.1 keep alive feature) server written entirely in C++98 from scratch. The primary goal of this project is to understand the underlying mechanics of the World Wide Web by recreating a server architecture inspired by NGINX. 
 
 It handles multiple concurrent client connections through non-blocking I/O multiplexing. The server is capable of parsing raw HTTP requests, serving static files, managing custom routing via a configuration file, and executing dynamic scripts (like Python or PHP) through a Common Gateway Interface (CGI).
 
