@@ -57,7 +57,7 @@ $ curl -i http://localhost:8080
 
 ## Ressources
 
->AI was used to improve understanding of certains concept and resolve some issues
+>AI was used to improve understanding of certains concept and resolve some issues.
 
 * Beej's Guide to Network Programming: https://beej.us/guide/bgnet/
 * NGINX Documentation: https://docs.nginx.com/nginx/admin-guide/basic-functionality/managing-configuration-files/
