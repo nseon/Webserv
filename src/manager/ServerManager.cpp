@@ -74,6 +74,7 @@ void	ServerManager::serverLoop(void)
 				waitpid((*it)->getPid(), NULL, 0);
 				response.error(504);
 				client->appendOutput(response.toString());
+				client->enableReadEvent();
 				this->enableClientWrite(client);
 				this->removeCgiSocket(*it);
 			}
