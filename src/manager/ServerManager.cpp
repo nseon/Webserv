@@ -60,8 +60,8 @@ void	ServerManager::serverLoop(void)
 
 		for (std::vector<ASocket*>::iterator it = readyList.begin(); it < readyList.end(); it++)
 		{
-			(*it)->socketBehavior(this);
 			(*it)->updateLastTimeUsed();
+			(*it)->socketBehavior(this);
 		}
 		for (std::vector<CGISocket*>::iterator it = _cgis.begin(); it < _cgis.end(); it++)
 		{
