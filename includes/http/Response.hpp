@@ -34,7 +34,7 @@ class Response : public AHttpMessage {
 
 	public:
 		Response(Request const &request, Location *location, int socketfd);
-		Response(Location &location, std::string const& version);
+		Response(Location &location, std::string const& version, Request const& request);
 		Response(int code, Server &server);
 		~Response();
 

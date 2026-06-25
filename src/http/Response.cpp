@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "http/Response.hpp"
+#include "http/Request.hpp"
 #include "http/responses.hpp"
 #include <cstddef>
 #include <fcntl.h>
@@ -83,6 +84,7 @@ std::string Response::getStatusMessage(int code)
 		case 500: return "Internal Server Error";
 		case 501: return "Not Implemented";
 		case 502: return "Bad Gateway Error";
+		case 504: return "Gateway Timeout";
 		case 505: return "HTTP Version Not Supported";
 		default:  return "Unknown Status";
 	}
@@ -236,8 +238,8 @@ Response::Response(Request const &request, Location *location, int socketfd)
 		handle_delete(request);
 }
 
-Response::Response(Location &location, std::string const& version)
-	: _status_code(0), _location(&location), _request(NULL)
+Response::Response(Location &location, std::string const& version, Request const& request)
+	: _status_code(0), _location(&location), _request(&request)
 {
 	this->setVersion(version);
 	this->addHeader("connection", "keep-alive");
