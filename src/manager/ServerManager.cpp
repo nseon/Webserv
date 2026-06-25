@@ -21,15 +21,7 @@ _shouldStop(false)
 {
 	for (std::vector<Server>::iterator it = this->_servers.begin(); it < this->_servers.end(); it++)
 	{
-		try
-		{
-			it->createSocket();
-		}
-		catch (std::exception &e)
-		{
-			std::cout << "Manager failed to create because :" << e.what() << std::endl;
-			return ;
-		}
+		it->createSocket();
 		this->_pollingManager.addSocket(it->getSocket());
 	}
 	Logger::info() << "Server Manager is up !" << std::endl;

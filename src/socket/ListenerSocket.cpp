@@ -19,7 +19,7 @@ ASocket(NULL)
 	this->_address.sin_addr.s_addr = htonl(INADDR_ANY);
 	std::memset(&this->_address.sin_zero, 0, 8);
 
-	if (bind(this->_socketFd, reinterpret_cast<struct sockaddr*>(&this->_address), sizeof(struct sockaddr)))
+	if (bind(this->_socketFd, reinterpret_cast<struct sockaddr*>(&this->_address), sizeof(struct sockaddr)) == -1)
 	{
 		throw std::runtime_error("ListenerSocket constructor failed because bind() failed.");
 	}
@@ -35,8 +35,8 @@ ASocket(server, address)
 {
 	int yes = 1;
 
-	setsockopt(this->_socketFd, SOL_SOCKET, SO_REUSEPORT, &yes, 4);
-	if (bind(this->_socketFd, reinterpret_cast<struct sockaddr*>(&this->_address), sizeof(struct sockaddr)))
+	setsockopt(this->_socketFd, SOL_SOCKET, SO_REUSEADDR, &yes, 4);
+	if (bind(this->_socketFd, reinterpret_cast<struct sockaddr*>(&this->_address), sizeof(struct sockaddr)) == -1)
 	{
 		throw std::runtime_error("ListenerSocket constructor failed because bind() failed.");
 	}
