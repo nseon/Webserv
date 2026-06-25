@@ -1,7 +1,6 @@
 #include "socket/ClientSocket.hpp"
 #include "manager/ServerManager.hpp"
 #include "logger/Logger.hpp"
-#include "http/Request.hpp"
 
 #include <netinet/in.h>
 #include <sys/epoll.h>
