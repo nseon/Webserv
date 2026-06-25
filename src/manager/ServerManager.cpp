@@ -59,13 +59,14 @@ void	ServerManager::serverLoop(void)
 		{
 			if (difftime(std::time(NULL), (*it)->getLastTimeUsed()) >= CGI_TIMEOUT)
 			{
-				Response		response(*(*it)->getLocation(), (*it)->getVersion());
 				ClientSocket*	client = (*it)->getClient();
+				Response		response(*(*it)->getLocation(), (*it)->getVersion(), this->_requests.find(client)->second);
 
 				kill((*it)->getPid(), SIGKILL);
 				waitpid((*it)->getPid(), NULL, 0);
 				response.error(504);
 				client->appendOutput(response.toString());
+				client->enableReadEvent();
 				this->enableClientWrite(client);
 				this->removeCgiSocket(*it);
 			}
@@ -147,7 +148,7 @@ void	ServerManager::serverLoop(void)
 	void	ServerManager::sendErrorResponse(ClientSocket* client, Location& location,
 		std::string const& version, int code)
 	{
-		Response	response(location, version);
+		Response	response(location, version, this->_requests.find(client)->second);
 
 		response.error(code);
 		client->appendOutput(response.toString());
@@ -207,7 +208,7 @@ void	ServerManager::serverLoop(void)
 		close(sv[1]);
 		freeCgiEnvs(envs);
 
-		CGISocket*	cgi = new CGISocket(sv[0], pid, client, request.getBody(), &location, version);
+		CGISocket*	cgi = new CGISocket(sv[0], pid, client, request, &location, version);
 
 		this->_pollingManager.addSocket(cgi);
 		this->_cgis.push_back(cgi);
@@ -234,7 +235,7 @@ void	ServerManager::serverLoop(void)
 				alive = true;
 		if (alive)
 		{
-		Response	response(*cgi->getLocation(), cgi->getVersion());
+		Response	response(*cgi->getLocation(), cgi->getVersion(), cgi->getRequest());
 
 		if (!response.buildFromCgiOutput(cgi->getOutput()))
 			response.error(502);

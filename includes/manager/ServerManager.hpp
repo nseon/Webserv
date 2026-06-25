@@ -9,7 +9,7 @@
 # include "config/Server.hpp"
 
 # ifndef POLLING_TIMEOUT
-#  define POLLING_TIMEOUT 60000
+#  define POLLING_TIMEOUT 10000
 # endif
 
 # ifndef CLIENT_TIMEOUT
@@ -17,7 +17,7 @@
 # endif
 
 # ifndef CGI_TIMEOUT
-#  define CGI_TIMEOUT 60
+#  define CGI_TIMEOUT 10
 # endif
 
 class CGISocket;

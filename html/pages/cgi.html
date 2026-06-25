@@ -181,6 +181,29 @@
                 <button type="submit">Analyser (POST · Perl)</button>
             </form>
         </div>
+
+        <!-- ============ Erreur : CGI qui plante (502) ============ -->
+        <div class="card" style="border-color: rgba(245,101,101,0.6);">
+            <h2>Gestion d'erreur CGI <span class="badge" style="background:#f56565;">502</span></h2>
+            <p class="desc">
+                Le script <code>crash.py</code> contient une <strong>erreur de syntaxe volontaire</strong> :
+                l'interpréteur Python échoue et ne produit aucune sortie CGI valide.
+                Webserv doit alors répondre <strong>502 Bad Gateway</strong> au lieu de planter.
+            </p>
+            <a href="/cgi-bin/crash.py"><button type="button" style="background:#f56565;color:#fff;">Déclencher l'erreur (502)</button></a>
+        </div>
+
+        <!-- ============ Timeout : CGI qui dort à l'infini ============ -->
+        <div class="card" style="border-color: rgba(255,193,7,0.6);">
+            <h2>Timeout CGI <span class="badge" style="background:#ffc107;color:#333;">504</span></h2>
+            <p class="desc">
+                Le script <code>timeout.py</code> dort <strong>indéfiniment</strong> sans jamais répondre.
+                Webserv doit détecter l'absence de réponse, tuer le processus CGI et renvoyer une erreur
+                (<strong>504 Gateway Timeout</strong>) au lieu d'attendre éternellement.
+                <em>(la requête peut donc rester en attente quelques secondes avant l'erreur)</em>
+            </p>
+            <a href="/cgi-bin/timeout.py"><button type="button" style="background:#ffc107;color:#333;">Tester le timeout</button></a>
+        </div>
     </div>
 </body>
 </html>

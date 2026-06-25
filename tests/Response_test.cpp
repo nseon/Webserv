@@ -297,7 +297,8 @@ TEST_SUITE("Response — sortie CGI")
 	{
 		Server		server;
 		Location	location(server);
-		Response	response(location, "HTTP/1.1");
+		Request		request;
+		Response	response(location, "HTTP/1.1", request);
 
 		std::string raw = "Content-Type: text/html\r\n\r\n<h1>hi</h1>";
 		std::vector<char>	v(raw.begin(), raw.end());
@@ -316,7 +317,8 @@ TEST_SUITE("Response — sortie CGI")
 	{
 		Server		server;
 		Location	location(server);
-		Response	response(location, "HTTP/1.1");
+		Request		request;
+		Response	response(location, "HTTP/1.1", request);
 
 		std::string raw = "Status: 404 Not Found\r\nContent-Type: text/plain\r\n\r\nnope";
 		std::vector<char>	v(raw.begin(), raw.end());
@@ -329,7 +331,8 @@ TEST_SUITE("Response — sortie CGI")
 	{
 		Server		server;
 		Location	location(server);
-		Response	response(location, "HTTP/1.1");
+		Request		request;
+		Response	response(location, "HTTP/1.1", request);
 
 		std::vector<char>	empty;
 		CHECK(response.buildFromCgiOutput(empty) == false);

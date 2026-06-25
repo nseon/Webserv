@@ -309,7 +309,8 @@ TEST_SUITE("CGI — execution bout en bout")
 		// La sortie brute est parsee comme le ferait le serveur.
 		Server		server;
 		Location	location(server);
-		Response	response(location, "HTTP/1.1");
+		Request		request;
+		Response	response(location, "HTTP/1.1", request);
 		REQUIRE(response.buildFromCgiOutput(out) == true);
 
 		std::vector<char> const& body = response.getBody();
@@ -341,7 +342,8 @@ TEST_SUITE("CGI — execution bout en bout")
 
 		Server		server;
 		Location	location(server);
-		Response	response(location, "HTTP/1.1");
+		Request		request;
+		Response	response(location, "HTTP/1.1", request);
 		REQUIRE(response.buildFromCgiOutput(out) == true);
 
 		std::vector<char> const& body = response.getBody();
@@ -363,7 +365,8 @@ TEST_SUITE("CGI — execution bout en bout")
 
 		Server		server;
 		Location	location(server);
-		Response	response(location, "HTTP/1.1");
+		Request		request;
+		Response	response(location, "HTTP/1.1", request);
 		REQUIRE(response.buildFromCgiOutput(out) == true);
 		CHECK(response.getStatusCode() == 418);
 	}

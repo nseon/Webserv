@@ -9,13 +9,14 @@
 #endif
 
 CGISocket::CGISocket(int fd, pid_t pid, ClientSocket* client,
-	std::vector<char> const& body, Location* location, std::string const& version):
+	Request const& request, Location* location, std::string const& version):
 ASocket(fd, client->getServer()),
 _pid(pid),
 _client(client),
 _location(location),
+_request(request),
 _version(version),
-_toCgi(body),
+_toCgi(request.getBody()),
 _toCgi_off(0)
 {
 	if (!this->_toCgi.empty())
@@ -37,6 +38,11 @@ ClientSocket*	CGISocket::getClient(void) const
 Location*	CGISocket::getLocation(void) const
 {
 	return (this->_location);
+}
+
+Request const&	CGISocket::getRequest(void) const
+{
+	return (this->_request);
 }
 
 std::string const&	CGISocket::getVersion(void) const
